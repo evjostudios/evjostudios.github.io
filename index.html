@@ -1795,44 +1795,44 @@ function setupCarousels(scope) {
     const speed = Number(car.dataset.speed) || 40;
     requestAnimationFrame(() => {
       const originals = Array.from(track.children);
-      const overflow = track.scrollWidth > vp.clientWidth + 8;
-      if (!overflow || dir === 'static') {
-        // No hace falta girar: se muestran centrados, sin duplicar ni controles
-        track.style.justifyContent = 'center';
-        track.style.width = '100%';
-        if (ctrl) ctrl.style.display = 'none';
-        if (dir === 'static') vp.style.overflowX = 'auto';
+      const n = originals.length;
+      if (dir === 'static') {
+        vp.style.overflowX = 'auto';
+        if (track.scrollWidth <= vp.clientWidth + 8) { track.style.justifyContent = 'center'; track.style.width = '100%'; if (ctrl) ctrl.style.display = 'none'; }
         return;
       }
-      // Clonar una vez SOLO para el bucle continuo (no se nota con suficientes items)
-      originals.forEach(n => track.appendChild(n.cloneNode(true)));
-      const half = () => track.scrollWidth / 2 || 1;
+      if (n <= 1) { track.style.justifyContent = 'center'; track.style.width = '100%'; if (ctrl) ctrl.style.display = 'none'; return; }
+      // Clonar lo justo para un bucle fluido (rellena al menos 2x el ancho visible)
+      let guard = 0;
+      while (track.scrollWidth < vp.clientWidth * 2 + 10 && guard < 30) { originals.forEach(o => track.appendChild(o.cloneNode(true))); guard++; }
+      if (track.children.length <= n) originals.forEach(o => track.appendChild(o.cloneNode(true)));
+      const baseW = () => (track.children[n] ? track.children[n].offsetLeft : track.scrollWidth / 2) || 1;
       let dots = [];
       if (dotsWrap) {
         dotsWrap.innerHTML = originals.map((_, i) => `<button class="car-dot" data-i="${i}" aria-label="Ir al ${i + 1}"></button>`).join('');
         dots = Array.from(dotsWrap.children);
-        dots.forEach((dot, i) => dot.addEventListener('click', () => { paused = true; setIcon(); vp.scrollLeft = originals[i].offsetLeft; }));
+        dots.forEach((d, i) => d.addEventListener('click', () => { paused = true; setIcon(); vp.scrollLeft = originals[i].offsetLeft; }));
       }
       let paused = false, hover = false;
       function setIcon() { if (pauseBtn) pauseBtn.innerHTML = paused ? CAR_PLAY : CAR_PAUSE; }
       if (pauseBtn) { pauseBtn.addEventListener('click', () => { paused = !paused; setIcon(); }); setIcon(); }
       vp.addEventListener('mouseenter', () => hover = true);
       vp.addEventListener('mouseleave', () => hover = false);
-      if (dir === 'right') vp.scrollLeft = half();
+      if (dir === 'right') vp.scrollLeft = baseW();
       let last = performance.now();
       function step(now) {
         const dt = Math.min((now - last) / 1000, 0.05); last = now;
+        const base = baseW();
         if (!paused && !hover) {
-          const pps = half() / speed;
-          vp.scrollLeft += pps * dt * (dir === 'right' ? -1 : 1);
-          const h = half();
-          if (vp.scrollLeft >= h) vp.scrollLeft -= h; else if (vp.scrollLeft < 0) vp.scrollLeft += h;
+          vp.scrollLeft += (base / speed) * dt * (dir === 'right' ? -1 : 1);
+          if (vp.scrollLeft >= base) vp.scrollLeft -= base;
+          else if (vp.scrollLeft < 0) vp.scrollLeft += base;
         }
         if (dots.length) {
-          const h = half(); const pos = ((vp.scrollLeft % h) + h) % h;
+          const pos = ((vp.scrollLeft % base) + base) % base;
           let idx = 0, best = Infinity;
-          originals.forEach((n, i) => { const dd = Math.abs(n.offsetLeft - pos); if (dd < best) { best = dd; idx = i; } });
-          dots.forEach((dd, i) => dd.classList.toggle('active', i === idx));
+          originals.forEach((o, i) => { const dd = Math.abs(o.offsetLeft - pos); if (dd < best) { best = dd; idx = i; } });
+          dots.forEach((d, i) => d.classList.toggle('active', i === idx));
         }
         requestAnimationFrame(step);
       }
