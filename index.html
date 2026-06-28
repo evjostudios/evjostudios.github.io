@@ -1161,7 +1161,7 @@ async function createBasket() {
 async function addToBasket(basketIdent, packageId) {
   try {
     const res = await fetch(
-      `https://headless.tebex.io/api/accounts/${TEBEX_TOKEN}/baskets/${basketIdent}/packages`,
+      `https://headless.tebex.io/api/baskets/${basketIdent}/packages`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
