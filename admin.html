@@ -280,7 +280,7 @@
         <div class="field"><label>Subtítulo grande (contorno)</label><input type="text" data-bind="hero.titleOutline"></div>
         <div class="field-row">
           <div class="field"><label>Color del título</label><div class="color-row"><input type="color" data-bind="hero.titleColor"><input type="text" data-bind="hero.titleColor" style="flex:1"></div></div>
-          <div class="field"><label>Color del contorno</label><input type="text" data-bind="hero.outlineColor" placeholder="vacío = degradado"></div>
+          <div class="field"><label>Color del contorno</label><div class="color-row"><input type="color" data-bind="hero.outlineColor"><input type="text" data-bind="hero.outlineColor" placeholder="vacío = degradado" style="flex:1"></div></div>
         </div>
         <div class="field-row">
           <div class="field"><label>Grosor del contorno (px)</label><input type="number" min="0" max="8" step="1" data-bind="hero.outlineWidth"></div>
@@ -309,11 +309,16 @@
       <div class="section-body">
         <label class="check"><input type="checkbox" data-bind="heroTicker.show"> Mostrar la barra</label>
         <div class="field-row">
+          <div class="field"><label>Posición</label><select data-bind="heroTicker.position"><option value="bottom">Abajo del hero</option><option value="top">Arriba (pegada al menú)</option></select></div>
           <div class="field"><label>Dirección</label><select data-bind="heroTicker.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option></select></div>
-          <div class="field"><label>Velocidad (seg)</label><input type="number" min="5" max="120" data-bind="heroTicker.speed"></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Color de fondo</label><input type="text" data-bind="heroTicker.bgColor" placeholder="vacío = rojo"></div>
+          <div class="field"><label>Velocidad (seg)</label><input type="number" min="5" max="120" data-bind="heroTicker.speed"></div>
+          <div class="field"><label>Grosor (px)</label><input type="number" min="20" max="90" data-bind="heroTicker.height"></div>
+        </div>
+        <div class="field"><label>Transparencia: <span id="tkOpVal"></span></label><input type="range" min="0.1" max="1" step="0.05" data-bind="heroTicker.opacity" data-out="tkOpVal"></div>
+        <div class="field-row">
+          <div class="field"><label>Color de fondo</label><div class="color-row"><input type="color" data-bind="heroTicker.bgColor"><input type="text" data-bind="heroTicker.bgColor" placeholder="vacío = rojo" style="flex:1"></div></div>
           <div class="field"><label>Color del texto</label><div class="color-row"><input type="color" data-bind="heroTicker.textColor"><input type="text" data-bind="heroTicker.textColor" style="flex:1"></div></div>
         </div>
         <div id="tickerList"></div>
@@ -415,6 +420,7 @@
           <div class="field"><label>2º botón — enlace</label><input type="text" data-bind="cta.btn2Href"></div>
         </div>
         <div class="field"><label>Línea de miembros (opcional)</label><input type="text" data-bind="cta.membersText" placeholder="Ej: +12.000 miembros activos"></div>
+        <div class="field"><label>Imagen de fondo (opcional)</label><div class="media-input"><input type="text" data-bind="cta.image" placeholder="URL o sube una imagen"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div><div class="media-preview"></div></div>
       </div>
     </div>
 
@@ -448,6 +454,7 @@
           <button class="add-btn" data-add="buttons"><span class="ico">🔘</span> Botones</button>
           <button class="add-btn" data-add="banner"><span class="ico">📢</span> Banner</button>
           <button class="add-btn" data-add="divider"><span class="ico">➖</span> Separador</button>
+          <button class="add-btn" data-add="partners"><span class="ico">🤝</span> Partners</button>
         </div>
         <div id="blocksList"></div>
       </div>
@@ -535,7 +542,7 @@ const DEFAULT_CONFIG = {
   theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#E62B2B', headingAlign: 'left', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
-  heroTicker: { show: true, direction: 'left', speed: 28, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
+  heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
   music: { enabled: false, autoplay: false, position: 'pos-br', color: '#E62B2B', title: 'Lofi EVJO', url: '', tracks: [] },
   stats: [
     { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
@@ -565,7 +572,7 @@ const DEFAULT_CONFIG = {
   blocks: []
 };
 
-const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner', divider: 'Separador' };
+const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner', divider: 'Separador', partners: 'Partners' };
 const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', reviews: 'Reviews', cta: 'CTA Discord' };
 const ICON_OPTIONS = ['lock','unlock','refresh','chat','bolt','shield','star','download','check','clock','code','box','users','gift','headset','server','tag','cart','heart','fire','rocket','globe'];
 const DRAFT_KEY = 'evjo_admin_config';
@@ -812,7 +819,8 @@ function newBlock(type) {
     case 'carousel': return { type, tag: 'Galería', title: '', direction: 'left', speed: 40, items: [{ kind: 'image', url: '', caption: '' }] };
     case 'buttons': return { type, align: 'center', items: [{ label: 'Botón', href: '#tienda', style: 'solid' }] };
     case 'banner': return { type, title: 'TÍTULO DEL BANNER', text: 'Descripción del banner.', btnLabel: 'Acción', btnHref: '#tienda' };
-    case 'divider': return { type, style: '1', color: '' };
+    case 'divider': return { type, style: '1', color: '', thickness: 2 };
+    case 'partners': return { type, tag: 'Partners', title: '', view: 'carousel', direction: 'left', speed: 40, opacity: 0.7, gap: 40, items: [{ logo: '', link: '' }] };
     case 'window': return { type, title: 'Ventana', text: 'Contenido de la ventana...', media: { type: 'image', url: '' } };
   }
 }
@@ -900,8 +908,15 @@ function blockFields(b) {
       <div class="field"><label>Texto</label><textarea ${f('text')}>${attr(b.text)}</textarea></div>
       <div class="field-row"><div class="field"><label>Botón texto</label><input type="text" ${f('btnLabel')} value="${attr(b.btnLabel)}"></div><div class="field"><label>Botón enlace</label><input type="text" ${f('btnHref')} value="${attr(b.btnHref)}"></div></div>`;
     case 'divider': return `
-      <div class="field-row"><div class="field"><label>Estilo</label><select ${f('style')}>${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}"${String(b.style) === String(n) ? ' selected' : ''}>${n <= 5 ? 'Estático ' + n : 'Animado ' + (n - 5)}</option>`).join('')}</select></div><div class="field"><label>Color</label><input type="text" ${f('color')} value="${attr(b.color)}" placeholder="vacío = rojo"></div></div>
-      <div class="hint">5 estáticos y 5 animados. El color vacío usa el color principal.</div>`;
+      <div class="field-row"><div class="field"><label>Estilo</label><select ${f('style')}>${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}"${String(b.style) === String(n) ? ' selected' : ''}>${n <= 5 ? 'Estático ' + n : 'Animado ' + (n - 5)}</option>`).join('')}</select></div><div class="field" style="max-width:120px"><label>Grosor (px)</label><input type="number" min="1" max="14" ${f('thickness')} value="${attr(b.thickness)}"></div></div>
+      <div class="field"><label>Color</label><div class="color-row"><input type="color" data-bf="color" value="${attr(b.color || '#E62B2B')}"><input type="text" ${f('color')} value="${attr(b.color)}" placeholder="vacío = color principal" style="flex:1"></div></div>
+      <div class="hint">5 estáticos y 5 animados. Cubren de lado a lado con bordes difuminados.</div>`;
+    case 'partners': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      <div class="field-row"><div class="field"><label>Vista</label><select ${f('view')}><option value="carousel"${b.view !== 'grid' ? ' selected' : ''}>Carrusel</option><option value="grid"${b.view === 'grid' ? ' selected' : ''}>Cuadrícula</option></select></div><div class="field"><label>Dirección</label><select ${f('direction')}><option value="left"${b.direction !== 'right' ? ' selected' : ''}>⬅️ Izquierda</option><option value="right"${b.direction === 'right' ? ' selected' : ''}>➡️ Derecha</option></select></div></div>
+      <div class="field-row"><div class="field"><label>Velocidad</label><input type="number" ${f('speed')} value="${attr(b.speed)}"></div><div class="field"><label>Separación (px)</label><input type="number" ${f('gap')} value="${attr(b.gap)}"></div><div class="field"><label>Transparencia</label><input type="number" min="0.1" max="1" step="0.1" ${f('opacity')} value="${attr(b.opacity)}"></div></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Logo ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>${mediaField('Logo', it.logo, 'data-bf="items.' + j + '.logo"')}<div class="field"><label>Enlace al hacer clic (opcional)</label><input type="text" data-bf="items.${j}.link" value="${attr(it.link)}" placeholder="https://..."></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir logo</button>`;
   }
 }
 function renderBlocks() {
@@ -935,6 +950,7 @@ function addSubItem(b) {
   if (b.type === 'faq') b.items.push({ q: '¿Pregunta?', a: 'Respuesta.' });
   else if (b.type === 'buttons') b.items.push({ label: 'Botón', href: '#', style: 'solid' });
   else if (b.type === 'carousel') b.items.push({ kind: 'image', url: '', caption: '' });
+  else if (b.type === 'partners') b.items.push({ logo: '', link: '' });
   else b.items.push({ icon: 'star', title: 'Título', text: 'Descripción' });
 }
 blocksList.addEventListener('click', e => {

@@ -520,21 +520,21 @@
   body[data-btn="rounded"] .cta-discord,
   body[data-btn="rounded"] .script-btn { border-radius: 12px; }
 
-  /* SCRIPTS CAROUSEL */
-  .carousel-viewport { overflow: hidden; width: 100%; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
-  .carousel-viewport.static-scroll { overflow-x: auto; -webkit-mask-image: none; mask-image: none; padding-bottom: 12px; }
+  /* CAROUSEL (JS-driven: flechas, hover acelera, bordes difuminados) */
+  .carousel { position: relative; width: 100%; }
+  .carousel-viewport { overflow: hidden; width: 100%; -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); }
+  .carousel-viewport.static-scroll { overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; }
+  .carousel-viewport.static-scroll::-webkit-scrollbar { display: none; }
   .carousel-track { display: flex; gap: 22px; width: max-content; }
-  .carousel-track.anim-left { animation: carLeft var(--carousel-dur, 45s) linear infinite; }
-  .carousel-track.anim-right { animation: carRight var(--carousel-dur, 45s) linear infinite; }
-  .carousel-viewport:hover .carousel-track.anim-left,
-  .carousel-viewport:hover .carousel-track.anim-right { animation-play-state: paused; }
   .carousel-track .script-card { flex: 0 0 320px; width: 320px; }
   .carousel-item { flex: 0 0 340px; width: 340px; }
   .carousel-item img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); }
   .carousel-item video { width: 100%; border-radius: 12px; border: 1px solid var(--border); }
   .carousel-cap { font-family: var(--font-head); letter-spacing: 1px; text-transform: uppercase; font-size: 12px; color: var(--muted); margin-top: 8px; text-align: center; }
-  @keyframes carLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  @keyframes carRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  .car-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 5; width: 42px; height: 42px; border-radius: 50%; background: rgba(16,16,19,0.85); border: 1px solid var(--border-2); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; line-height: 1; transition: .2s; backdrop-filter: blur(6px); }
+  .car-arrow:hover { background: var(--grad-red); border-color: transparent; }
+  .car-arrow.prev { left: 8px; } .car-arrow.next { right: 8px; }
+  @media (max-width: 700px) { .car-arrow { display: none; } }
 
   /* MORE BUTTON VARIATIONS */
   body[data-btn="outline"] .btn-primary, body[data-btn="outline"] .nav-cta, body[data-btn="outline"] .modal-buy-btn, body[data-btn="outline"] .cta-discord, body[data-btn="outline"] .script-btn, body[data-btn="outline"] .modal-free-btn {
@@ -637,6 +637,26 @@
   /* HEADING ALIGN (izquierda / centro / derecha) */
   body[data-halign="center"] .section-tag, body[data-halign="center"] .sec-head .section-tag { justify-content: center; }
   body[data-halign="right"] .section-tag, body[data-halign="right"] .sec-head .section-tag { justify-content: flex-end; }
+
+  /* NAV AUTH layout (carrito izq + nombre, en fila) */
+  .nav-auth { display: flex; align-items: center; gap: 10px; }
+
+  /* PARTNERS */
+  .partners-grid { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
+  .partner { display: inline-flex; align-items: center; justify-content: center; }
+  .partner img { max-height: 64px; width: auto; object-fit: contain; opacity: var(--p-op, 0.7); filter: grayscale(0.4); transition: transform .35s var(--ease), opacity .3s, filter .3s; }
+  .partner:hover img { transform: scale(1.2); opacity: 1; filter: none; }
+  .carousel-track .partner { flex: 0 0 auto; }
+
+  /* HERO TICKER: arriba + grosor */
+  .hero-ticker.top { top: 62px; bottom: auto; }
+
+  /* DIVIDER full-bleed + grosor variable */
+  .block-divider .divider { max-width: none; padding-left: 0; padding-right: 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .dv-1 i, .dv-6 i, .dv-7 i, .dv-8 i, .dv-10 i { height: var(--dvh, 2px); }
+  .dv-9 i { height: var(--dvh, 4px); }
+  .dv-5 i { height: var(--dvh, 4px); }
+  .dv-2 i { border-top-width: var(--dvh, 2px); }
   body[data-halign="center"] .section-title, body[data-halign="center"] .sec-head, body[data-halign="center"] .scripts-header { text-align: center; }
   body[data-halign="right"] .section-title, body[data-halign="right"] .sec-head, body[data-halign="right"] .scripts-header { text-align: right; }
   body[data-halign="center"] .scripts-header { flex-direction: column; align-items: center; }
@@ -1099,7 +1119,7 @@ async function addToBasket(basketIdent, packageId) {
         body: JSON.stringify({ package_id: packageId, quantity: 1 })
       }
     );
-    if (!res.ok) { const t = await res.text().catch(() => ''); console.error('Tebex add-to-basket error', res.status, t); return false; }
+    if (!res.ok) { const t = await res.text().catch(() => ''); window.__lastTebexError = res.status + (t ? ' ' + t.slice(0, 160) : ''); console.error('Tebex add-to-basket error', res.status, t); return false; }
     return true;
   } catch (err) {
     console.error('Add package error:', err);
@@ -1178,14 +1198,9 @@ function renderGrid(filterCat) {
 
   if (layout.mode === 'carousel') {
     grid.style.display = 'block';
-    const dur = (Number(layout.speed) || 45) + 's';
-    if (layout.direction === 'static') {
-      grid.innerHTML = `<div class="carousel-viewport static-scroll"><div class="carousel-track">${cardsHTML}</div></div>`;
-    } else {
-      const animClass = layout.direction === 'right' ? 'anim-right' : 'anim-left';
-      grid.innerHTML = `<div class="carousel-viewport"><div class="carousel-track ${animClass}" style="--carousel-dur:${dur}">${cardsHTML}${cardsHTML}</div></div>`;
-    }
+    grid.innerHTML = carouselHTML(cardsHTML, layout.direction, layout.speed);
     grid.querySelectorAll('.script-card').forEach(card => card.addEventListener('click', () => openModal(card.dataset.id)));
+    setupCarousels(grid);
   } else {
     grid.style.display = '';
     grid.innerHTML = cardsHTML;
@@ -1438,7 +1453,7 @@ async function addToCart() {
     ok = await addToBasket(AUTH.ident, currentPkg.id);
   }
   if (ok) { AUTH.cart++; renderAuthUI(); showToast('Añadido al carrito ✓', 'success'); closeModal(); }
-  else { showToast('No se pudo añadir. Revisa la consola (F12) — el paquete podría requerir datos extra en Tebex.', 'error'); if (btn) { btn.disabled = false; btn.textContent = 'Añadir al carrito'; } }
+  else { showToast('No se pudo añadir: ' + (window.__lastTebexError || 'error') + '. (F12 para más detalles)', 'error'); if (btn) { btn.disabled = false; btn.textContent = 'Añadir al carrito'; } }
 }
 
 // Al volver del login CFX, recuperar el usuario de la cesta
@@ -1579,7 +1594,7 @@ const DEFAULT_CONFIG = {
     bgImage: ''
   },
   store: { cardSize: 'normal', priceTagShape: 'slant' },
-  heroTicker: { show: true, direction: 'left', speed: 28, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
+  heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
   music: { enabled: false, autoplay: false, position: 'pos-br', color: '#E62B2B', title: 'Lofi EVJO', url: '', tracks: [] },
   stats: [
     { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
@@ -1649,6 +1664,49 @@ const ICONS = {
 function renderIcon(name, cls) {
   if (name && ICONS[name]) return `<span class="${cls || ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg></span>`;
   return `<span class="${cls || ''}"><span class="emoji">${escHTML(name || '')}</span></span>`;
+}
+
+// Carrusel: envoltorio con flechas (auto-scroll por JS)
+function carouselHTML(cards, dir, speed) {
+  const sp = Number(speed) || 40;
+  const d = dir || 'left';
+  const content = d === 'static' ? cards : cards + cards;
+  const vpClass = d === 'static' ? ' static-scroll' : '';
+  return `<div class="carousel" data-dir="${d}" data-speed="${sp}">
+    <button class="car-arrow prev" aria-label="Anterior">‹</button>
+    <div class="carousel-viewport${vpClass}"><div class="carousel-track">${content}</div></div>
+    <button class="car-arrow next" aria-label="Siguiente">›</button>
+  </div>`;
+}
+function setupCarousels(scope) {
+  (scope || document).querySelectorAll('.carousel:not([data-init])').forEach(car => {
+    car.dataset.init = '1';
+    const vp = car.querySelector('.carousel-viewport');
+    const track = car.querySelector('.carousel-track');
+    if (!vp || !track) return;
+    const dir = car.dataset.dir || 'left';
+    const speed = Number(car.dataset.speed) || 40;
+    const prev = car.querySelector('.car-arrow.prev'), next = car.querySelector('.car-arrow.next');
+    if (prev) prev.addEventListener('click', () => vp.scrollBy({ left: -340, behavior: 'smooth' }));
+    if (next) next.addEventListener('click', () => vp.scrollBy({ left: 340, behavior: 'smooth' }));
+    if (dir === 'static') return;
+    let hovering = false;
+    vp.addEventListener('mouseenter', () => hovering = true);
+    vp.addEventListener('mouseleave', () => hovering = false);
+    let last = performance.now();
+    function step(now) {
+      const dt = Math.min((now - last) / 1000, 0.05); last = now;
+      const half = track.scrollWidth / 2 || 1;
+      const pxPerSec = half / speed;
+      const mult = hovering ? 3 : 1;
+      vp.scrollLeft += pxPerSec * dt * mult * (dir === 'right' ? -1 : 1);
+      if (vp.scrollLeft >= half) vp.scrollLeft -= half;
+      else if (vp.scrollLeft <= 0) vp.scrollLeft += half;
+      requestAnimationFrame(step);
+    }
+    if (dir === 'right') vp.scrollLeft = track.scrollWidth / 2;
+    requestAnimationFrame(step);
+  });
 }
 
 // Build a logo "EV<span>J</span>O" style with accent letter
@@ -1806,12 +1864,22 @@ function renderBlock(b) {
         const media = it.kind === 'video' ? mediaHTML({ type: 'video', url: it.url }) : `<img src="${escHTML(it.url)}" alt="${escHTML(it.caption || '')}" loading="lazy">`;
         return `<div class="carousel-item">${media}${it.caption ? `<div class="carousel-cap">${escHTML(it.caption)}</div>` : ''}</div>`;
       };
-      const cards = items.map(mk).join('');
       const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
-      if (b.direction === 'static') return `<div class="reveal">${head}<div class="carousel-viewport static-scroll"><div class="carousel-track">${cards}</div></div></div>`;
-      const animClass = b.direction === 'right' ? 'anim-right' : 'anim-left';
-      const dur = (Number(b.speed) || 40) + 's';
-      return `<div class="reveal">${head}<div class="carousel-viewport"><div class="carousel-track ${animClass}" style="--carousel-dur:${dur}">${cards}${cards}</div></div></div>`;
+      return `<div class="reveal">${head}${carouselHTML(items.map(mk).join(''), b.direction, b.speed)}</div>`;
+    }
+    case 'partners': {
+      const items = (b.items || []).filter(it => it.logo);
+      if (!items.length) return '';
+      const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
+      const op = (b.opacity != null && b.opacity !== '') ? b.opacity : 0.7;
+      const gap = Number(b.gap) || 40;
+      const mk = it => {
+        const img = `<img src="${escHTML(it.logo)}" alt="partner" loading="lazy">`;
+        return it.link ? `<a class="partner" href="${escHTML(it.link)}" target="_blank" rel="noopener">${img}</a>` : `<span class="partner">${img}</span>`;
+      };
+      const inner = items.map(mk).join('');
+      if (b.view === 'carousel') return `<div class="reveal" style="--p-op:${op}">${head}${carouselHTML(`<div style="display:flex;gap:${gap}px">${inner}</div>`, b.direction, b.speed)}</div>`;
+      return `<div class="reveal" style="--p-op:${op}">${head}<div class="partners-grid" style="gap:${gap}px">${inner}</div></div>`;
     }
     case 'gallery': {
       const imgs = (b.images || []).filter(Boolean);
@@ -1819,9 +1887,7 @@ function renderBlock(b) {
       const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
       if (b.view === 'carousel') {
         const cards = imgs.map(u => `<div class="carousel-item"><img src="${escHTML(u)}" loading="lazy"></div>`).join('');
-        const dir = b.direction === 'right' ? 'anim-right' : 'anim-left';
-        const dur = (Number(b.speed) || 40) + 's';
-        return `<div class="reveal">${head}<div class="carousel-viewport"><div class="carousel-track ${dir}" style="--carousel-dur:${dur}">${cards}${cards}</div></div></div>`;
+        return `<div class="reveal">${head}${carouselHTML(cards, b.direction, b.speed)}</div>`;
       }
       return `<div class="reveal">${head}<div class="gallery-grid">${imgs.map(u => `<img src="${escHTML(u)}" loading="lazy">`).join('')}</div></div>`;
     }
@@ -1841,8 +1907,10 @@ function renderBlock(b) {
     }
     case 'divider': {
       const st = (String(b.style || '1').match(/\d+/) || ['1'])[0];
-      const col = b.color ? ` style="--dvc:${escHTML(b.color)}"` : '';
-      return `<div class="divider dv-${st}"${col}><i></i></div>`;
+      const col = b.color ? `--dvc:${escHTML(b.color)};` : '';
+      const th = (b.thickness != null && b.thickness !== '') ? `--dvh:${parseInt(b.thickness) || 2}px;` : '';
+      const sv = (col || th) ? ` style="${col}${th}"` : '';
+      return `<div class="divider dv-${st}"${sv}><i></i></div>`;
     }
     default:
       return '';
@@ -1970,6 +2038,9 @@ function applyConfig(cfg) {
     else {
       heroTicker.style.display = '';
       heroTicker.style.background = c.heroTicker.bgColor || '';
+      heroTicker.classList.toggle('top', c.heroTicker.position === 'top');
+      heroTicker.style.opacity = (c.heroTicker.opacity != null && c.heroTicker.opacity !== '') ? c.heroTicker.opacity : 1;
+      heroTicker.style.height = (Number(c.heroTicker.height) || 40) + 'px';
       let items = '';
       for (let r = 0; r < 3; r++) c.heroTicker.items.forEach(w => { items += `<span class="ticker-item" style="color:${escHTML(c.heroTicker.textColor || '#fff')}">${escHTML(w)}</span>`; });
       tickerTrack.innerHTML = items;
@@ -2048,6 +2119,11 @@ function applyConfig(cfg) {
   }
   const cMembers = document.getElementById('ctaMembers');
   if (cMembers) { if (c.cta.membersText) { cMembers.innerHTML = escHTML(c.cta.membersText); cMembers.style.display = ''; } else cMembers.style.display = 'none'; }
+  const ctaBanner = document.querySelector('.cta-banner');
+  if (ctaBanner) {
+    if (c.cta.image) { ctaBanner.style.backgroundImage = `linear-gradient(135deg, rgba(20,6,6,0.86), rgba(13,13,16,0.86)), url("${c.cta.image}")`; ctaBanner.style.backgroundSize = 'cover'; ctaBanner.style.backgroundPosition = 'center'; }
+    else { ctaBanner.style.backgroundImage = ''; }
+  }
 
   // Legacy extras container -> always hidden (blocks are individual sections now)
   const extras = document.getElementById('extras'); if (extras) extras.style.display = 'none';
@@ -2058,7 +2134,7 @@ function applyConfig(cfg) {
     main.querySelectorAll('[data-section^="b:"]').forEach(el => el.remove());
     c.blocks.forEach(b => {
       const sec = document.createElement('section');
-      sec.className = b.type === 'divider' ? 'block-divider' : ('block-section' + (['banner', 'marquee', 'carousel', 'gallery'].includes(b.type) ? ' full' : ''));
+      sec.className = b.type === 'divider' ? 'block-divider' : ('block-section' + (['banner', 'marquee', 'carousel', 'gallery', 'partners'].includes(b.type) ? ' full' : ''));
       sec.setAttribute('data-section', 'b:' + b.id);
       sec.innerHTML = renderBlock(b);
       main.appendChild(sec);
@@ -2068,6 +2144,7 @@ function applyConfig(cfg) {
       const el = main.querySelector(`[data-section="${key}"]`);
       if (el) el.style.display = c.layout.visible[key] === false ? 'none' : '';
     });
+    setupCarousels(main);
   }
 
   // Music player
