@@ -8,6 +8,15 @@
     "navCtaLabel": "Ver Scripts",
     "navCtaHref": "#tienda"
   },
+  "theme": {
+    "textColor": "#F2F2F4",
+    "mutedColor": "#8a8a93",
+    "headingColor": "#ffffff",
+    "fontDisplay": "Bebas Neue",
+    "fontHead": "Barlow Condensed",
+    "fontBody": "Barlow",
+    "buttonStyle": "slant"
+  },
   "background": {
     "color": "#0a0a0c",
     "image": "",
@@ -40,11 +49,20 @@
     { "icon": "💬", "name": "Soporte 24/7", "desc": "Equipo disponible en Discord en todo momento." },
     { "icon": "⚡", "name": "Entrega Inmediata", "desc": "Descarga automática al completar el pago." }
   ],
-  "marquee": ["FiveM", "Scripts", "EVJO", "Premium"],
+  "marquee": {
+    "words": ["FiveM", "Scripts", "EVJO", "Premium"],
+    "direction": "left",
+    "speed": 32
+  },
   "scriptsHeading": {
     "tag": "Catálogo",
     "title": "NUESTROS\nSCRIPTS",
     "desc": "Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas."
+  },
+  "scriptsLayout": {
+    "mode": "grid",
+    "direction": "left",
+    "speed": 45
   },
   "reviews": {
     "tag": "Lo que dicen",

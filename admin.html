@@ -105,6 +105,10 @@
   .c-actions button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: .2s; font-size: 13px; display: flex; align-items: center; justify-content: center; }
   .c-actions button:hover { color: #fff; border-color: var(--border-2); }
   .c-actions button.del:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .drag-handle { cursor: grab; color: var(--muted); font-size: 15px; padding: 0 2px; user-select: none; }
+  .drag-handle:active { cursor: grabbing; }
+  .card.dragging, .lay-row.dragging { opacity: .45; }
+  .card.drop-target, .lay-row.drop-target { outline: 2px dashed var(--red); outline-offset: 2px; }
   .card-body { padding: 14px; }
   .empty { text-align: center; padding: 24px 10px; color: var(--muted); font-size: 13px; border: 1px dashed var(--border); border-radius: 10px; }
 
@@ -149,6 +153,7 @@
     <form id="gateForm">
       <input type="text" id="gateUser" placeholder="Usuario" autocomplete="username">
       <input type="password" id="gatePass" placeholder="Contraseña" autocomplete="current-password">
+      <label class="check" style="margin:4px 2px 8px;color:var(--muted)"><input type="checkbox" id="gateRemember"> Mantener sesión iniciada</label>
       <button type="submit">Entrar</button>
       <div class="gate-err" id="gateErr"></div>
     </form>
@@ -215,6 +220,41 @@
       </div>
     </div>
 
+    <!-- TEMA -->
+    <div class="section" data-key="theme">
+      <div class="section-head"><h3>🅰️ Tema (textos, fuentes, botones)</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field-row">
+          <div class="field"><label>Color de texto</label><div class="color-row"><input type="color" data-bind="theme.textColor"><input type="text" data-bind="theme.textColor" style="flex:1"></div></div>
+          <div class="field"><label>Color texto apagado</label><div class="color-row"><input type="color" data-bind="theme.mutedColor"><input type="text" data-bind="theme.mutedColor" style="flex:1"></div></div>
+        </div>
+        <div class="field"><label>Color de títulos</label><div class="color-row"><input type="color" data-bind="theme.headingColor"><input type="text" data-bind="theme.headingColor" style="flex:1"></div></div>
+        <div class="field"><label>Fuente de títulos grandes (display)</label>
+          <select data-bind="theme.fontDisplay">
+            <option>Bebas Neue</option><option>Anton</option><option>Archivo Black</option><option>Oswald</option><option>Teko</option>
+          </select>
+        </div>
+        <div class="field"><label>Fuente de encabezados</label>
+          <select data-bind="theme.fontHead">
+            <option>Barlow Condensed</option><option>Oswald</option><option>Teko</option><option>Saira Condensed</option><option>Rajdhani</option>
+          </select>
+        </div>
+        <div class="field"><label>Fuente del cuerpo</label>
+          <select data-bind="theme.fontBody">
+            <option>Barlow</option><option>Inter</option><option>Poppins</option><option>Roboto</option><option>Montserrat</option><option>Rajdhani</option>
+          </select>
+        </div>
+        <div class="field"><label>Forma de los botones</label>
+          <select data-bind="theme.buttonStyle">
+            <option value="slant">Inclinada (por defecto)</option>
+            <option value="rounded">Redondeada</option>
+            <option value="pill">Píldora</option>
+            <option value="square">Recta</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <!-- HERO -->
     <div class="section" data-key="hero">
       <div class="section-head"><h3>🦸 Portada (Hero)</h3><span class="chev">▾</span></div>
@@ -264,18 +304,30 @@
     <div class="section collapsed" data-key="marquee">
       <div class="section-head"><h3>🔁 Texto deslizante (marquee)</h3><span class="chev">▾</span></div>
       <div class="section-body">
+        <div class="field-row">
+          <div class="field"><label>Dirección</label><select data-bind="marquee.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option></select></div>
+          <div class="field"><label>Velocidad (seg)</label><input type="number" min="5" max="120" data-bind="marquee.speed"></div>
+        </div>
         <div id="marqueeList"></div>
         <button class="add-btn add-wide" id="addMarquee"><span class="ico">＋</span> Añadir palabra</button>
       </div>
     </div>
 
-    <!-- SCRIPTS HEADING -->
+    <!-- SCRIPTS HEADING + LAYOUT -->
     <div class="section collapsed" data-key="scriptsHeading">
-      <div class="section-head"><h3>🛒 Título de la Tienda</h3><span class="chev">▾</span></div>
+      <div class="section-head"><h3>🛒 Tienda (título y disposición)</h3><span class="chev">▾</span></div>
       <div class="section-body">
         <div class="field"><label>Etiqueta</label><input type="text" data-bind="scriptsHeading.tag"></div>
         <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="scriptsHeading.title"></textarea></div>
         <div class="field"><label>Descripción</label><textarea data-bind="scriptsHeading.desc"></textarea></div>
+        <div class="field"><label>Disposición de los scripts</label>
+          <select data-bind="scriptsLayout.mode"><option value="grid">Cuadrícula (estático)</option><option value="carousel">Carrusel deslizante</option></select>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Dirección del carrusel</label><select data-bind="scriptsLayout.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option><option value="static">⏸️ Estático (scroll manual)</option></select></div>
+          <div class="field"><label>Velocidad (seg)</label><input type="number" min="10" max="160" data-bind="scriptsLayout.speed"></div>
+        </div>
+        <div class="hint">El carrusel desliza las tarjetas; al pasar el ratón se pausa para poder hacer clic. "Estático" permite arrastrar/scroll en horizontal.</div>
       </div>
     </div>
 
@@ -322,6 +374,8 @@
           <button class="add-btn" data-add="image"><span class="ico">🖼️</span> Imagen</button>
           <button class="add-btn" data-add="gif"><span class="ico">🎞️</span> GIF</button>
           <button class="add-btn" data-add="video"><span class="ico">🎬</span> Vídeo</button>
+          <button class="add-btn" data-add="embed"><span class="ico">📺</span> Embed</button>
+          <button class="add-btn" data-add="marquee"><span class="ico">🔁</span> Barra texto</button>
           <button class="add-btn" data-add="window"><span class="ico">🪟</span> Ventana</button>
         </div>
         <div id="blocksList"></div>
@@ -384,26 +438,30 @@ async function sha256(s) {
 const gate = document.getElementById('gate');
 let appStarted = false;
 function unlock() { gate.style.display = 'none'; if (!appStarted) { appStarted = true; start(); } }
-if (sessionStorage.getItem('evjo_admin_auth') === '1') unlock();
+if (localStorage.getItem('evjo_admin_auth') === '1' || sessionStorage.getItem('evjo_admin_auth') === '1') unlock();
 document.getElementById('gateForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const u = document.getElementById('gateUser').value.trim();
   const p = document.getElementById('gatePass').value;
+  const remember = document.getElementById('gateRemember').checked;
   const err = document.getElementById('gateErr');
   err.textContent = 'Comprobando...';
   try {
     const [uh, ph] = await Promise.all([sha256(u), sha256(p)]);
-    if (uh === USER_HASH && ph === PASS_HASH) { sessionStorage.setItem('evjo_admin_auth', '1'); err.textContent = ''; unlock(); }
-    else err.textContent = 'Usuario o contraseña incorrectos.';
+    if (uh === USER_HASH && ph === PASS_HASH) {
+      (remember ? localStorage : sessionStorage).setItem('evjo_admin_auth', '1');
+      err.textContent = ''; unlock();
+    } else err.textContent = 'Usuario o contraseña incorrectos.';
   } catch (e) { err.textContent = 'Tu navegador no soporta el login (usa HTTPS).'; }
 });
-document.getElementById('btnLogout').addEventListener('click', () => { sessionStorage.removeItem('evjo_admin_auth'); location.reload(); });
+document.getElementById('btnLogout').addEventListener('click', () => { localStorage.removeItem('evjo_admin_auth'); sessionStorage.removeItem('evjo_admin_auth'); location.reload(); });
 
 // ─────────────────────────────────────────────
 // DEFAULTS
 // ─────────────────────────────────────────────
 const DEFAULT_CONFIG = {
   branding: { logoText: 'EVJO', accentIndex: 1, logoImage: '', primaryColor: '#E62B2B', discordUrl: 'https://discord.gg/RNVxxAU9Nv', navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
+  theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: { tag: 'Scripts FiveM Premium', title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
   stats: [
@@ -418,8 +476,9 @@ const DEFAULT_CONFIG = {
     { icon: '💬', name: 'Soporte 24/7', desc: 'Equipo disponible en Discord en todo momento.' },
     { icon: '⚡', name: 'Entrega Inmediata', desc: 'Descarga automática al completar el pago.' }
   ],
-  marquee: ['FiveM', 'Scripts', 'EVJO', 'Premium'],
+  marquee: { words: ['FiveM', 'Scripts', 'EVJO', 'Premium'], direction: 'left', speed: 32 },
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
+  scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
   reviews: { tag: 'Lo que dicen', title: 'REVIEWS\nREALES', items: [
     { stars: 5, text: 'El Gang System de EVJO transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
     { stars: 5, text: 'Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · Script Tester' },
@@ -432,7 +491,7 @@ const DEFAULT_CONFIG = {
   blocks: []
 };
 
-const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', window: 'Ventana' };
+const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana' };
 const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', extras: 'Contenido extra', reviews: 'Reviews', cta: 'CTA Discord' };
 const DRAFT_KEY = 'evjo_admin_config';
 const PREVIEW_KEY = 'evjo_preview_config';
@@ -539,13 +598,13 @@ function listHandlers(listId, arrName, renderFn, makeNew) {
     const f = e.target.dataset.f; if (f === undefined) return;
     const i = +e.target.closest('[data-i]').dataset.i;
     let v = e.target.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value;
-    if (arrName === 'marquee') config.marquee[i] = v; else config[arrName][i][f] = v;
+    if (arrName === 'marquee') config.marquee.words[i] = v; else config[arrName][i][f] = v;
     pushPreview();
   });
   wrap.addEventListener('click', e => {
     const card = e.target.closest('[data-i]'); if (!card) return;
     const i = +card.dataset.i;
-    const arr = arrName === 'marquee' ? config.marquee : config[arrName];
+    const arr = arrName === 'marquee' ? config.marquee.words : config[arrName];
     if (e.target.dataset.del !== undefined) { arr.splice(i, 1); renderFn(); pushPreview(); }
     else if (e.target.dataset.move !== undefined) {
       const j = i + (+e.target.dataset.move); if (j < 0 || j >= arr.length) return;
@@ -601,7 +660,7 @@ function renderReviews() {
 }
 // MARQUEE
 function renderMarquee() {
-  document.getElementById('marqueeList').innerHTML = config.marquee.map((w, i) => `
+  document.getElementById('marqueeList').innerHTML = config.marquee.words.map((w, i) => `
     <div class="card" data-i="${i}"><div class="card-body" style="display:flex;gap:8px;align-items:center">
       <input type="text" data-f="word" value="${attr(w)}" style="flex:1">
       <div class="c-actions"><button data-move="-1">▲</button><button data-move="1">▼</button><button class="del" data-del>✕</button></div>
@@ -618,6 +677,8 @@ function newBlock(type) {
     case 'image': return { type, url: '', caption: '', link: '' };
     case 'gif': return { type, url: '', caption: '', link: '' };
     case 'video': return { type, url: '', caption: '' };
+    case 'embed': return { type, url: '', height: 400, caption: '' };
+    case 'marquee': return { type, words: ['TEXTO', 'NUEVO', 'AQUÍ'], direction: 'left', speed: 28 };
     case 'window': return { type, title: 'Ventana', text: 'Contenido de la ventana...', media: { type: 'image', url: '' } };
   }
 }
@@ -650,6 +711,16 @@ function blockFields(b) {
     case 'video': return `
       ${mediaField('Vídeo', b.url, f('url'), true)}
       <div class="field"><label>Pie / descripción (opcional)</label><input type="text" ${f('caption')} value="${attr(b.caption)}"></div>`;
+    case 'embed': return `
+      <div class="field"><label>URL para incrustar (YouTube, Vimeo, Twitch o iframe)</label><input type="text" ${f('url')} value="${attr(b.url)}" placeholder="https://www.youtube.com/watch?v=..."></div>
+      <div class="field"><label>Altura (px)</label><input type="number" min="150" max="900" ${f('height')} value="${attr(b.height)}"></div>
+      <div class="field"><label>Pie / descripción (opcional)</label><input type="text" ${f('caption')} value="${attr(b.caption)}"></div>`;
+    case 'marquee': return `
+      <div class="field-row">
+        <div class="field"><label>Dirección</label><select ${f('direction')}><option value="left"${b.direction === 'left' ? ' selected' : ''}>⬅️ Izquierda</option><option value="right"${b.direction === 'right' ? ' selected' : ''}>➡️ Derecha</option></select></div>
+        <div class="field"><label>Velocidad (seg)</label><input type="number" min="5" max="120" ${f('speed')} value="${attr(b.speed)}"></div>
+      </div>
+      <div class="field"><label>Palabras (separadas por comas)</label><input type="text" ${f('words')} value="${attr(Array.isArray(b.words) ? b.words.join(', ') : b.words)}"></div>`;
     case 'window': return `
       <div class="field"><label>Título de la ventana</label><input type="text" ${f('title')} value="${attr(b.title)}"></div>
       <div class="field"><label>Texto</label><textarea ${f('text')}>${attr(b.text)}</textarea></div>
@@ -661,8 +732,8 @@ function renderBlocks() {
   const wrap = document.getElementById('blocksList');
   if (!config.blocks.length) { wrap.innerHTML = `<div class="empty">Aún no hay bloques. Usa los botones de arriba para añadir contenido.</div>`; return; }
   wrap.innerHTML = config.blocks.map((b, i) => `
-    <div class="card" data-bi="${i}">
-      <div class="card-head"><span class="ctype"><span class="badge">${BLOCK_LABELS[b.type] || b.type}</span> Bloque ${i + 1}</span>
+    <div class="card" data-bi="${i}" data-drag="${i}">
+      <div class="card-head"><span class="ctype"><span class="drag-handle" draggable="true" title="Arrastrar">⠿</span><span class="badge">${BLOCK_LABELS[b.type] || b.type}</span> Bloque ${i + 1}</span>
         <div class="c-actions"><button data-bmove="-1">▲</button><button data-bmove="1">▼</button><button class="del" data-bdel>✕</button></div></div>
       <div class="card-body">${blockFields(b)}</div>
     </div>`).join('');
@@ -692,13 +763,42 @@ document.querySelectorAll('[data-add]').forEach(btn => btn.addEventListener('cli
   blocksList.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }));
 
+// DRAG REORDER (blocks + layout)
+function enableDragReorder(container, getArr, rerender) {
+  let dragIdx = null;
+  container.addEventListener('dragstart', e => {
+    const h = e.target.closest('.drag-handle'); if (!h) return;
+    const row = h.closest('[data-drag]'); if (!row) return;
+    dragIdx = +row.dataset.drag; row.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', String(dragIdx)); } catch (err) {}
+  });
+  container.addEventListener('dragend', () => { container.querySelectorAll('.dragging,.drop-target').forEach(x => x.classList.remove('dragging', 'drop-target')); dragIdx = null; });
+  container.addEventListener('dragover', e => {
+    e.preventDefault();
+    const row = e.target.closest('[data-drag]');
+    container.querySelectorAll('.drop-target').forEach(x => x.classList.remove('drop-target'));
+    if (row && dragIdx != null) row.classList.add('drop-target');
+  });
+  container.addEventListener('drop', e => {
+    e.preventDefault();
+    const row = e.target.closest('[data-drag]'); if (!row || dragIdx == null) return;
+    const tgt = +row.dataset.drag; if (tgt === dragIdx) return;
+    const arr = getArr(); const [m] = arr.splice(dragIdx, 1); arr.splice(tgt, 0, m);
+    dragIdx = null; rerender(); pushPreview();
+  });
+}
+enableDragReorder(blocksList, () => config.blocks, renderBlocks);
+enableDragReorder(document.getElementById('layoutList'), () => config.layout.order, renderLayout);
+
 // ─────────────────────────────────────────────
 // LAYOUT MANAGER
 // ─────────────────────────────────────────────
 function renderLayout() {
   const wrap = document.getElementById('layoutList');
   wrap.innerHTML = config.layout.order.map((key, i) => `
-    <div class="lay-row" data-li="${i}">
+    <div class="lay-row" data-li="${i}" data-drag="${i}">
+      <span class="drag-handle" draggable="true" title="Arrastrar">⠿</span>
       <div class="c-actions"><button data-lmove="-1">▲</button><button data-lmove="1">▼</button></div>
       <span class="lay-name">${SECTION_LABELS[key] || key}</span>
       <label class="lay-vis"><input type="checkbox" data-lvis ${config.layout.visible[key] !== false ? 'checked' : ''}> Visible</label>
@@ -791,17 +891,21 @@ document.getElementById('publishConfirm').addEventListener('click', async () => 
 function mergeConfig(loaded) {
   const c = Object.assign(deepClone(DEFAULT_CONFIG), loaded || {});
   c.branding = Object.assign({}, DEFAULT_CONFIG.branding, c.branding);
+  c.theme = Object.assign({}, DEFAULT_CONFIG.theme, c.theme);
   c.background = Object.assign({}, DEFAULT_CONFIG.background, c.background);
   c.hero = Object.assign({}, DEFAULT_CONFIG.hero, c.hero);
   c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
+  c.scriptsLayout = Object.assign({}, DEFAULT_CONFIG.scriptsLayout, c.scriptsLayout);
   c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
   c.cta = Object.assign({}, DEFAULT_CONFIG.cta, c.cta);
   c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
   c.layout = Object.assign({}, DEFAULT_CONFIG.layout, c.layout);
   c.layout.visible = Object.assign({}, DEFAULT_CONFIG.layout.visible, c.layout.visible);
+  if (Array.isArray(c.marquee)) c.marquee = { words: c.marquee, direction: 'left', speed: 32 };
+  c.marquee = Object.assign({}, DEFAULT_CONFIG.marquee, c.marquee);
+  if (!Array.isArray(c.marquee.words) || !c.marquee.words.length) c.marquee.words = DEFAULT_CONFIG.marquee.words.slice();
   if (!Array.isArray(c.stats)) c.stats = deepClone(DEFAULT_CONFIG.stats);
   if (!Array.isArray(c.trust)) c.trust = deepClone(DEFAULT_CONFIG.trust);
-  if (!Array.isArray(c.marquee) || !c.marquee.length) c.marquee = DEFAULT_CONFIG.marquee.slice();
   if (!c.reviews.items || !Array.isArray(c.reviews.items)) c.reviews.items = deepClone(DEFAULT_CONFIG.reviews.items);
   if (!Array.isArray(c.layout.order) || !c.layout.order.length) c.layout.order = DEFAULT_CONFIG.layout.order.slice();
   if (!Array.isArray(c.blocks)) c.blocks = [];
@@ -821,7 +925,7 @@ async function loadInitialConfig() {
 document.getElementById('addStat').addEventListener('click', () => { config.stats.push({ target: 0, decimal: '', suffix: '', label: 'Nueva' }); renderStats(); pushPreview(); });
 document.getElementById('addTrust').addEventListener('click', () => { config.trust.push({ icon: '⭐', name: 'Nueva ventaja', desc: 'Descripción...' }); renderTrust(); pushPreview(); });
 document.getElementById('addReview').addEventListener('click', () => { config.reviews.items.push({ stars: 5, text: 'Nueva reseña...', avatar: 'XX', name: 'Usuario', role: 'Cliente' }); renderReviews(); pushPreview(); });
-document.getElementById('addMarquee').addEventListener('click', () => { config.marquee.push('NUEVO'); renderMarquee(); pushPreview(); });
+document.getElementById('addMarquee').addEventListener('click', () => { config.marquee.words.push('NUEVO'); renderMarquee(); pushPreview(); });
 
 // wire list handlers once
 listHandlers('statsList', 'stats', renderStats);
