@@ -394,6 +394,7 @@
           <div class="field"><label>Forma de la etiqueta de precio</label><select data-bind="store.priceTagShape"><option value="slant">Inclinada</option><option value="rounded">Redondeada</option><option value="pill">Píldora</option><option value="square">Recta</option><option value="cut">Cortada</option></select></div>
         </div>
         <div class="field"><label>Estilo de miniatura</label><select data-bind="store.thumbStyle"><option value="frame">Con marco (recortada)</option><option value="clean">Solo PNG (sin marco, cuadrada)</option></select></div>
+        <div class="field"><label>Oscuridad del fondo en la página del producto: <span id="prDarkVal"></span></label><input type="range" min="0.3" max="0.97" step="0.03" data-bind="store.productBgDark" data-out="prDarkVal"></div>
         <div class="hint">"Solo PNG": muestra tu imagen cuadrada completa sin recuadro ni recorte, con la etiqueta de precio y "Comprar ahora" debajo. Ideal si subes los PNG ya con su outline.</div>
       </div>
     </div>
@@ -567,7 +568,7 @@ const DEFAULT_CONFIG = {
   marquee: { words: ['FiveM', 'Scripts', 'EVJO', 'Premium'], direction: 'left', speed: 32 },
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
-  store: { cardSize: 'normal', priceTagShape: 'slant', thumbStyle: 'frame' },
+  store: { cardSize: 'normal', priceTagShape: 'slant', thumbStyle: 'frame', productBgDark: 0.82 },
   reviews: { tag: 'Lo que dicen', title: 'REVIEWS\nREALES', items: [
     { stars: 5, text: 'El Gang System de EVJO transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
     { stars: 5, text: 'Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · Script Tester' },
