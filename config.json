@@ -53,6 +53,7 @@
     "enabled": false,
     "title": "Lofi EVJO",
     "url": "",
+    "tracks": [],
     "autoplay": false,
     "position": "pos-br",
     "color": "#E62B2B"
@@ -98,7 +99,11 @@
     "tag": "Comunidad",
     "title": "ÚNETE A NUESTRA |FAMILIA",
     "desc": "+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.",
-    "btnLabel": "Entrar al Discord"
+    "btnLabel": "Entrar al Discord",
+    "btn2Label": "",
+    "btn2Href": "",
+    "membersText": "",
+    "image": ""
   },
   "extrasHeading": {
     "tag": "Novedades",

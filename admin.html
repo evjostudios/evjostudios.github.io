@@ -316,16 +316,13 @@
       <div class="section-body">
         <label class="check"><input type="checkbox" data-bind="music.enabled"> Activar el reproductor</label>
         <label class="check"><input type="checkbox" data-bind="music.autoplay"> Reproducir automáticamente al entrar</label>
-        <div class="field"><label>Título mostrado</label><input type="text" data-bind="music.title"></div>
-        <div class="field">
-          <label>Audio (MP3) — URL o archivo</label>
-          <div class="media-input"><input type="text" data-bind="music.url" placeholder="https://.../cancion.mp3"><button class="upload-btn" data-accept="audio/*">⬆ Subir</button></div>
-        </div>
-        <div class="field-row">
+        <div id="musicList"></div>
+        <button class="add-btn add-wide" id="addTrack"><span class="ico">＋</span> Añadir canción</button>
+        <div class="field-row" style="margin-top:12px">
           <div class="field"><label>Posición</label><select data-bind="music.position"><option value="pos-br">Abajo derecha</option><option value="pos-bl">Abajo izquierda</option><option value="pos-tr">Arriba derecha</option><option value="pos-tl">Arriba izquierda</option></select></div>
           <div class="field"><label>Color</label><div class="color-row"><input type="color" data-bind="music.color"><input type="text" data-bind="music.color" style="flex:1"></div></div>
         </div>
-        <div class="hint">⚠️ Los navegadores bloquean el autoplay con sonido hasta que el usuario interactúa; si pasa, la música arrancará al primer clic en la web.</div>
+        <div class="hint">Cada canción lleva su título y artista/info (lo escribes tú). ⚠️ Los navegadores bloquean el autoplay con sonido hasta que el usuario interactúa; si pasa, arrancará al primer clic. Para varios MB usa URL externa, no subas el MP3.</div>
       </div>
     </div>
 
@@ -398,6 +395,11 @@
         <div class="hint">Usa <strong>|</strong> para marcar la parte en rojo. Ej: "ÚNETE A NUESTRA |FAMILIA".</div>
         <div class="field"><label>Descripción</label><textarea data-bind="cta.desc"></textarea></div>
         <div class="field"><label>Texto del botón</label><input type="text" data-bind="cta.btnLabel"></div>
+        <div class="field-row">
+          <div class="field"><label>2º botón — texto (opcional)</label><input type="text" data-bind="cta.btn2Label"></div>
+          <div class="field"><label>2º botón — enlace</label><input type="text" data-bind="cta.btn2Href"></div>
+        </div>
+        <div class="field"><label>Línea de miembros (opcional)</label><input type="text" data-bind="cta.membersText" placeholder="Ej: +12.000 miembros activos"></div>
       </div>
     </div>
 
@@ -518,7 +520,7 @@ const DEFAULT_CONFIG = {
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
   heroTicker: { show: true, direction: 'left', speed: 28, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
-  music: { enabled: false, title: 'Lofi EVJO', url: '', autoplay: false, position: 'pos-br', color: '#E62B2B' },
+  music: { enabled: false, autoplay: false, position: 'pos-br', color: '#E62B2B', title: 'Lofi EVJO', url: '', tracks: [] },
   stats: [
     { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
     { target: 50, decimal: '', suffix: '+', label: 'Scripts' },
@@ -540,7 +542,7 @@ const DEFAULT_CONFIG = {
     { stars: 5, text: 'Scripts de calidad brutal. El soporte en Discord siempre responde rápido y las actualizaciones son constantes. Muy recomendado.', avatar: 'NG', name: 'NightGang_ES', role: 'Admin · FiveM Server' },
     { stars: 4, text: 'Llevo usando scripts de EVJO desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.', avatar: 'ZR', name: 'ZeRoFault', role: 'Community Manager' }
   ] },
-  cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord' },
+  cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '' },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
   layout: { order: ['trust', 'marquee', 'tienda', 'reviews', 'cta'], visible: { trust: true, marquee: true, tienda: true, reviews: true, cta: true } },
   blocks: []
@@ -728,6 +730,29 @@ function renderTicker() {
       <div class="c-actions"><button data-move="-1">▲</button><button data-move="1">▼</button><button class="del" data-del>✕</button></div>
     </div></div>`).join('');
 }
+function renderMusic() {
+  const wrap = document.getElementById('musicList'); if (!wrap) return;
+  if (!config.music.tracks.length) { wrap.innerHTML = `<div class="empty">Sin canciones. Añade una con el botón de abajo.</div>`; return; }
+  wrap.innerHTML = config.music.tracks.map((t, j) => `
+    <div class="card" data-mi="${j}">
+      <div class="card-head"><span class="ctype">Canción ${j + 1}</span><div class="c-actions"><button data-mmove="-1">▲</button><button data-mmove="1">▼</button><button class="del" data-mdel>✕</button></div></div>
+      <div class="card-body">
+        <div class="field-row"><div class="field"><label>Título</label><input type="text" data-mf="title" value="${attr(t.title)}"></div><div class="field"><label>Artista / info</label><input type="text" data-mf="artist" value="${attr(t.artist)}"></div></div>
+        <div class="field"><label>Audio (MP3) — URL o archivo</label><div class="media-input"><input type="text" data-mf="url" value="${attr(t.url)}" placeholder="https://.../cancion.mp3"><button class="upload-btn" data-accept="audio/*">⬆ Subir</button></div></div>
+      </div>
+    </div>`).join('');
+}
+(function () {
+  const wrap = document.getElementById('musicList');
+  const edit = e => { const f = e.target.dataset.mf; if (f === undefined) return; const j = +e.target.closest('[data-mi]').dataset.mi; config.music.tracks[j][f] = e.target.value; pushPreview(); };
+  wrap.addEventListener('input', edit); wrap.addEventListener('change', edit);
+  wrap.addEventListener('click', e => {
+    const card = e.target.closest('[data-mi]'); if (!card) return; const j = +card.dataset.mi;
+    if (e.target.dataset.mdel !== undefined) { config.music.tracks.splice(j, 1); renderMusic(); pushPreview(); }
+    else if (e.target.dataset.mmove !== undefined) { const k = j + (+e.target.dataset.mmove); if (k < 0 || k >= config.music.tracks.length) return; [config.music.tracks[j], config.music.tracks[k]] = [config.music.tracks[k], config.music.tracks[j]]; renderMusic(); pushPreview(); }
+  });
+})();
+document.getElementById('addTrack').addEventListener('click', () => { config.music.tracks.push({ title: 'Canción', artist: '', url: '' }); renderMusic(); pushPreview(); });
 // REVIEWS
 function renderReviews() {
   document.getElementById('reviewsList').innerHTML = config.reviews.items.map((r, i) => `
@@ -766,7 +791,7 @@ function newBlock(type) {
     case 'marquee': return { type, words: ['TEXTO', 'NUEVO', 'AQUÍ'], direction: 'left', speed: 28 };
     case 'features': return { type, tag: 'Características', title: '', items: [{ icon: 'star', title: 'Título', text: 'Descripción de la característica.' }] };
     case 'faq': return { type, tag: 'FAQ', title: 'PREGUNTAS\nFRECUENTES', items: [{ q: '¿Pregunta de ejemplo?', a: 'Respuesta de ejemplo.' }] };
-    case 'gallery': return { type, tag: 'Galería', title: '', images: [''] };
+    case 'gallery': return { type, tag: 'Galería', title: '', view: 'grid', direction: 'left', speed: 40, images: [''] };
     case 'carousel': return { type, tag: 'Galería', title: '', direction: 'left', speed: 40, items: [{ kind: 'image', url: '', caption: '' }] };
     case 'buttons': return { type, align: 'center', items: [{ label: 'Botón', href: '#tienda', style: 'solid' }] };
     case 'banner': return { type, title: 'TÍTULO DEL BANNER', text: 'Descripción del banner.', btnLabel: 'Acción', btnHref: '#tienda' };
@@ -834,6 +859,7 @@ function blockFields(b) {
       <button class="add-btn add-wide" data-additem>＋ Añadir pregunta</button>`;
     case 'gallery': return `
       <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      <div class="field-row"><div class="field"><label>Vista</label><select ${f('view')}><option value="grid"${b.view !== 'carousel' ? ' selected' : ''}>Cuadrícula</option><option value="carousel"${b.view === 'carousel' ? ' selected' : ''}>Carrusel</option></select></div><div class="field"><label>Dirección (carrusel)</label><select ${f('direction')}><option value="left"${b.direction !== 'right' ? ' selected' : ''}>⬅️ Izquierda</option><option value="right"${b.direction === 'right' ? ' selected' : ''}>➡️ Derecha</option></select></div><div class="field" style="max-width:110px"><label>Velocidad</label><input type="number" ${f('speed')} value="${attr(b.speed)}"></div></div>
       ${(b.images || []).map((u, j) => `<div class="subcard"><div class="subhead"><span>Imagen ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="images">✕</button></div>${mediaField('Imagen', u, 'data-bf="images.' + j + '"')}</div>`).join('')}
       <button class="add-btn add-wide" data-additem>＋ Añadir imagen</button>`;
     case 'carousel': return `
@@ -1034,6 +1060,7 @@ function mergeConfig(loaded) {
   c.hero = Object.assign({}, DEFAULT_CONFIG.hero, c.hero);
   c.heroTicker = Object.assign({}, DEFAULT_CONFIG.heroTicker, c.heroTicker);
   c.music = Object.assign({}, DEFAULT_CONFIG.music, c.music);
+  if (!Array.isArray(c.music.tracks)) c.music.tracks = [];
   c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
   c.scriptsLayout = Object.assign({}, DEFAULT_CONFIG.scriptsLayout, c.scriptsLayout);
   c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
@@ -1055,7 +1082,7 @@ function mergeConfig(loaded) {
 }
 function initUI() {
   fillStaticInputs();
-  renderStats(); renderTrust(); renderTicker(); renderReviews(); renderMarquee(); renderBlocks(); renderLayout();
+  renderStats(); renderTrust(); renderTicker(); renderMusic(); renderReviews(); renderMarquee(); renderBlocks(); renderLayout();
 }
 async function loadInitialConfig() {
   try { const d = localStorage.getItem(DRAFT_KEY); if (d) return JSON.parse(d); } catch (e) {}
