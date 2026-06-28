@@ -2,8 +2,19 @@
   "branding": {
     "logoText": "EVJO",
     "accentIndex": 1,
+    "logoImage": "",
     "primaryColor": "#E62B2B",
-    "discordUrl": "https://discord.gg/RNVxxAU9Nv"
+    "discordUrl": "https://discord.gg/RNVxxAU9Nv",
+    "navCtaLabel": "Ver Scripts",
+    "navCtaHref": "#tienda"
+  },
+  "background": {
+    "color": "#0a0a0c",
+    "image": "",
+    "opacity": 0.25,
+    "overlay": 0.5,
+    "showOrbs": true,
+    "showGrid": true
   },
   "hero": {
     "tag": "Scripts FiveM Premium",
@@ -14,7 +25,8 @@
     "primaryBtnLabel": "Ver Catálogo →",
     "primaryBtnHref": "#tienda",
     "ghostBtnLabel": "Únete al Discord",
-    "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv"
+    "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv",
+    "bgImage": ""
   },
   "stats": [
     { "target": 12, "decimal": "", "suffix": "K+", "label": "Clientes" },
@@ -22,9 +34,41 @@
     { "target": 4, "decimal": "9", "suffix": "", "label": "Rating" },
     { "target": 24, "decimal": "", "suffix": "/7", "label": "Soporte" }
   ],
+  "trust": [
+    { "icon": "🔓", "name": "Sin Escrow", "desc": "Código 100% abierto. Sin bloqueos ni dependencias ocultas." },
+    { "icon": "🔄", "name": "Updates Gratis", "desc": "Actualizaciones de por vida incluidas en cada compra." },
+    { "icon": "💬", "name": "Soporte 24/7", "desc": "Equipo disponible en Discord en todo momento." },
+    { "icon": "⚡", "name": "Entrega Inmediata", "desc": "Descarga automática al completar el pago." }
+  ],
+  "marquee": ["FiveM", "Scripts", "EVJO", "Premium"],
+  "scriptsHeading": {
+    "tag": "Catálogo",
+    "title": "NUESTROS\nSCRIPTS",
+    "desc": "Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas."
+  },
+  "reviews": {
+    "tag": "Lo que dicen",
+    "title": "REVIEWS\nREALES",
+    "items": [
+      { "stars": 5, "text": "El Gang System de EVJO transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.", "avatar": "MR", "name": "MadRoller_RP", "role": "Owner · Servidor 200+ slots" },
+      { "stars": 5, "text": "Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.", "avatar": "KX", "name": "KxiloDev", "role": "Developer · Script Tester" },
+      { "stars": 5, "text": "Scripts de calidad brutal. El soporte en Discord siempre responde rápido y las actualizaciones son constantes. Muy recomendado.", "avatar": "NG", "name": "NightGang_ES", "role": "Admin · FiveM Server" },
+      { "stars": 4, "text": "Llevo usando scripts de EVJO desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.", "avatar": "ZR", "name": "ZeRoFault", "role": "Community Manager" }
+    ]
+  },
+  "cta": {
+    "tag": "Comunidad",
+    "title": "ÚNETE A NUESTRA |FAMILIA",
+    "desc": "+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.",
+    "btnLabel": "Entrar al Discord"
+  },
   "extrasHeading": {
     "tag": "Novedades",
     "title": "CONTENIDO\nEXTRA"
+  },
+  "layout": {
+    "order": ["trust", "marquee", "tienda", "extras", "reviews", "cta"],
+    "visible": { "trust": true, "marquee": true, "tienda": true, "extras": true, "reviews": true, "cta": true }
   },
   "blocks": []
 }
