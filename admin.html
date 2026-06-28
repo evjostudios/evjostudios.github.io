@@ -111,6 +111,10 @@
   .card.drop-target, .lay-row.drop-target { outline: 2px dashed var(--red); outline-offset: 2px; }
   .card-body { padding: 14px; }
   .empty { text-align: center; padding: 24px 10px; color: var(--muted); font-size: 13px; border: 1px dashed var(--border); border-radius: 10px; }
+  .subcard { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 12px; margin-bottom: 10px; }
+  .subhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: var(--font-head); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .subhead .del { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); cursor: pointer; }
+  .subhead .del:hover { background: var(--red); color: #fff; border-color: var(--red); }
 
   /* LAYOUT MANAGER */
   .lay-row { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; padding: 10px 12px; margin-bottom: 8px; }
@@ -229,6 +233,7 @@
           <div class="field"><label>Color texto apagado</label><div class="color-row"><input type="color" data-bind="theme.mutedColor"><input type="text" data-bind="theme.mutedColor" style="flex:1"></div></div>
         </div>
         <div class="field"><label>Color de títulos</label><div class="color-row"><input type="color" data-bind="theme.headingColor"><input type="text" data-bind="theme.headingColor" style="flex:1"></div></div>
+        <div class="field"><label>Color de los iconos</label><div class="color-row"><input type="color" data-bind="theme.iconColor"><input type="text" data-bind="theme.iconColor" style="flex:1"></div></div>
         <div class="field"><label>Fuente de títulos grandes (display)</label>
           <select data-bind="theme.fontDisplay">
             <option>Bebas Neue</option><option>Anton</option><option>Archivo Black</option><option>Oswald</option><option>Teko</option>
@@ -260,11 +265,16 @@
       <div class="section-head"><h3>🦸 Portada (Hero)</h3><span class="chev">▾</span></div>
       <div class="section-body">
         <div class="field"><label>Etiqueta superior</label><input type="text" data-bind="hero.tag"></div>
+        <label class="check"><input type="checkbox" data-bind="hero.showTag"> Mostrar la etiqueta superior (pastilla)</label>
         <div class="field-row">
           <div class="field"><label>Título</label><input type="text" data-bind="hero.title"></div>
           <div class="field" style="max-width:120px"><label>Letra en rojo</label><input type="number" min="0" data-bind="hero.titleAccentIndex"></div>
         </div>
         <div class="field"><label>Subtítulo grande (contorno)</label><input type="text" data-bind="hero.titleOutline"></div>
+        <div class="field-row">
+          <div class="field"><label>Color del título</label><div class="color-row"><input type="color" data-bind="hero.titleColor"><input type="text" data-bind="hero.titleColor" style="flex:1"></div></div>
+          <div class="field"><label>Color del contorno</label><input type="text" data-bind="hero.outlineColor" placeholder="vacío = degradado"></div>
+        </div>
         <div class="field"><label>Descripción</label><textarea data-bind="hero.subtitle"></textarea></div>
         <div class="field-row">
           <div class="field"><label>Botón 1 — texto</label><input type="text" data-bind="hero.primaryBtnLabel"></div>
@@ -279,6 +289,43 @@
           <div class="media-input"><input type="text" data-bind="hero.bgImage" placeholder="URL o sube una imagen"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div>
           <div class="media-preview"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- HERO TICKER -->
+    <div class="section collapsed" data-key="heroTicker">
+      <div class="section-head"><h3>🏷️ Barra del Hero (ticker)</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <label class="check"><input type="checkbox" data-bind="heroTicker.show"> Mostrar la barra</label>
+        <div class="field-row">
+          <div class="field"><label>Dirección</label><select data-bind="heroTicker.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option></select></div>
+          <div class="field"><label>Velocidad (seg)</label><input type="number" min="5" max="120" data-bind="heroTicker.speed"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Color de fondo</label><input type="text" data-bind="heroTicker.bgColor" placeholder="vacío = rojo"></div>
+          <div class="field"><label>Color del texto</label><div class="color-row"><input type="color" data-bind="heroTicker.textColor"><input type="text" data-bind="heroTicker.textColor" style="flex:1"></div></div>
+        </div>
+        <div id="tickerList"></div>
+        <button class="add-btn add-wide" id="addTicker"><span class="ico">＋</span> Añadir texto</button>
+      </div>
+    </div>
+
+    <!-- MÚSICA -->
+    <div class="section collapsed" data-key="music">
+      <div class="section-head"><h3>🎵 Reproductor de música</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <label class="check"><input type="checkbox" data-bind="music.enabled"> Activar el reproductor</label>
+        <label class="check"><input type="checkbox" data-bind="music.autoplay"> Reproducir automáticamente al entrar</label>
+        <div class="field"><label>Título mostrado</label><input type="text" data-bind="music.title"></div>
+        <div class="field">
+          <label>Audio (MP3) — URL o archivo</label>
+          <div class="media-input"><input type="text" data-bind="music.url" placeholder="https://.../cancion.mp3"><button class="upload-btn" data-accept="audio/*">⬆ Subir</button></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Posición</label><select data-bind="music.position"><option value="pos-br">Abajo derecha</option><option value="pos-bl">Abajo izquierda</option><option value="pos-tr">Arriba derecha</option><option value="pos-tl">Arriba izquierda</option></select></div>
+          <div class="field"><label>Color</label><div class="color-row"><input type="color" data-bind="music.color"><input type="text" data-bind="music.color" style="flex:1"></div></div>
+        </div>
+        <div class="hint">⚠️ Los navegadores bloquean el autoplay con sonido hasta que el usuario interactúa; si pasa, la música arrancará al primer clic en la web.</div>
       </div>
     </div>
 
@@ -377,6 +424,12 @@
           <button class="add-btn" data-add="embed"><span class="ico">📺</span> Embed</button>
           <button class="add-btn" data-add="marquee"><span class="ico">🔁</span> Barra texto</button>
           <button class="add-btn" data-add="window"><span class="ico">🪟</span> Ventana</button>
+          <button class="add-btn" data-add="features"><span class="ico">🧱</span> Features</button>
+          <button class="add-btn" data-add="faq"><span class="ico">❓</span> FAQ</button>
+          <button class="add-btn" data-add="gallery"><span class="ico">🖼️</span> Galería</button>
+          <button class="add-btn" data-add="carousel"><span class="ico">🎠</span> Carrusel</button>
+          <button class="add-btn" data-add="buttons"><span class="ico">🔘</span> Botones</button>
+          <button class="add-btn" data-add="banner"><span class="ico">📢</span> Banner</button>
         </div>
         <div id="blocksList"></div>
       </div>
@@ -461,9 +514,11 @@ document.getElementById('btnLogout').addEventListener('click', () => { localStor
 // ─────────────────────────────────────────────
 const DEFAULT_CONFIG = {
   branding: { logoText: 'EVJO', accentIndex: 1, logoImage: '', primaryColor: '#E62B2B', discordUrl: 'https://discord.gg/RNVxxAU9Nv', navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
-  theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
+  theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#E62B2B', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
-  hero: { tag: 'Scripts FiveM Premium', title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
+  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
+  heroTicker: { show: true, direction: 'left', speed: 28, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
+  music: { enabled: false, title: 'Lofi EVJO', url: '', autoplay: false, position: 'pos-br', color: '#E62B2B' },
   stats: [
     { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
     { target: 50, decimal: '', suffix: '+', label: 'Scripts' },
@@ -471,10 +526,10 @@ const DEFAULT_CONFIG = {
     { target: 24, decimal: '', suffix: '/7', label: 'Soporte' }
   ],
   trust: [
-    { icon: '🔓', name: 'Sin Escrow', desc: 'Código 100% abierto. Sin bloqueos ni dependencias ocultas.' },
-    { icon: '🔄', name: 'Updates Gratis', desc: 'Actualizaciones de por vida incluidas en cada compra.' },
-    { icon: '💬', name: 'Soporte 24/7', desc: 'Equipo disponible en Discord en todo momento.' },
-    { icon: '⚡', name: 'Entrega Inmediata', desc: 'Descarga automática al completar el pago.' }
+    { icon: 'unlock', name: 'Sin Escrow', desc: 'Código 100% abierto. Sin bloqueos ni dependencias ocultas.' },
+    { icon: 'refresh', name: 'Updates Gratis', desc: 'Actualizaciones de por vida incluidas en cada compra.' },
+    { icon: 'chat', name: 'Soporte 24/7', desc: 'Equipo disponible en Discord en todo momento.' },
+    { icon: 'bolt', name: 'Entrega Inmediata', desc: 'Descarga automática al completar el pago.' }
   ],
   marquee: { words: ['FiveM', 'Scripts', 'EVJO', 'Premium'], direction: 'left', speed: 32 },
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
@@ -487,14 +542,31 @@ const DEFAULT_CONFIG = {
   ] },
   cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord' },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
-  layout: { order: ['trust', 'marquee', 'tienda', 'extras', 'reviews', 'cta'], visible: { trust: true, marquee: true, tienda: true, extras: true, reviews: true, cta: true } },
+  layout: { order: ['trust', 'marquee', 'tienda', 'reviews', 'cta'], visible: { trust: true, marquee: true, tienda: true, reviews: true, cta: true } },
   blocks: []
 };
 
-const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana' };
-const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', extras: 'Contenido extra', reviews: 'Reviews', cta: 'CTA Discord' };
+const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner' };
+const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', reviews: 'Reviews', cta: 'CTA Discord' };
+const ICON_OPTIONS = ['lock','unlock','refresh','chat','bolt','shield','star','download','check','clock','code','box','users','gift','headset','server','tag','cart','heart','fire','rocket','globe'];
 const DRAFT_KEY = 'evjo_admin_config';
 const PREVIEW_KEY = 'evjo_preview_config';
+
+function migrateLayout(c) {
+  c.blocks.forEach(b => { if (!b.id) b.id = 'b' + Math.random().toString(36).slice(2, 9); });
+  const blockKeys = c.blocks.map(b => 'b:' + b.id);
+  let order = (c.layout.order || []).filter(k => k !== 'extras' && (!k.startsWith('b:') || blockKeys.includes(k)));
+  ['trust', 'marquee', 'tienda', 'reviews', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
+  blockKeys.forEach(k => { if (!order.includes(k)) order.push(k); });
+  c.layout.order = order;
+  if (!c.layout.visible) c.layout.visible = {};
+  order.forEach(k => { if (c.layout.visible[k] === undefined) c.layout.visible[k] = true; });
+}
+function labelFor(key) {
+  if (SECTION_LABELS[key]) return SECTION_LABELS[key];
+  if (key.startsWith('b:')) { const b = config.blocks.find(x => x.id === key.slice(2)); return 'Bloque: ' + (b ? (BLOCK_LABELS[b.type] || b.type) : '?'); }
+  return key;
+}
 
 let config = null;
 
@@ -596,17 +668,21 @@ document.addEventListener('click', async e => {
 // ─────────────────────────────────────────────
 function listHandlers(listId, arrName, renderFn, makeNew) {
   const wrap = document.getElementById(listId);
-  wrap.addEventListener('input', e => {
+  const onEdit = e => {
     const f = e.target.dataset.f; if (f === undefined) return;
     const i = +e.target.closest('[data-i]').dataset.i;
     let v = e.target.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value;
-    if (arrName === 'marquee') config.marquee.words[i] = v; else config[arrName][i][f] = v;
+    if (arrName === 'marquee') config.marquee.words[i] = v;
+    else if (arrName === 'ticker') config.heroTicker.items[i] = v;
+    else config[arrName][i][f] = v;
     pushPreview();
-  });
+  };
+  wrap.addEventListener('input', onEdit);
+  wrap.addEventListener('change', onEdit);
   wrap.addEventListener('click', e => {
     const card = e.target.closest('[data-i]'); if (!card) return;
     const i = +card.dataset.i;
-    const arr = arrName === 'marquee' ? config.marquee.words : config[arrName];
+    const arr = arrName === 'marquee' ? config.marquee.words : (arrName === 'ticker' ? config.heroTicker.items : config[arrName]);
     if (e.target.dataset.del !== undefined) { arr.splice(i, 1); renderFn(); pushPreview(); }
     else if (e.target.dataset.move !== undefined) {
       const j = i + (+e.target.dataset.move); if (j < 0 || j >= arr.length) return;
@@ -638,12 +714,19 @@ function renderTrust() {
     <div class="card" data-i="${i}">${cardHead('Ventaja', i)}
       <div class="card-body">
         <div class="field-row">
-          <div class="field" style="max-width:90px"><label>Icono</label><input type="text" data-f="icon" value="${attr(t.icon)}"></div>
+          <div class="field" style="max-width:130px"><label>Icono</label><select data-f="icon">${ICON_OPTIONS.map(ic => `<option value="${ic}"${t.icon === ic ? ' selected' : ''}>${ic}</option>`).join('')}</select></div>
           <div class="field"><label>Título</label><input type="text" data-f="name" value="${attr(t.name)}"></div>
         </div>
         <div class="field"><label>Descripción</label><textarea data-f="desc">${attr(t.desc)}</textarea></div>
       </div>
     </div>`).join('');
+}
+function renderTicker() {
+  document.getElementById('tickerList').innerHTML = config.heroTicker.items.map((w, i) => `
+    <div class="card" data-i="${i}"><div class="card-body" style="display:flex;gap:8px;align-items:center">
+      <input type="text" data-f="item" value="${attr(w)}" style="flex:1">
+      <div class="c-actions"><button data-move="-1">▲</button><button data-move="1">▼</button><button class="del" data-del>✕</button></div>
+    </div></div>`).join('');
 }
 // REVIEWS
 function renderReviews() {
@@ -681,6 +764,12 @@ function newBlock(type) {
     case 'video': return { type, url: '', caption: '' };
     case 'embed': return { type, url: '', height: 400, caption: '' };
     case 'marquee': return { type, words: ['TEXTO', 'NUEVO', 'AQUÍ'], direction: 'left', speed: 28 };
+    case 'features': return { type, tag: 'Características', title: '', items: [{ icon: 'star', title: 'Título', text: 'Descripción de la característica.' }] };
+    case 'faq': return { type, tag: 'FAQ', title: 'PREGUNTAS\nFRECUENTES', items: [{ q: '¿Pregunta de ejemplo?', a: 'Respuesta de ejemplo.' }] };
+    case 'gallery': return { type, tag: 'Galería', title: '', images: [''] };
+    case 'carousel': return { type, tag: 'Galería', title: '', direction: 'left', speed: 40, items: [{ kind: 'image', url: '', caption: '' }] };
+    case 'buttons': return { type, align: 'center', items: [{ label: 'Botón', href: '#tienda', style: 'solid' }] };
+    case 'banner': return { type, title: 'TÍTULO DEL BANNER', text: 'Descripción del banner.', btnLabel: 'Acción', btnHref: '#tienda' };
     case 'window': return { type, title: 'Ventana', text: 'Contenido de la ventana...', media: { type: 'image', url: '' } };
   }
 }
@@ -696,6 +785,9 @@ function mediaField(label, urlVal, bindAttr, video) {
       <div class="media-preview"></div>
       <div class="hint">${video ? 'Acepta enlaces de YouTube/Vimeo o un archivo de vídeo.' : 'Sube imágenes/GIFs pequeños (&lt; 1.5MB) o usa una URL externa.'}</div>
     </div>`;
+}
+function iconSelect(field, val) {
+  return `<select data-bf="${field}">` + ICON_OPTIONS.map(ic => `<option value="${ic}"${val === ic ? ' selected' : ''}>${ic}</option>`).join('') + `</select>`;
 }
 function blockFields(b) {
   const f = (n) => `data-bf="${n}"`;
@@ -728,15 +820,50 @@ function blockFields(b) {
       <div class="field"><label>Texto</label><textarea ${f('text')}>${attr(b.text)}</textarea></div>
       <div class="field"><label>Tipo de medio</label><select data-bf="media.type"><option value="image"${b.media?.type === 'image' ? ' selected' : ''}>Imagen / GIF</option><option value="video"${b.media?.type === 'video' ? ' selected' : ''}>Vídeo</option></select></div>
       ${mediaField('Medio de la ventana (opcional)', b.media?.url, 'data-bf="media.url"', b.media?.type === 'video')}`;
+    case 'features': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Item ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>
+        <div class="field-row"><div class="field" style="max-width:130px"><label>Icono</label>${iconSelect('items.' + j + '.icon', it.icon)}</div><div class="field"><label>Título</label><input type="text" data-bf="items.${j}.title" value="${attr(it.title)}"></div></div>
+        <div class="field"><label>Texto</label><textarea data-bf="items.${j}.text">${attr(it.text)}</textarea></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir item</button>`;
+    case 'faq': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Pregunta ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>
+        <div class="field"><label>Pregunta</label><input type="text" data-bf="items.${j}.q" value="${attr(it.q)}"></div>
+        <div class="field"><label>Respuesta</label><textarea data-bf="items.${j}.a">${attr(it.a)}</textarea></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir pregunta</button>`;
+    case 'gallery': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      ${(b.images || []).map((u, j) => `<div class="subcard"><div class="subhead"><span>Imagen ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="images">✕</button></div>${mediaField('Imagen', u, 'data-bf="images.' + j + '"')}</div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir imagen</button>`;
+    case 'carousel': return `
+      <div class="field-row"><div class="field"><label>Etiqueta</label><input type="text" ${f('tag')} value="${attr(b.tag)}"></div><div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div></div>
+      <div class="field-row"><div class="field"><label>Dirección</label><select ${f('direction')}><option value="left"${b.direction === 'left' ? ' selected' : ''}>⬅️ Izquierda</option><option value="right"${b.direction === 'right' ? ' selected' : ''}>➡️ Derecha</option><option value="static"${b.direction === 'static' ? ' selected' : ''}>⏸️ Estático</option></select></div><div class="field"><label>Velocidad</label><input type="number" ${f('speed')} value="${attr(b.speed)}"></div></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Slide ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>
+        <div class="field"><label>Tipo</label><select data-bf="items.${j}.kind"><option value="image"${it.kind === 'image' ? ' selected' : ''}>Imagen</option><option value="video"${it.kind === 'video' ? ' selected' : ''}>Vídeo/Embed</option></select></div>
+        ${mediaField('Medio', it.url, 'data-bf="items.' + j + '.url"', it.kind === 'video')}
+        <div class="field"><label>Texto (opcional)</label><input type="text" data-bf="items.${j}.caption" value="${attr(it.caption)}"></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir slide</button>`;
+    case 'buttons': return `
+      <div class="field"><label>Alineación</label><select ${f('align')}><option value="center"${b.align === 'center' ? ' selected' : ''}>Centro</option><option value="flex-start"${b.align === 'flex-start' ? ' selected' : ''}>Izquierda</option><option value="flex-end"${b.align === 'flex-end' ? ' selected' : ''}>Derecha</option></select></div>
+      ${(b.items || []).map((it, j) => `<div class="subcard"><div class="subhead"><span>Botón ${j + 1}</span><button class="del" data-delitem="${j}" data-arr="items">✕</button></div>
+        <div class="field"><label>Texto</label><input type="text" data-bf="items.${j}.label" value="${attr(it.label)}"></div>
+        <div class="field"><label>Enlace</label><input type="text" data-bf="items.${j}.href" value="${attr(it.href)}"></div>
+        <div class="field"><label>Estilo</label><select data-bf="items.${j}.style"><option value="solid"${it.style === 'solid' ? ' selected' : ''}>Sólido</option><option value="ghost"${it.style === 'ghost' ? ' selected' : ''}>Contorno</option><option value="discord"${it.style === 'discord' ? ' selected' : ''}>Discord</option></select></div></div>`).join('')}
+      <button class="add-btn add-wide" data-additem>＋ Añadir botón</button>`;
+    case 'banner': return `
+      <div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div>
+      <div class="field"><label>Texto</label><textarea ${f('text')}>${attr(b.text)}</textarea></div>
+      <div class="field-row"><div class="field"><label>Botón texto</label><input type="text" ${f('btnLabel')} value="${attr(b.btnLabel)}"></div><div class="field"><label>Botón enlace</label><input type="text" ${f('btnHref')} value="${attr(b.btnHref)}"></div></div>`;
   }
 }
 function renderBlocks() {
   const wrap = document.getElementById('blocksList');
-  if (!config.blocks.length) { wrap.innerHTML = `<div class="empty">Aún no hay bloques. Usa los botones de arriba para añadir contenido.</div>`; return; }
+  if (!config.blocks.length) { wrap.innerHTML = `<div class="empty">Aún no hay bloques. Añade contenido con los botones de arriba. El <strong>orden y la visibilidad</strong> se controlan abajo en "Orden y visibilidad de secciones".</div>`; return; }
   wrap.innerHTML = config.blocks.map((b, i) => `
-    <div class="card" data-bi="${i}" data-drag="${i}">
-      <div class="card-head"><span class="ctype"><span class="drag-handle" draggable="true" title="Arrastrar">⠿</span><span class="badge">${BLOCK_LABELS[b.type] || b.type}</span> Bloque ${i + 1}</span>
-        <div class="c-actions"><button data-bmove="-1">▲</button><button data-bmove="1">▼</button><button class="del" data-bdel>✕</button></div></div>
+    <div class="card" data-bi="${i}">
+      <div class="card-head"><span class="ctype"><span class="badge">${BLOCK_LABELS[b.type] || b.type}</span> Bloque ${i + 1}</span>
+        <div class="c-actions"><button class="del" data-bdel title="Eliminar">✕</button></div></div>
       <div class="card-body">${blockFields(b)}</div>
     </div>`).join('');
   wrap.querySelectorAll('.media-input input').forEach(refreshMediaPreview);
@@ -752,20 +879,26 @@ blocksList.addEventListener('change', e => {
   const f = e.target.dataset.bf; if (f === undefined) return;
   const i = +e.target.closest('[data-bi]').dataset.bi;
   setPath(config.blocks[i], f, e.target.value);
-  if (f === 'media.type') renderBlocks();
+  if (f === 'media.type' || f.endsWith('.kind')) renderBlocks();
   pushPreview();
 });
+function addSubItem(b) {
+  if (b.type === 'gallery') { (b.images = b.images || []).push(''); return; }
+  b.items = b.items || [];
+  if (b.type === 'faq') b.items.push({ q: '¿Pregunta?', a: 'Respuesta.' });
+  else if (b.type === 'buttons') b.items.push({ label: 'Botón', href: '#', style: 'solid' });
+  else if (b.type === 'carousel') b.items.push({ kind: 'image', url: '', caption: '' });
+  else b.items.push({ icon: 'star', title: 'Título', text: 'Descripción' });
+}
 blocksList.addEventListener('click', e => {
   const card = e.target.closest('[data-bi]'); if (!card) return;
   const i = +card.dataset.bi;
-  if (e.target.dataset.bdel !== undefined) { config.blocks.splice(i, 1); renderBlocks(); pushPreview(); }
-  else if (e.target.dataset.bmove !== undefined) {
-    const j = i + (+e.target.dataset.bmove); if (j < 0 || j >= config.blocks.length) return;
-    [config.blocks[i], config.blocks[j]] = [config.blocks[j], config.blocks[i]]; renderBlocks(); pushPreview();
-  }
+  if (e.target.dataset.bdel !== undefined) { config.blocks.splice(i, 1); migrateLayout(config); renderBlocks(); renderLayout(); pushPreview(); return; }
+  if (e.target.dataset.delitem !== undefined) { const arr = e.target.dataset.arr || 'items'; (config.blocks[i][arr] || []).splice(+e.target.dataset.delitem, 1); renderBlocks(); pushPreview(); return; }
+  if (e.target.dataset.additem !== undefined) { addSubItem(config.blocks[i]); renderBlocks(); pushPreview(); return; }
 });
 document.querySelectorAll('[data-add]').forEach(btn => btn.addEventListener('click', () => {
-  config.blocks.push(newBlock(btn.dataset.add)); renderBlocks(); pushPreview();
+  config.blocks.push(newBlock(btn.dataset.add)); migrateLayout(config); renderBlocks(); renderLayout(); pushPreview();
   blocksList.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }));
 
@@ -794,7 +927,6 @@ function enableDragReorder(container, getArr, rerender) {
     dragIdx = null; rerender(); pushPreview();
   });
 }
-enableDragReorder(blocksList, () => config.blocks, renderBlocks);
 enableDragReorder(document.getElementById('layoutList'), () => config.layout.order, renderLayout);
 
 // ─────────────────────────────────────────────
@@ -806,7 +938,7 @@ function renderLayout() {
     <div class="lay-row" data-li="${i}" data-drag="${i}">
       <span class="drag-handle" draggable="true" title="Arrastrar">⠿</span>
       <div class="c-actions"><button data-lmove="-1">▲</button><button data-lmove="1">▼</button></div>
-      <span class="lay-name">${SECTION_LABELS[key] || key}</span>
+      <span class="lay-name">${labelFor(key)}</span>
       <label class="lay-vis"><input type="checkbox" data-lvis ${config.layout.visible[key] !== false ? 'checked' : ''}> Visible</label>
     </div>`).join('');
 }
@@ -900,26 +1032,30 @@ function mergeConfig(loaded) {
   c.theme = Object.assign({}, DEFAULT_CONFIG.theme, c.theme);
   c.background = Object.assign({}, DEFAULT_CONFIG.background, c.background);
   c.hero = Object.assign({}, DEFAULT_CONFIG.hero, c.hero);
+  c.heroTicker = Object.assign({}, DEFAULT_CONFIG.heroTicker, c.heroTicker);
+  c.music = Object.assign({}, DEFAULT_CONFIG.music, c.music);
   c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
   c.scriptsLayout = Object.assign({}, DEFAULT_CONFIG.scriptsLayout, c.scriptsLayout);
   c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
   c.cta = Object.assign({}, DEFAULT_CONFIG.cta, c.cta);
   c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
   c.layout = Object.assign({}, DEFAULT_CONFIG.layout, c.layout);
-  c.layout.visible = Object.assign({}, DEFAULT_CONFIG.layout.visible, c.layout.visible);
+  c.layout.visible = Object.assign({}, c.layout.visible);
   if (Array.isArray(c.marquee)) c.marquee = { words: c.marquee, direction: 'left', speed: 32 };
   c.marquee = Object.assign({}, DEFAULT_CONFIG.marquee, c.marquee);
   if (!Array.isArray(c.marquee.words) || !c.marquee.words.length) c.marquee.words = DEFAULT_CONFIG.marquee.words.slice();
+  if (!Array.isArray(c.heroTicker.items)) c.heroTicker.items = DEFAULT_CONFIG.heroTicker.items.slice();
   if (!Array.isArray(c.stats)) c.stats = deepClone(DEFAULT_CONFIG.stats);
   if (!Array.isArray(c.trust)) c.trust = deepClone(DEFAULT_CONFIG.trust);
   if (!c.reviews.items || !Array.isArray(c.reviews.items)) c.reviews.items = deepClone(DEFAULT_CONFIG.reviews.items);
-  if (!Array.isArray(c.layout.order) || !c.layout.order.length) c.layout.order = DEFAULT_CONFIG.layout.order.slice();
+  if (!Array.isArray(c.layout.order)) c.layout.order = [];
   if (!Array.isArray(c.blocks)) c.blocks = [];
+  migrateLayout(c);
   return c;
 }
 function initUI() {
   fillStaticInputs();
-  renderStats(); renderTrust(); renderReviews(); renderMarquee(); renderBlocks(); renderLayout();
+  renderStats(); renderTrust(); renderTicker(); renderReviews(); renderMarquee(); renderBlocks(); renderLayout();
 }
 async function loadInitialConfig() {
   try { const d = localStorage.getItem(DRAFT_KEY); if (d) return JSON.parse(d); } catch (e) {}
@@ -932,6 +1068,7 @@ document.getElementById('addStat').addEventListener('click', () => { config.stat
 document.getElementById('addTrust').addEventListener('click', () => { config.trust.push({ icon: '⭐', name: 'Nueva ventaja', desc: 'Descripción...' }); renderTrust(); pushPreview(); });
 document.getElementById('addReview').addEventListener('click', () => { config.reviews.items.push({ stars: 5, text: 'Nueva reseña...', avatar: 'XX', name: 'Usuario', role: 'Cliente' }); renderReviews(); pushPreview(); });
 document.getElementById('addMarquee').addEventListener('click', () => { config.marquee.words.push('NUEVO'); renderMarquee(); pushPreview(); });
+document.getElementById('addTicker').addEventListener('click', () => { config.heroTicker.items.push('NUEVO'); renderTicker(); pushPreview(); });
 
 // wire list handlers once
 listHandlers('statsList', 'stats', renderStats);
@@ -959,6 +1096,7 @@ listHandlers('reviewsList', 'reviews', renderReviews);
   });
 })();
 listHandlers('marqueeList', 'marquee', renderMarquee);
+listHandlers('tickerList', 'ticker', renderTicker);
 
 async function start() {
   config = mergeConfig(await loadInitialConfig());

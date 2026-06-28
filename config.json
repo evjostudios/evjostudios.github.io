@@ -12,6 +12,7 @@
     "textColor": "#F2F2F4",
     "mutedColor": "#8a8a93",
     "headingColor": "#ffffff",
+    "iconColor": "#E62B2B",
     "fontDisplay": "Bebas Neue",
     "fontHead": "Barlow Condensed",
     "fontBody": "Barlow",
@@ -27,15 +28,34 @@
   },
   "hero": {
     "tag": "Scripts FiveM Premium",
+    "showTag": true,
     "title": "EVJO",
     "titleAccentIndex": 1,
     "titleOutline": "STORE",
+    "titleColor": "#ffffff",
+    "outlineColor": "",
     "subtitle": "Scripts de calidad para servidores serios — Sin escrow. Código abierto.",
     "primaryBtnLabel": "Ver Catálogo →",
     "primaryBtnHref": "#tienda",
     "ghostBtnLabel": "Únete al Discord",
     "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv",
     "bgImage": ""
+  },
+  "heroTicker": {
+    "show": true,
+    "direction": "left",
+    "speed": 28,
+    "bgColor": "",
+    "textColor": "#ffffff",
+    "items": ["Sin Escrow", "Soporte 24/7", "Updates Gratis", "Entrega Inmediata", "Código Abierto", "ESX · QBCore · QBox"]
+  },
+  "music": {
+    "enabled": false,
+    "title": "Lofi EVJO",
+    "url": "",
+    "autoplay": false,
+    "position": "pos-br",
+    "color": "#E62B2B"
   },
   "stats": [
     { "target": 12, "decimal": "", "suffix": "K+", "label": "Clientes" },
@@ -44,10 +64,10 @@
     { "target": 24, "decimal": "", "suffix": "/7", "label": "Soporte" }
   ],
   "trust": [
-    { "icon": "🔓", "name": "Sin Escrow", "desc": "Código 100% abierto. Sin bloqueos ni dependencias ocultas." },
-    { "icon": "🔄", "name": "Updates Gratis", "desc": "Actualizaciones de por vida incluidas en cada compra." },
-    { "icon": "💬", "name": "Soporte 24/7", "desc": "Equipo disponible en Discord en todo momento." },
-    { "icon": "⚡", "name": "Entrega Inmediata", "desc": "Descarga automática al completar el pago." }
+    { "icon": "unlock", "name": "Sin Escrow", "desc": "Código 100% abierto. Sin bloqueos ni dependencias ocultas." },
+    { "icon": "refresh", "name": "Updates Gratis", "desc": "Actualizaciones de por vida incluidas en cada compra." },
+    { "icon": "chat", "name": "Soporte 24/7", "desc": "Equipo disponible en Discord en todo momento." },
+    { "icon": "bolt", "name": "Entrega Inmediata", "desc": "Descarga automática al completar el pago." }
   ],
   "marquee": {
     "words": ["FiveM", "Scripts", "EVJO", "Premium"],
@@ -85,8 +105,8 @@
     "title": "CONTENIDO\nEXTRA"
   },
   "layout": {
-    "order": ["trust", "marquee", "tienda", "extras", "reviews", "cta"],
-    "visible": { "trust": true, "marquee": true, "tienda": true, "extras": true, "reviews": true, "cta": true }
+    "order": ["trust", "marquee", "tienda", "reviews", "cta"],
+    "visible": { "trust": true, "marquee": true, "tienda": true, "reviews": true, "cta": true }
   },
   "blocks": []
 }

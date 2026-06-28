@@ -244,9 +244,11 @@
   .trust-item:hover { transform: translateY(-6px); border-color: var(--border-red); box-shadow: 0 18px 40px rgba(0,0,0,0.4); }
   .trust-item:hover::before { transform: scaleX(1); }
   .trust-icon {
-    font-size: 26px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
-    background: rgba(230,43,43,0.1); border: 1px solid var(--border-red); border-radius: 12px;
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+    color: var(--icon-color, var(--red)); margin-bottom: 4px;
   }
+  .trust-icon svg { width: 38px; height: 38px; stroke: currentColor; }
+  .trust-icon .emoji { font-size: 30px; }
   .trust-name { font-family: var(--font-head); font-size: 17px; font-weight: 700; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
   .trust-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
 
@@ -525,8 +527,91 @@
   .carousel-viewport:hover .carousel-track.anim-left,
   .carousel-viewport:hover .carousel-track.anim-right { animation-play-state: paused; }
   .carousel-track .script-card { flex: 0 0 320px; width: 320px; }
+  .carousel-item { flex: 0 0 340px; width: 340px; }
+  .carousel-item img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); }
+  .carousel-item video { width: 100%; border-radius: 12px; border: 1px solid var(--border); }
+  .carousel-cap { font-family: var(--font-head); letter-spacing: 1px; text-transform: uppercase; font-size: 12px; color: var(--muted); margin-top: 8px; text-align: center; }
   @keyframes carLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @keyframes carRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+  /* MORE BUTTON VARIATIONS */
+  body[data-btn="outline"] .btn-primary, body[data-btn="outline"] .nav-cta, body[data-btn="outline"] .modal-buy-btn, body[data-btn="outline"] .cta-discord, body[data-btn="outline"] .script-btn, body[data-btn="outline"] .modal-free-btn {
+    clip-path: none !important; border-radius: 10px; background: transparent !important; border: 2px solid var(--red); color: var(--red); box-shadow: none; }
+  body[data-btn="glow"] .btn-primary, body[data-btn="glow"] .nav-cta, body[data-btn="glow"] .modal-buy-btn {
+    clip-path: none !important; border-radius: 10px; box-shadow: 0 0 22px var(--red-glow), 0 0 8px var(--red-glow); }
+  body[data-btn="cut"] .btn-primary, body[data-btn="cut"] .nav-cta, body[data-btn="cut"] .modal-buy-btn, body[data-btn="cut"] .modal-free-btn {
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)) !important; border-radius: 0; }
+  body[data-btn="shadow"] .btn-primary, body[data-btn="shadow"] .nav-cta, body[data-btn="shadow"] .modal-buy-btn {
+    clip-path: none !important; border-radius: 8px; box-shadow: 4px 4px 0 var(--red-deep); }
+
+  /* CUSTOM BUTTON BLOCK */
+  .block-buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .cbtn { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 15px 36px; cursor: pointer; text-decoration: none; transition: all .25s var(--ease); display: inline-flex; align-items: center; gap: 8px; border: none; }
+  .cbtn.solid { background: var(--grad-red); color: #fff; box-shadow: 0 8px 24px rgba(230,43,43,0.3); }
+  .cbtn.solid:hover { transform: translateY(-3px); }
+  .cbtn.ghost { background: rgba(255,255,255,0.04); border: 1px solid var(--border-2); color: var(--text); }
+  .cbtn.ghost:hover { border-color: var(--red); color: #fff; }
+  .cbtn.discord { background: #5865F2; color: #fff; }
+
+  /* SECTION (generic block section + dynamic sections) */
+  .block-section { padding: 70px 48px; max-width: 1100px; margin: 0 auto; }
+  .block-section.full { max-width: 1500px; }
+  .sec-head { text-align: center; margin-bottom: 44px; }
+  .sec-head .section-tag { justify-content: center; }
+
+  /* GALLERY */
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); transition: transform .4s var(--ease); cursor: pointer; }
+  .gallery-grid img:hover { transform: scale(1.03); border-color: var(--border-red); }
+
+  /* FEATURES CARDS */
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+  .feature-card { background: linear-gradient(170deg, var(--surface2), var(--surface)); border: 1px solid var(--border); border-radius: 16px; padding: 28px; transition: all .35s var(--ease); }
+  .feature-card:hover { transform: translateY(-6px); border-color: var(--border-red); box-shadow: 0 18px 40px rgba(0,0,0,0.4); }
+  .feature-card .fi { color: var(--icon-color, var(--red)); margin-bottom: 14px; }
+  .feature-card .fi svg { width: 34px; height: 34px; }
+  .feature-card h4 { font-family: var(--font-head); font-size: 18px; letter-spacing: 1px; text-transform: uppercase; color: #fff; margin-bottom: 8px; }
+  .feature-card p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+
+  /* FAQ */
+  .faq-list { display: flex; flex-direction: column; gap: 10px; }
+  .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .faq-q { padding: 18px 22px; font-family: var(--font-head); font-size: 16px; letter-spacing: 1px; color: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
+  .faq-q .fq-plus { color: var(--red); transition: transform .3s; font-size: 20px; }
+  .faq-item.open .fq-plus { transform: rotate(45deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s var(--ease), padding .35s; padding: 0 22px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+  .faq-item.open .faq-a { max-height: 400px; padding: 0 22px 20px; }
+
+  /* BANNER */
+  .banner-block { padding: 70px 48px; max-width: 1500px; margin: 0 auto; }
+  .banner-inner { position: relative; overflow: hidden; border-radius: 22px; border: 1px solid var(--border-red); background: linear-gradient(135deg, #1a0808, #0d0d10 65%); padding: 70px 48px; text-align: center; }
+  .banner-inner::before { content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%); width: 500px; height: 400px; background: radial-gradient(circle, var(--red-glow), transparent 70%); }
+  .banner-inner h2 { font-family: var(--font-display); font-size: clamp(38px, 6vw, 76px); letter-spacing: 2px; color: #fff; position: relative; }
+  .banner-inner p { color: var(--muted); max-width: 560px; margin: 16px auto 28px; position: relative; }
+
+  /* MUSIC PLAYER */
+  .music-player {
+    position: fixed; z-index: 400; display: flex; align-items: center; gap: 12px;
+    background: rgba(16,16,19,0.92); border: 1px solid var(--border-red); border-radius: 100px;
+    padding: 8px 16px 8px 8px; backdrop-filter: blur(12px); box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+    transition: transform .3s var(--ease), opacity .3s; max-width: 280px;
+  }
+  .music-player.pos-br { bottom: 22px; right: 22px; }
+  .music-player.pos-bl { bottom: 22px; left: 22px; }
+  .music-player.pos-tr { top: 80px; right: 22px; }
+  .music-player.pos-tl { top: 80px; left: 22px; }
+  .mp-btn { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; border: none; cursor: pointer; background: var(--grad-red); color: #fff; display: flex; align-items: center; justify-content: center; }
+  .mp-btn svg { width: 18px; height: 18px; fill: #fff; }
+  .mp-info { min-width: 0; }
+  .mp-title { font-family: var(--font-head); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mp-sub { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+  .mp-bars { display: flex; gap: 2px; align-items: flex-end; height: 16px; }
+  .mp-bars i { width: 3px; background: var(--red); height: 6px; border-radius: 2px; animation: mpbar 0.9s ease-in-out infinite; }
+  .mp-bars i:nth-child(2){animation-delay:.15s} .mp-bars i:nth-child(3){animation-delay:.3s} .mp-bars i:nth-child(4){animation-delay:.45s}
+  .music-player.paused .mp-bars i { animation-play-state: paused; height: 6px; }
+  @keyframes mpbar { 0%,100%{height:5px} 50%{height:16px} }
+  .mp-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 4px; }
+  .mp-close:hover { color: #fff; }
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
@@ -602,21 +687,8 @@
       </div>
     </div>
   </div>
-  <div class="hero-ticker">
-    <div class="ticker-track">
-      <span class="ticker-item">Sin Escrow</span>
-      <span class="ticker-item">Soporte 24/7</span>
-      <span class="ticker-item">Updates Gratis</span>
-      <span class="ticker-item">Entrega Inmediata</span>
-      <span class="ticker-item">Código Abierto</span>
-      <span class="ticker-item">ESX · QBCore · QBox</span>
-      <span class="ticker-item">Sin Escrow</span>
-      <span class="ticker-item">Soporte 24/7</span>
-      <span class="ticker-item">Updates Gratis</span>
-      <span class="ticker-item">Entrega Inmediata</span>
-      <span class="ticker-item">Código Abierto</span>
-      <span class="ticker-item">ESX · QBCore · QBox</span>
-    </div>
+  <div class="hero-ticker" id="heroTicker">
+    <div class="ticker-track" id="tickerTrack"></div>
   </div>
 </section>
 
@@ -833,6 +905,18 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- MUSIC PLAYER -->
+<div class="music-player pos-br paused" id="musicPlayer" style="display:none;">
+  <button class="mp-btn" id="mpToggle" aria-label="Reproducir/Pausar"></button>
+  <div class="mp-info">
+    <div class="mp-title" id="mpTitle">Música</div>
+    <div class="mp-sub">♪ EVJO</div>
+  </div>
+  <div class="mp-bars"><i></i><i></i><i></i><i></i></div>
+  <button class="mp-close" id="mpClose" title="Ocultar">✕</button>
+  <audio id="mpAudio" loop></audio>
+</div>
 
 <script>
 // ─────────────────────────────────────────────
@@ -1092,26 +1176,62 @@ async function handleBuy() {
   if (btn) { btn.disabled = true; btn.textContent = isFree ? 'Procesando...' : 'Creando cesta...'; }
 
   try {
-    if (typeof Tebex !== 'undefined') {
-      const basket = await createBasket();
-      if (!basket) throw new Error('No se pudo crear la cesta');
-      const added = await addToBasket(basket.ident, currentPkg.id);
-      if (!added) throw new Error('No se pudo añadir el paquete');
-      closeModal();
-      Tebex.checkout.init({
-        ident: basket.ident,
-        theme: 'dark',
-        colors: [{ name: 'primary', color: window.__primary || '#E62B2B' }]
-      });
-      Tebex.checkout.launch();
-    } else {
+    if (typeof Tebex === 'undefined') {
       window.open(`https://store.tebex.io/package/${currentPkg.id}`, '_blank');
       closeModal();
+      return;
     }
+    const basket = await createBasket();
+    if (!basket) throw new Error('No se pudo crear la cesta');
+
+    // ¿La tienda requiere login (FiveM/cfx.re, Steam, etc.)? Si sí, redirigir a iniciar sesión.
+    const authLinks = await getBasketAuth(basket.ident, window.location.href.split('#')[0]);
+    if (authLinks && authLinks.length) {
+      localStorage.setItem('evjo_pending_buy', JSON.stringify({ ident: basket.ident, pkg: currentPkg.id }));
+      showToast('Inicia sesión para añadir al carrito...', 'success');
+      window.location.href = authLinks[0].url;
+      return;
+    }
+
+    const added = await addToBasket(basket.ident, currentPkg.id);
+    if (!added) throw new Error('No se pudo añadir el paquete');
+    closeModal();
+    launchCheckout(basket.ident);
   } catch (err) {
     showToast('Error al procesar. Inténtalo de nuevo.', 'error');
     if (btn) { btn.disabled = false; btn.textContent = isFree ? 'Descargar Gratis' : `Comprar — ${formatPrice(currentPkg)}`; }
   }
+}
+
+function launchCheckout(ident) {
+  Tebex.checkout.init({ ident, theme: 'dark', colors: [{ name: 'primary', color: window.__primary || '#E62B2B' }] });
+  Tebex.checkout.launch();
+}
+
+// Comprueba si la cesta necesita autenticación de usuario (devuelve enlaces de login si aplica)
+async function getBasketAuth(ident, returnUrl) {
+  try {
+    const res = await fetch(
+      `https://headless.tebex.io/api/accounts/${TEBEX_TOKEN}/baskets/${ident}/auth?returnUrl=${encodeURIComponent(returnUrl)}`,
+      { headers: { Accept: 'application/json' } }
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    return Array.isArray(json) ? json : (json.data || []);
+  } catch (e) { return []; }
+}
+
+// Tras volver del login, retomar la compra pendiente
+async function resumePendingPurchase() {
+  let pending = null;
+  try { pending = JSON.parse(localStorage.getItem('evjo_pending_buy') || 'null'); } catch (e) {}
+  if (!pending) return;
+  localStorage.removeItem('evjo_pending_buy');
+  if (typeof Tebex === 'undefined') return;
+  try {
+    const added = await addToBasket(pending.ident, pending.pkg);
+    if (added) { showToast('Sesión iniciada — abriendo el pago...', 'success'); launchCheckout(pending.ident); }
+  } catch (e) {}
 }
 
 // ─────────────────────────────────────────────
@@ -1224,15 +1344,18 @@ function observeCounts() { document.querySelectorAll('.count').forEach(el => { i
 // ─────────────────────────────────────────────
 const DEFAULT_CONFIG = {
   branding: { logoText: 'EVJO', accentIndex: 1, logoImage: '', primaryColor: '#E62B2B', discordUrl: DISCORD_URL, navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
-  theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
+  theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#E62B2B', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: {
-    tag: 'Scripts FiveM Premium', title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
+    tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
+    titleColor: '#ffffff', outlineColor: '',
     subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.',
     primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda',
     ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL,
     bgImage: ''
   },
+  heroTicker: { show: true, direction: 'left', speed: 28, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
+  music: { enabled: false, title: 'Lofi EVJO', url: '', autoplay: false, position: 'pos-br', color: '#E62B2B' },
   stats: [
     { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
     { target: 50, decimal: '', suffix: '+', label: 'Scripts' },
@@ -1240,10 +1363,10 @@ const DEFAULT_CONFIG = {
     { target: 24, decimal: '', suffix: '/7', label: 'Soporte' }
   ],
   trust: [
-    { icon: '🔓', name: 'Sin Escrow', desc: 'Código 100% abierto. Sin bloqueos ni dependencias ocultas.' },
-    { icon: '🔄', name: 'Updates Gratis', desc: 'Actualizaciones de por vida incluidas en cada compra.' },
-    { icon: '💬', name: 'Soporte 24/7', desc: 'Equipo disponible en Discord en todo momento.' },
-    { icon: '⚡', name: 'Entrega Inmediata', desc: 'Descarga automática al completar el pago.' }
+    { icon: 'unlock', name: 'Sin Escrow', desc: 'Código 100% abierto. Sin bloqueos ni dependencias ocultas.' },
+    { icon: 'refresh', name: 'Updates Gratis', desc: 'Actualizaciones de por vida incluidas en cada compra.' },
+    { icon: 'chat', name: 'Soporte 24/7', desc: 'Equipo disponible en Discord en todo momento.' },
+    { icon: 'bolt', name: 'Entrega Inmediata', desc: 'Descarga automática al completar el pago.' }
   ],
   marquee: { words: ['FiveM', 'Scripts', 'EVJO', 'Premium'], direction: 'left', speed: 32 },
   reviews: {
@@ -1260,8 +1383,8 @@ const DEFAULT_CONFIG = {
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
   layout: {
-    order: ['trust', 'marquee', 'tienda', 'extras', 'reviews', 'cta'],
-    visible: { trust: true, marquee: true, tienda: true, extras: true, reviews: true, cta: true }
+    order: ['trust', 'marquee', 'tienda', 'reviews', 'cta'],
+    visible: { trust: true, marquee: true, tienda: true, reviews: true, cta: true }
   },
   blocks: []
 };
@@ -1272,6 +1395,36 @@ function escHTML(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 function nl2br(s) { return escHTML(s).replace(/\n/g, '<br>'); }
+
+// ── SVG ICON SET (monocromo, sin emojis) ──
+const ICONS = {
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  unlock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+  refresh: '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  chat: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+  bolt: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+  box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  gift: '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',
+  headset: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+  server: '<rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>',
+  tag: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+  cart: '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>',
+  heart: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  fire: '<path d="M12 2s5 4 5 9a5 5 0 0 1-10 0c0-2 1-3 1-3s0 2 2 2c0-3 2-5 2-8z"/>',
+  rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'
+};
+function renderIcon(name, cls) {
+  if (name && ICONS[name]) return `<span class="${cls || ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg></span>`;
+  return `<span class="${cls || ''}"><span class="emoji">${escHTML(name || '')}</span></span>`;
+}
 
 // Build a logo "EV<span>J</span>O" style with accent letter
 function buildLogo(text, accentIndex) {
@@ -1336,6 +1489,7 @@ function applyThemeExtras(theme) {
   const root = document.documentElement.style;
   if (theme.textColor) root.setProperty('--text', theme.textColor);
   if (theme.mutedColor) root.setProperty('--muted', theme.mutedColor);
+  if (theme.iconColor) root.setProperty('--icon-color', theme.iconColor);
   if (theme.fontDisplay) { root.setProperty('--font-display', `'${theme.fontDisplay}', sans-serif`); loadFont(theme.fontDisplay); }
   if (theme.fontHead) { root.setProperty('--font-head', `'${theme.fontHead}', sans-serif`); loadFont(theme.fontHead); }
   if (theme.fontBody) { root.setProperty('--font-body', `'${theme.fontBody}', sans-serif`); loadFont(theme.fontBody); }
@@ -1411,6 +1565,48 @@ function renderBlock(b) {
       const spd = Number(b.speed) || 30;
       return `<div class="block reveal"><div class="mini-marquee"><div class="marquee-track" style="animation-duration:${spd}s;animation-direction:${dir}">${items}</div></div></div>`;
     }
+    case 'buttons': {
+      const items = (b.items || []).filter(it => it.label).map(it => {
+        const ext = /^https?:/.test(it.href || '') ? ' target="_blank" rel="noopener"' : '';
+        return `<a class="cbtn ${it.style || 'solid'}" href="${escHTML(it.href || '#')}"${ext}>${escHTML(it.label)}</a>`;
+      }).join('');
+      if (!items) return '';
+      return `<div class="block reveal"><div class="block-buttons" style="justify-content:${b.align || 'center'}">${items}</div></div>`;
+    }
+    case 'carousel': {
+      const items = (b.items || []).filter(it => it.url);
+      if (!items.length) return '';
+      const mk = it => {
+        const media = it.kind === 'video' ? mediaHTML({ type: 'video', url: it.url }) : `<img src="${escHTML(it.url)}" alt="${escHTML(it.caption || '')}" loading="lazy">`;
+        return `<div class="carousel-item">${media}${it.caption ? `<div class="carousel-cap">${escHTML(it.caption)}</div>` : ''}</div>`;
+      };
+      const cards = items.map(mk).join('');
+      const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
+      if (b.direction === 'static') return `<div class="reveal">${head}<div class="carousel-viewport static-scroll"><div class="carousel-track">${cards}</div></div></div>`;
+      const animClass = b.direction === 'right' ? 'anim-right' : 'anim-left';
+      const dur = (Number(b.speed) || 40) + 's';
+      return `<div class="reveal">${head}<div class="carousel-viewport"><div class="carousel-track ${animClass}" style="--carousel-dur:${dur}">${cards}${cards}</div></div></div>`;
+    }
+    case 'gallery': {
+      const imgs = (b.images || []).filter(Boolean);
+      if (!imgs.length) return '';
+      const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
+      return `<div class="reveal">${head}<div class="gallery-grid">${imgs.map(u => `<img src="${escHTML(u)}" loading="lazy">`).join('')}</div></div>`;
+    }
+    case 'features': {
+      const items = (b.items || []);
+      const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
+      return `<div class="reveal">${head}<div class="features-grid">${items.map(it => `<div class="feature-card">${renderIcon(it.icon, 'fi')}<h4>${escHTML(it.title || '')}</h4><p>${nl2br(it.text || '')}</p></div>`).join('')}</div></div>`;
+    }
+    case 'faq': {
+      const items = (b.items || []);
+      const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
+      return `<div class="reveal">${head}<div class="faq-list">${items.map(it => `<div class="faq-item"><div class="faq-q">${escHTML(it.q || '')}<span class="fq-plus">+</span></div><div class="faq-a">${nl2br(it.a || '')}</div></div>`).join('')}</div></div>`;
+    }
+    case 'banner': {
+      const ext = /^https?:/.test(b.btnHref || '') ? ' target="_blank" rel="noopener"' : '';
+      return `<div class="banner-inner reveal"><h2>${nl2br(b.title || '')}</h2>${b.text ? `<p>${nl2br(b.text)}</p>` : ''}${b.btnLabel ? `<a class="btn-primary" href="${escHTML(b.btnHref || '#')}"${ext}>${escHTML(b.btnLabel)}</a>` : ''}</div>`;
+    }
     default:
       return '';
   }
@@ -1427,28 +1623,43 @@ function ctaTitleHTML(t) {
   return parts.length > 1 ? `${escHTML(parts[0])}<span class="red">${escHTML(parts.slice(1).join('|'))}</span>` : escHTML(t);
 }
 
+function ensureBlockIds(blocks) {
+  blocks.forEach(b => { if (!b.id) b.id = 'b' + Math.random().toString(36).slice(2, 9); });
+}
+
 function applyConfig(cfg) {
   const c = Object.assign({}, DEFAULT_CONFIG, cfg || {});
   c.branding = Object.assign({}, DEFAULT_CONFIG.branding, c.branding);
   c.theme = Object.assign({}, DEFAULT_CONFIG.theme, c.theme);
   c.background = Object.assign({}, DEFAULT_CONFIG.background, c.background);
   c.hero = Object.assign({}, DEFAULT_CONFIG.hero, c.hero);
+  c.heroTicker = Object.assign({}, DEFAULT_CONFIG.heroTicker, c.heroTicker);
+  c.music = Object.assign({}, DEFAULT_CONFIG.music, c.music);
   c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
   c.cta = Object.assign({}, DEFAULT_CONFIG.cta, c.cta);
   c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
   c.scriptsLayout = Object.assign({}, DEFAULT_CONFIG.scriptsLayout, c.scriptsLayout);
   c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
   c.layout = Object.assign({}, DEFAULT_CONFIG.layout, c.layout);
-  c.layout.visible = Object.assign({}, DEFAULT_CONFIG.layout.visible, c.layout.visible);
-  // marquee backward compat (array -> object)
+  c.layout.visible = Object.assign({}, c.layout.visible);
   if (Array.isArray(c.marquee)) c.marquee = { words: c.marquee, direction: 'left', speed: 32 };
   c.marquee = Object.assign({}, DEFAULT_CONFIG.marquee, c.marquee);
   if (!Array.isArray(c.stats)) c.stats = DEFAULT_CONFIG.stats;
   if (!Array.isArray(c.trust)) c.trust = DEFAULT_CONFIG.trust;
+  if (!Array.isArray(c.heroTicker.items)) c.heroTicker.items = DEFAULT_CONFIG.heroTicker.items;
   if (!Array.isArray(c.marquee.words) || !c.marquee.words.length) c.marquee.words = DEFAULT_CONFIG.marquee.words;
   if (!c.reviews.items || !Array.isArray(c.reviews.items)) c.reviews.items = DEFAULT_CONFIG.reviews.items;
   if (!Array.isArray(c.layout.order) || !c.layout.order.length) c.layout.order = DEFAULT_CONFIG.layout.order.slice();
   if (!Array.isArray(c.blocks)) c.blocks = [];
+
+  // Ensure block ids + migrate layout (blocks become individual sections; drop legacy 'extras')
+  ensureBlockIds(c.blocks);
+  const blockKeys = c.blocks.map(b => 'b:' + b.id);
+  let order = c.layout.order.filter(k => k !== 'extras' && (!k.startsWith('b:') || blockKeys.includes(k)));
+  ['trust', 'marquee', 'tienda', 'reviews', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
+  blockKeys.forEach(k => { if (!order.includes(k)) order.push(k); });
+  c.layout.order = order;
+  order.forEach(k => { if (c.layout.visible[k] === undefined) c.layout.visible[k] = true; });
 
   const root = document.documentElement.style;
 
@@ -1467,8 +1678,8 @@ function applyConfig(cfg) {
     else { bgImage.classList.remove('show'); bgImage.style.backgroundImage = ''; }
   }
   document.querySelectorAll('.hero-orb').forEach(o => o.style.display = c.background.showOrbs === false ? 'none' : '');
-  const grid = document.querySelector('.bg-grid');
-  if (grid) grid.style.display = c.background.showGrid === false ? 'none' : '';
+  const bgGrid = document.querySelector('.bg-grid');
+  if (bgGrid) bgGrid.style.display = c.background.showGrid === false ? 'none' : '';
 
   // Branding / logos / nav cta
   const navLogo = document.getElementById('navLogo');
@@ -1487,11 +1698,15 @@ function applyConfig(cfg) {
     if (c.hero.bgImage) { heroBgImg.style.backgroundImage = `url("${c.hero.bgImage}")`; heroBgImg.classList.add('show'); }
     else { heroBgImg.classList.remove('show'); heroBgImg.style.backgroundImage = ''; }
   }
+  const heroTagEl = document.querySelector('.hero-tag');
+  if (heroTagEl) heroTagEl.style.display = c.hero.showTag === false ? 'none' : '';
   const heroTagText = document.getElementById('heroTagText');
   if (heroTagText) heroTagText.textContent = c.hero.tag;
   const heroTitle = document.getElementById('heroTitle');
   if (heroTitle) {
-    heroTitle.innerHTML = `${buildLogo(c.hero.title, c.hero.titleAccentIndex).replace(/<span>/g, '<span class="red">')}<br><span class="outline">${escHTML(c.hero.titleOutline)}</span>`;
+    const titleLetters = buildLogo(c.hero.title, c.hero.titleAccentIndex).replace(/<span>/g, '<span class="red">');
+    const outlineStyle = c.hero.outlineColor ? ` style="background:none;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px ${escHTML(c.hero.outlineColor)};color:transparent"` : '';
+    heroTitle.innerHTML = `<span style="color:${escHTML(c.hero.titleColor || '#fff')}">${titleLetters}</span><br><span class="outline"${outlineStyle}>${escHTML(c.hero.titleOutline)}</span>`;
   }
   const heroSub = document.getElementById('heroSub');
   if (heroSub) heroSub.textContent = c.hero.subtitle;
@@ -1499,6 +1714,22 @@ function applyConfig(cfg) {
   if (bp) { bp.textContent = c.hero.primaryBtnLabel; bp.href = c.hero.primaryBtnHref || '#tienda'; }
   const bgt = document.getElementById('heroBtnGhost');
   if (bgt) { bgt.textContent = c.hero.ghostBtnLabel; bgt.href = c.hero.ghostBtnHref || c.branding.discordUrl; }
+
+  // Hero ticker (editable bar)
+  const heroTicker = document.getElementById('heroTicker');
+  const tickerTrack = document.getElementById('tickerTrack');
+  if (heroTicker && tickerTrack) {
+    if (c.heroTicker.show === false || !c.heroTicker.items.length) { heroTicker.style.display = 'none'; }
+    else {
+      heroTicker.style.display = '';
+      heroTicker.style.background = c.heroTicker.bgColor || '';
+      let items = '';
+      for (let r = 0; r < 3; r++) c.heroTicker.items.forEach(w => { items += `<span class="ticker-item" style="color:${escHTML(c.heroTicker.textColor || '#fff')}">${escHTML(w)}</span>`; });
+      tickerTrack.innerHTML = items;
+      tickerTrack.style.animationDuration = (Number(c.heroTicker.speed) || 28) + 's';
+      tickerTrack.style.animationDirection = c.heroTicker.direction === 'right' ? 'reverse' : 'normal';
+    }
+  }
 
   // Stats
   const heroStats = document.getElementById('heroStats');
@@ -1510,12 +1741,12 @@ function applyConfig(cfg) {
       </div>`).join('');
   }
 
-  // Trust / ventajas
+  // Trust / ventajas (SVG icons)
   const trustGrid = document.getElementById('trustGrid');
   if (trustGrid) {
     trustGrid.innerHTML = c.trust.map((t, i) => `
       <div class="trust-item reveal"${i ? ` data-delay="${Math.min(i, 4)}"` : ''}>
-        <span class="trust-icon">${escHTML(t.icon)}</span>
+        ${renderIcon(t.icon, 'trust-icon')}
         <div class="trust-name">${escHTML(t.name)}</div>
         <div class="trust-desc">${escHTML(t.desc)}</div>
       </div>`).join('');
@@ -1564,32 +1795,29 @@ function applyConfig(cfg) {
   const cDesc = document.getElementById('ctaDesc'); if (cDesc) cDesc.textContent = c.cta.desc;
   const cBtn = document.getElementById('ctaBtnText'); if (cBtn) cBtn.textContent = c.cta.btnLabel;
 
-  // Custom blocks
-  const extras = document.getElementById('extras');
-  const container = document.getElementById('blocksContainer');
-  const extrasVisible = c.layout.visible.extras !== false && c.blocks.length > 0;
-  if (extras && container) {
-    if (extrasVisible) {
-      document.getElementById('extrasTag').textContent = c.extrasHeading.tag || '';
-      document.getElementById('extrasTag').style.display = c.extrasHeading.tag ? '' : 'none';
-      document.getElementById('extrasTitle').innerHTML = dimTitle(c.extrasHeading.title);
-      container.innerHTML = c.blocks.map(renderBlock).join('');
-      extras.style.display = '';
-    } else {
-      extras.style.display = 'none';
-    }
-  }
+  // Legacy extras container -> always hidden (blocks are individual sections now)
+  const extras = document.getElementById('extras'); if (extras) extras.style.display = 'none';
 
-  // Section order + visibility
+  // Build block sections + order + visibility
   const main = document.getElementById('mainSections');
   if (main) {
+    main.querySelectorAll('[data-section^="b:"]').forEach(el => el.remove());
+    c.blocks.forEach(b => {
+      const sec = document.createElement('section');
+      sec.className = 'block-section' + (['banner', 'marquee', 'carousel', 'gallery'].includes(b.type) ? ' full' : '');
+      sec.setAttribute('data-section', 'b:' + b.id);
+      sec.innerHTML = renderBlock(b);
+      main.appendChild(sec);
+    });
     c.layout.order.forEach(key => { const el = main.querySelector(`[data-section="${key}"]`); if (el) main.appendChild(el); });
-    Object.keys(c.layout.visible).forEach(key => {
-      if (key === 'extras') return; // handled above
+    c.layout.order.forEach(key => {
       const el = main.querySelector(`[data-section="${key}"]`);
       if (el) el.style.display = c.layout.visible[key] === false ? 'none' : '';
     });
   }
+
+  // Music player
+  applyMusic(c.music);
 
   // Tebex checkout color
   window.__primary = c.branding.primaryColor;
@@ -1599,10 +1827,58 @@ function applyConfig(cfg) {
     try { renderGrid(activeCategory); } catch (e) {}
   }
 
-  // Re-observe newly added reveal/count elements
   observeReveals();
   observeCounts();
 }
+
+// ── MUSIC PLAYER ──
+let mpStarted = false;
+function applyMusic(m) {
+  const wrap = document.getElementById('musicPlayer');
+  const audio = document.getElementById('mpAudio');
+  if (!wrap || !audio) return;
+  if (!m || m.enabled === false || !m.url) { wrap.style.display = 'none'; audio.pause(); return; }
+  wrap.style.display = '';
+  wrap.className = 'music-player ' + (m.position || 'pos-br') + (audio.paused ? ' paused' : '');
+  if (m.color) { document.documentElement.style.setProperty('--mp-accent', m.color); }
+  document.getElementById('mpTitle').textContent = m.title || 'Música';
+  if (audio.dataset.src !== m.url) { audio.src = m.url; audio.dataset.src = m.url; }
+  audio.volume = 0.6;
+  if (m.autoplay && !mpStarted) {
+    mpStarted = true;
+    audio.play().then(() => updateMpIcon()).catch(() => { /* autoplay bloqueado: arrancará al primer clic */
+      const once = () => { audio.play().catch(()=>{}); updateMpIcon(); document.removeEventListener('click', once); };
+      document.addEventListener('click', once);
+    });
+  }
+  updateMpIcon();
+}
+function updateMpIcon() {
+  const audio = document.getElementById('mpAudio');
+  const wrap = document.getElementById('musicPlayer');
+  const btn = document.getElementById('mpToggle');
+  if (!audio || !btn) return;
+  const playing = !audio.paused;
+  wrap.classList.toggle('paused', !playing);
+  btn.innerHTML = playing
+    ? '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'
+    : '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
+}
+(function wireMusic() {
+  const audio = document.getElementById('mpAudio');
+  const btn = document.getElementById('mpToggle');
+  const close = document.getElementById('mpClose');
+  if (btn) btn.addEventListener('click', () => { if (audio.paused) audio.play().catch(()=>{}); else audio.pause(); updateMpIcon(); });
+  if (close) close.addEventListener('click', () => { document.getElementById('musicPlayer').style.display = 'none'; audio.pause(); });
+  if (audio) { audio.addEventListener('play', updateMpIcon); audio.addEventListener('pause', updateMpIcon); }
+})();
+
+// FAQ accordion (delegated)
+document.addEventListener('click', e => {
+  const q = e.target.closest('.faq-q');
+  if (q) q.parentElement.classList.toggle('open');
+});
+
 
 // Load config (preview from localStorage when ?preview=1, else config.json)
 async function loadConfig() {
@@ -1637,6 +1913,6 @@ window.addEventListener('message', (e) => {
 observeReveals();
 observeCounts();
 init();
-</script>
+resumePendingPurchase();</script>
 </body>
 </html>
