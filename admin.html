@@ -288,6 +288,7 @@
         </div>
         <div class="field"><label>Descripción</label><textarea data-bind="hero.subtitle"></textarea></div>
         <div class="field"><label>Imagen del título (PNG, en vez del texto EVJO/STORE)</label><div class="media-input"><input type="text" data-bind="hero.titleImage" placeholder="URL o sube un PNG; vacío = usar texto"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div><div class="media-preview"></div></div>
+        <div class="field"><label>Tamaño de la imagen del título (px)</label><input type="range" min="120" max="900" step="10" data-bind="hero.titleImageSize" data-out="tiSizeVal"> <span id="tiSizeVal" style="color:var(--muted);font-size:12px"></span></div>
         <div class="field-row">
           <div class="field"><label>Botón 1 — texto</label><input type="text" data-bind="hero.primaryBtnLabel"></div>
           <div class="field"><label>Botón 1 — enlace</label><input type="text" data-bind="hero.primaryBtnHref"></div>
@@ -556,7 +557,7 @@ const DEFAULT_CONFIG = {
   branding: { logoText: 'EVJO', accentIndex: 1, logoImage: '', primaryColor: '#E62B2B', discordUrl: 'https://discord.gg/RNVxxAU9Nv', navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
   theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#E62B2B', headingAlign: 'left', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
-  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
+  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '', titleImageSize: 360, subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
   heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
   music: { enabled: false, autoplay: false, position: 'pos-br', color: '#E62B2B', title: 'Lofi EVJO', url: '', tracks: [] },
   stats: [
