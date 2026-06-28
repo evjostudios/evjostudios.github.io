@@ -13,6 +13,7 @@
     "mutedColor": "#8a8a93",
     "headingColor": "#ffffff",
     "iconColor": "#E62B2B",
+    "headingAlign": "left",
     "fontDisplay": "Bebas Neue",
     "fontHead": "Barlow Condensed",
     "fontBody": "Barlow",

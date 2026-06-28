@@ -634,6 +634,16 @@
   .nav-cart svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
   .nav-cart .cart-count { position: absolute; top: -7px; right: -7px; background: var(--grad-red); color: #fff; font-family: var(--font-body); font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
 
+  /* HEADING ALIGN (izquierda / centro / derecha) */
+  body[data-halign="center"] .section-tag, body[data-halign="center"] .sec-head .section-tag { justify-content: center; }
+  body[data-halign="right"] .section-tag, body[data-halign="right"] .sec-head .section-tag { justify-content: flex-end; }
+  body[data-halign="center"] .section-title, body[data-halign="center"] .sec-head, body[data-halign="center"] .scripts-header { text-align: center; }
+  body[data-halign="right"] .section-title, body[data-halign="right"] .sec-head, body[data-halign="right"] .scripts-header { text-align: right; }
+  body[data-halign="center"] .scripts-header { flex-direction: column; align-items: center; }
+  body[data-halign="right"] .scripts-header { flex-direction: column; align-items: flex-end; }
+  body[data-halign="left"] .sec-head { text-align: left; }
+  body[data-halign="left"] .sec-head .section-tag { justify-content: flex-start; }
+
   /* IMAGE HOVER (glow + zoom, solo la imagen señalada) */
   .gallery-grid img, .carousel-item img { transition: transform .4s var(--ease), box-shadow .4s, filter .4s, opacity .3s; }
   .gallery-grid img:hover { transform: scale(1.1); box-shadow: 0 14px 44px rgba(0,0,0,0.55), 0 0 28px var(--red-glow); filter: brightness(1.12); position: relative; z-index: 3; }
@@ -1482,7 +1492,7 @@ function observeCounts() { document.querySelectorAll('.count').forEach(el => { i
 // ─────────────────────────────────────────────
 const DEFAULT_CONFIG = {
   branding: { logoText: 'EVJO', accentIndex: 1, logoImage: '', primaryColor: '#E62B2B', discordUrl: DISCORD_URL, navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
-  theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#E62B2B', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
+  theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#E62B2B', headingAlign: 'left', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: {
     tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
@@ -1632,6 +1642,7 @@ function applyThemeExtras(theme) {
   if (theme.fontHead) { root.setProperty('--font-head', `'${theme.fontHead}', sans-serif`); loadFont(theme.fontHead); }
   if (theme.fontBody) { root.setProperty('--font-body', `'${theme.fontBody}', sans-serif`); loadFont(theme.fontBody); }
   document.body.dataset.btn = theme.buttonStyle || 'slant';
+  document.body.dataset.halign = theme.headingAlign || 'left';
   if (!dynHeadingStyle) { dynHeadingStyle = document.createElement('style'); document.head.appendChild(dynHeadingStyle); }
   const hc = theme.headingColor || '#ffffff';
   dynHeadingStyle.textContent = `.section-title, .script-name, .modal-name, .trust-name, .test-name, .win-title, .nav-logo, .footer-logo, .stat-num, .cta-title { color: ${hc}; }`;
