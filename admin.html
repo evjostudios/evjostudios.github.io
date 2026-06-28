@@ -282,6 +282,10 @@
           <div class="field"><label>Color del título</label><div class="color-row"><input type="color" data-bind="hero.titleColor"><input type="text" data-bind="hero.titleColor" style="flex:1"></div></div>
           <div class="field"><label>Color del contorno</label><input type="text" data-bind="hero.outlineColor" placeholder="vacío = degradado"></div>
         </div>
+        <div class="field-row">
+          <div class="field"><label>Grosor del contorno (px)</label><input type="number" min="0" max="8" step="1" data-bind="hero.outlineWidth"></div>
+          <div class="field"><label>Alineación del hero</label><select data-bind="hero.align"><option value="left">Izquierda</option><option value="center">Centro</option><option value="right">Derecha</option></select></div>
+        </div>
         <div class="field"><label>Descripción</label><textarea data-bind="hero.subtitle"></textarea></div>
         <div class="field-row">
           <div class="field"><label>Botón 1 — texto</label><input type="text" data-bind="hero.primaryBtnLabel"></div>
@@ -379,6 +383,10 @@
           <div class="field"><label>Velocidad (seg)</label><input type="number" min="10" max="160" data-bind="scriptsLayout.speed"></div>
         </div>
         <div class="hint">El carrusel desliza las tarjetas; al pasar el ratón se pausa para poder hacer clic. "Estático" permite arrastrar/scroll en horizontal.</div>
+        <div class="field-row">
+          <div class="field"><label>Tamaño de las tarjetas</label><select data-bind="store.cardSize"><option value="compact">Pequeñas (compactas)</option><option value="normal">Normal</option><option value="large">Grandes</option></select></div>
+          <div class="field"><label>Forma de la etiqueta de precio</label><select data-bind="store.priceTagShape"><option value="slant">Inclinada</option><option value="rounded">Redondeada</option><option value="pill">Píldora</option><option value="square">Recta</option><option value="cut">Cortada</option></select></div>
+        </div>
       </div>
     </div>
 
@@ -439,6 +447,7 @@
           <button class="add-btn" data-add="carousel"><span class="ico">🎠</span> Carrusel</button>
           <button class="add-btn" data-add="buttons"><span class="ico">🔘</span> Botones</button>
           <button class="add-btn" data-add="banner"><span class="ico">📢</span> Banner</button>
+          <button class="add-btn" data-add="divider"><span class="ico">➖</span> Separador</button>
         </div>
         <div id="blocksList"></div>
       </div>
@@ -525,7 +534,7 @@ const DEFAULT_CONFIG = {
   branding: { logoText: 'EVJO', accentIndex: 1, logoImage: '', primaryColor: '#E62B2B', discordUrl: 'https://discord.gg/RNVxxAU9Nv', navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
   theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#E62B2B', headingAlign: 'left', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
-  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
+  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
   heroTicker: { show: true, direction: 'left', speed: 28, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
   music: { enabled: false, autoplay: false, position: 'pos-br', color: '#E62B2B', title: 'Lofi EVJO', url: '', tracks: [] },
   stats: [
@@ -543,6 +552,7 @@ const DEFAULT_CONFIG = {
   marquee: { words: ['FiveM', 'Scripts', 'EVJO', 'Premium'], direction: 'left', speed: 32 },
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
+  store: { cardSize: 'normal', priceTagShape: 'slant' },
   reviews: { tag: 'Lo que dicen', title: 'REVIEWS\nREALES', items: [
     { stars: 5, text: 'El Gang System de EVJO transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
     { stars: 5, text: 'Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · Script Tester' },
@@ -555,7 +565,7 @@ const DEFAULT_CONFIG = {
   blocks: []
 };
 
-const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner' };
+const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner', divider: 'Separador' };
 const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', reviews: 'Reviews', cta: 'CTA Discord' };
 const ICON_OPTIONS = ['lock','unlock','refresh','chat','bolt','shield','star','download','check','clock','code','box','users','gift','headset','server','tag','cart','heart','fire','rocket','globe'];
 const DRAFT_KEY = 'evjo_admin_config';
@@ -802,6 +812,7 @@ function newBlock(type) {
     case 'carousel': return { type, tag: 'Galería', title: '', direction: 'left', speed: 40, items: [{ kind: 'image', url: '', caption: '' }] };
     case 'buttons': return { type, align: 'center', items: [{ label: 'Botón', href: '#tienda', style: 'solid' }] };
     case 'banner': return { type, title: 'TÍTULO DEL BANNER', text: 'Descripción del banner.', btnLabel: 'Acción', btnHref: '#tienda' };
+    case 'divider': return { type, style: '1', color: '' };
     case 'window': return { type, title: 'Ventana', text: 'Contenido de la ventana...', media: { type: 'image', url: '' } };
   }
 }
@@ -888,6 +899,9 @@ function blockFields(b) {
       <div class="field"><label>Título</label><input type="text" ${f('title')} value="${attr(b.title)}"></div>
       <div class="field"><label>Texto</label><textarea ${f('text')}>${attr(b.text)}</textarea></div>
       <div class="field-row"><div class="field"><label>Botón texto</label><input type="text" ${f('btnLabel')} value="${attr(b.btnLabel)}"></div><div class="field"><label>Botón enlace</label><input type="text" ${f('btnHref')} value="${attr(b.btnHref)}"></div></div>`;
+    case 'divider': return `
+      <div class="field-row"><div class="field"><label>Estilo</label><select ${f('style')}>${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}"${String(b.style) === String(n) ? ' selected' : ''}>${n <= 5 ? 'Estático ' + n : 'Animado ' + (n - 5)}</option>`).join('')}</select></div><div class="field"><label>Color</label><input type="text" ${f('color')} value="${attr(b.color)}" placeholder="vacío = rojo"></div></div>
+      <div class="hint">5 estáticos y 5 animados. El color vacío usa el color principal.</div>`;
   }
 }
 function renderBlocks() {
@@ -1070,6 +1084,7 @@ function mergeConfig(loaded) {
   if (!Array.isArray(c.music.tracks)) c.music.tracks = [];
   c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
   c.scriptsLayout = Object.assign({}, DEFAULT_CONFIG.scriptsLayout, c.scriptsLayout);
+  c.store = Object.assign({}, DEFAULT_CONFIG.store, c.store);
   c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
   c.cta = Object.assign({}, DEFAULT_CONFIG.cta, c.cta);
   c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
