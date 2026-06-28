@@ -83,7 +83,7 @@
   .footer-logo .logo-img { height: 44px; }
   .hero-bg-img {
     position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background-size: cover; background-position: center; display: none; will-change: transform;
+    background-size: cover; background-position: center; background-attachment: fixed; display: none; will-change: transform;
   }
   .hero-bg-img.show { display: block; }
   .hero-bg-img::after { content: ''; position: absolute; inset: 0; opacity: var(--hero-ov, 1); transition: opacity .1s linear; background: linear-gradient(to right, rgba(7,7,10,0.92) 0%, rgba(7,7,10,0.6) 60%, rgba(7,7,10,0.4) 100%); }
