@@ -83,10 +83,10 @@
   .footer-logo .logo-img { height: 44px; }
   .hero-bg-img {
     position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background-size: cover; background-position: center; display: none;
+    background-size: cover; background-position: center; display: none; will-change: transform;
   }
   .hero-bg-img.show { display: block; }
-  .hero-bg-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(7,7,10,0.92) 0%, rgba(7,7,10,0.6) 60%, rgba(7,7,10,0.4) 100%); }
+  .hero-bg-img::after { content: ''; position: absolute; inset: 0; opacity: var(--hero-ov, 1); transition: opacity .1s linear; background: linear-gradient(to right, rgba(7,7,10,0.92) 0%, rgba(7,7,10,0.6) 60%, rgba(7,7,10,0.4) 100%); }
 
   /* PROGRESS BAR */
   .scroll-progress {
@@ -1545,6 +1545,25 @@ function onScroll() {
   nav.classList.toggle('scrolled', y > 40);
   const h = document.documentElement.scrollHeight - window.innerHeight;
   progress.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+  heroParallax(y);
+}
+function heroParallax(y) {
+  const heroEl = document.querySelector('.hero');
+  const heroInnerEl = document.querySelector('.hero-inner');
+  const heroBgEl = document.getElementById('heroBgImg');
+  if (!heroEl || !heroBgEl) return;
+  if (!heroBgEl.classList.contains('show') || heroBgEl.dataset.parallax === 'off') {
+    if (heroInnerEl) { heroInnerEl.style.opacity = ''; heroInnerEl.style.transform = ''; }
+    return;
+  }
+  const hh = heroEl.offsetHeight || window.innerHeight;
+  const p = Math.max(0, Math.min(y / hh, 1));
+  if (heroInnerEl) {
+    heroInnerEl.style.opacity = String(Math.max(0, 1 - p * 1.3));
+    heroInnerEl.style.transform = `translateY(${-y * 0.18}px)`;
+  }
+  heroBgEl.style.transform = `translateY(${y * 0.28}px) scale(${1 + p * 0.12})`;
+  heroBgEl.style.setProperty('--hero-ov', String(Math.max(0.12, 1 - p * 0.9)));
 }
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
@@ -1592,7 +1611,7 @@ const DEFAULT_CONFIG = {
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: {
     tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
-    titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left',
+    titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: true,
     subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.',
     primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda',
     ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL,
@@ -2015,6 +2034,8 @@ function applyConfig(cfg) {
   if (heroBgImg) {
     if (c.hero.bgImage) { heroBgImg.style.backgroundImage = `url("${c.hero.bgImage}")`; heroBgImg.classList.add('show'); }
     else { heroBgImg.classList.remove('show'); heroBgImg.style.backgroundImage = ''; }
+    heroBgImg.dataset.parallax = (c.hero.parallax === false) ? 'off' : 'on';
+    if (c.hero.parallax === false) { heroBgImg.style.transform = ''; heroBgImg.style.setProperty('--hero-ov', '1'); }
   }
   const heroTagEl = document.querySelector('.hero-tag');
   if (heroTagEl) heroTagEl.style.display = c.hero.showTag === false ? 'none' : '';
