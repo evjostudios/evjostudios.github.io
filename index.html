@@ -705,6 +705,35 @@
   .scripts-grid.size-large { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
   .scripts-grid.size-large .script-thumb { height: 230px; }
 
+  /* MINIATURA LIMPIA (solo PNG, sin marco) */
+  .scripts-grid.thumb-clean .script-card { background: transparent; border: none; box-shadow: none; }
+  .scripts-grid.thumb-clean .script-card:hover { transform: translateY(-8px); box-shadow: none; }
+  .scripts-grid.thumb-clean .script-card::after { display: none; }
+  .scripts-grid.thumb-clean .script-thumb { background: transparent; height: auto; aspect-ratio: 1 / 1; }
+  .scripts-grid.thumb-clean .script-thumb::before { display: none; }
+  .scripts-grid.thumb-clean .script-thumb img { object-fit: contain; opacity: 1; }
+  .scripts-grid.thumb-clean .script-card:hover .script-thumb img { transform: scale(1.06); }
+  .scripts-grid.thumb-clean .thumb-line { display: none; }
+  .scripts-grid.thumb-clean .script-category, .scripts-grid.thumb-clean .script-desc { display: none; }
+  .scripts-grid.thumb-clean .script-body { padding: 10px 6px 4px; flex: none; text-align: center; }
+  .scripts-grid.thumb-clean .script-name { font-size: 18px; }
+  .scripts-grid.thumb-clean .script-meta { border-top: none; justify-content: center; padding-top: 6px; }
+  .scripts-grid.thumb-clean .script-meta > div:first-child { display: none; }
+  .scripts-grid.thumb-clean .script-btn { background: var(--grad-red); border-color: transparent; }
+
+  /* PRODUCTO: página completa */
+  .modal-overlay.page { padding: 0; }
+  .modal-overlay.page .modal { max-width: none; width: 100%; height: 100%; max-height: 100%; border-radius: 0; transform: none; display: grid; grid-template-columns: 1.05fr 0.95fr; overflow: hidden; }
+  .modal-overlay.page .modal-img { height: 100%; }
+  .modal-overlay.page .modal-body { align-self: center; overflow-y: auto; max-height: 100%; padding: 56px clamp(28px, 6vw, 90px); max-width: 720px; }
+  .modal-overlay.page .modal-name { font-size: clamp(30px, 4vw, 46px); }
+  .modal-overlay.page .modal-desc { max-height: 42vh; }
+  .modal-overlay.page .modal-close { width: auto; padding: 8px 16px; border-radius: 8px; font-family: var(--font-head); letter-spacing: 1px; }
+  @media (max-width: 860px) {
+    .modal-overlay.page .modal { grid-template-columns: 1fr; grid-template-rows: 300px auto; overflow-y: auto; }
+    .modal-overlay.page .modal-body { padding: 32px 22px; }
+  }
+
   /* DIVIDERS (5 estáticos + 5 animados) */
   .block-divider { padding: 0; }
   .divider { width: 100%; max-width: 1100px; margin: 0 auto; padding: 24px 48px; display: flex; align-items: center; justify-content: center; --dvc: var(--red); }
@@ -1004,7 +1033,7 @@
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal" id="modal">
-    <button class="modal-close" id="modalClose">✕</button>
+    <button class="modal-close" id="modalClose">← Volver</button>
     <div class="modal-img" id="modalImg">
       <div class="modal-corner tl"></div>
       <div class="modal-corner tr"></div>
@@ -1280,13 +1309,13 @@ function openModal(pkgId, fromHash) {
     imgEl.insertBefore(img, imgEl.firstChild);
   }
 
-  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalOverlay').classList.add('open', 'page');
   document.body.classList.add('no-scroll');
   if (!fromHash) { try { location.hash = 'script-' + pkgId; } catch (e) {} }
 }
 
 function closeModal(fromHash) {
-  document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById('modalOverlay').classList.remove('open', 'page');
   document.body.classList.remove('no-scroll');
   currentPkg = null;
   if (!fromHash && location.hash.indexOf('#script-') === 0) {
@@ -1617,7 +1646,7 @@ const DEFAULT_CONFIG = {
     ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL,
     bgImage: ''
   },
-  store: { cardSize: 'normal', priceTagShape: 'slant' },
+  store: { cardSize: 'normal', priceTagShape: 'slant', thumbStyle: 'frame' },
   heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
   music: { enabled: false, autoplay: false, position: 'pos-br', color: '#E62B2B', title: 'Lofi EVJO', url: '', tracks: [] },
   stats: [
@@ -2003,7 +2032,11 @@ function applyConfig(cfg) {
   window.__scriptsLayout = c.scriptsLayout;
   document.body.dataset.tag = c.store.priceTagShape || 'slant';
   const sgrid = document.getElementById('scriptsGrid');
-  if (sgrid) { sgrid.classList.remove('size-compact', 'size-large'); if (c.store.cardSize === 'compact') sgrid.classList.add('size-compact'); else if (c.store.cardSize === 'large') sgrid.classList.add('size-large'); }
+  if (sgrid) {
+    sgrid.classList.remove('size-compact', 'size-large');
+    if (c.store.cardSize === 'compact') sgrid.classList.add('size-compact'); else if (c.store.cardSize === 'large') sgrid.classList.add('size-large');
+    sgrid.classList.toggle('thumb-clean', c.store.thumbStyle === 'clean');
+  }
 
   // Background
   root.setProperty('--bg', c.background.color || '#0a0a0c');
