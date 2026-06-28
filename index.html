@@ -1802,9 +1802,10 @@ function setupCarousels(scope) {
         return;
       }
       if (n <= 1) { track.style.justifyContent = 'center'; track.style.width = '100%'; if (ctrl) ctrl.style.display = 'none'; return; }
-      // Clonar lo justo para un bucle fluido (rellena al menos 2x el ancho visible)
+      // Clonar hasta que, tras dar la vuelta (1 set), el contenido restante cubra TODO el ancho visible (sin hueco)
+      const oneSet = track.scrollWidth;
       let guard = 0;
-      while (track.scrollWidth < vp.clientWidth * 2 + 10 && guard < 30) { originals.forEach(o => track.appendChild(o.cloneNode(true))); guard++; }
+      while (track.scrollWidth < oneSet + vp.clientWidth + 80 && guard < 40) { originals.forEach(o => track.appendChild(o.cloneNode(true))); guard++; }
       if (track.children.length <= n) originals.forEach(o => track.appendChild(o.cloneNode(true)));
       const baseW = () => (track.children[n] ? track.children[n].offsetLeft : track.scrollWidth / 2) || 1;
       let dots = [];
