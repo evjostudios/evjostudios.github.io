@@ -1,0 +1,30 @@
+{
+  "branding": {
+    "logoText": "EVJO",
+    "accentIndex": 1,
+    "primaryColor": "#E62B2B",
+    "discordUrl": "https://discord.gg/RNVxxAU9Nv"
+  },
+  "hero": {
+    "tag": "Scripts FiveM Premium",
+    "title": "EVJO",
+    "titleAccentIndex": 1,
+    "titleOutline": "STORE",
+    "subtitle": "Scripts de calidad para servidores serios — Sin escrow. Código abierto.",
+    "primaryBtnLabel": "Ver Catálogo →",
+    "primaryBtnHref": "#tienda",
+    "ghostBtnLabel": "Únete al Discord",
+    "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv"
+  },
+  "stats": [
+    { "target": 12, "decimal": "", "suffix": "K+", "label": "Clientes" },
+    { "target": 50, "decimal": "", "suffix": "+", "label": "Scripts" },
+    { "target": 4, "decimal": "9", "suffix": "", "label": "Rating" },
+    { "target": 24, "decimal": "", "suffix": "/7", "label": "Soporte" }
+  ],
+  "extrasHeading": {
+    "tag": "Novedades",
+    "title": "CONTENIDO\nEXTRA"
+  },
+  "blocks": []
+}

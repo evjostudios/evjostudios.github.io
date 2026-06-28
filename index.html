@@ -444,6 +444,31 @@
   .reveal[data-delay="4"] { transition-delay: .32s; }
   @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } *{animation: none !important;} }
 
+  /* EXTRAS / CUSTOM BLOCKS */
+  .extras { padding: 110px 48px; max-width: 1080px; margin: 0 auto; }
+  .extras-head { margin-bottom: 8px; }
+  .blocks { display: flex; flex-direction: column; gap: 44px; margin-top: 48px; }
+  .block { width: 100%; }
+  .block-titleblock { text-align: center; }
+  .block-titleblock .section-tag { justify-content: center; }
+  .block-text { color: var(--muted); font-size: 16px; line-height: 1.85; }
+  .block-titleblock .block-text { max-width: 640px; margin: 18px auto 0; }
+  .block-media { margin: 0; position: relative; }
+  .block-media img, .block-media video { width: 100%; display: block; border-radius: 16px; border: 1px solid var(--border); }
+  .block-media img { object-fit: cover; }
+  .block-embed { position: relative; width: 100%; padding-top: 56.25%; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+  .block-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .block-caption { text-align: center; color: var(--muted); font-size: 13px; margin-top: 12px; font-family: var(--font-head); letter-spacing: 1px; text-transform: uppercase; }
+  /* WINDOW BLOCK */
+  .win { border: 1px solid var(--border-red); border-radius: 16px; overflow: hidden; background: linear-gradient(170deg, var(--surface2), var(--surface)); box-shadow: 0 24px 50px rgba(0,0,0,0.4); }
+  .win-bar { display: flex; align-items: center; gap: 14px; padding: 13px 18px; background: linear-gradient(90deg, rgba(230,43,43,0.22), rgba(158,24,24,0.08)); border-bottom: 1px solid var(--border-red); }
+  .win-dots { display: flex; gap: 7px; }
+  .win-dot { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,0.18); }
+  .win-dot:first-child { background: var(--red); }
+  .win-title { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+  .win-body { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+  .win-media img, .win-media video { width: 100%; border-radius: 10px; display: block; border: 1px solid var(--border); }
+
   /* RESPONSIVE */
   @media (max-width: 900px) {
     nav { padding: 0 20px; }
@@ -455,7 +480,7 @@
     .hero { padding: 120px 22px 90px; }
     .hero-stats { gap: 32px; margin-top: 48px; }
     .stat-num { font-size: 40px; }
-    .trust-bar, .scripts, .testimonials { padding: 64px 22px; }
+    .trust-bar, .scripts, .testimonials, .extras { padding: 64px 22px; }
     .cta-banner { margin: 30px 18px 0; padding: 56px 28px; }
     .footer-top { grid-template-columns: 1fr 1fr; padding: 56px 22px; gap: 36px; }
     .footer-bottom { padding: 22px; flex-direction: column; text-align: center; }
@@ -471,7 +496,7 @@
 
 <!-- NAV -->
 <nav id="navbar">
-  <a href="#" class="nav-logo">EV<span>J</span>O</a>
+  <a href="#" class="nav-logo" id="navLogo">EV<span>J</span>O</a>
   <ul class="nav-links">
     <li><a href="#tienda">Tienda</a></li>
     <li><a href="#ventajas">Ventajas</a></li>
@@ -487,17 +512,17 @@
   <div class="hero-orb a"></div>
   <div class="hero-orb b"></div>
   <div class="hero-inner">
-    <div class="hero-tag reveal"><span class="dot"></span> Scripts FiveM Premium</div>
-    <h1 class="reveal" data-delay="1">
+    <div class="hero-tag reveal"><span class="dot"></span> <span id="heroTagText">Scripts FiveM Premium</span></div>
+    <h1 class="reveal" data-delay="1" id="heroTitle">
       EV<span class="red">J</span>O<br>
       <span class="outline">STORE</span>
     </h1>
-    <p class="hero-sub reveal" data-delay="2">Scripts de calidad para servidores serios — Sin escrow. Código abierto.</p>
+    <p class="hero-sub reveal" data-delay="2" id="heroSub">Scripts de calidad para servidores serios — Sin escrow. Código abierto.</p>
     <div class="hero-actions reveal" data-delay="3">
-      <a href="#tienda" class="btn-primary">Ver Catálogo →</a>
-      <a href="https://discord.gg/RNVxxAU9Nv" target="_blank" class="btn-ghost">Únete al Discord</a>
+      <a href="#tienda" class="btn-primary" id="heroBtnPrimary">Ver Catálogo →</a>
+      <a href="https://discord.gg/RNVxxAU9Nv" target="_blank" class="btn-ghost" id="heroBtnGhost">Únete al Discord</a>
     </div>
-    <div class="hero-stats reveal" data-delay="4">
+    <div class="hero-stats reveal" data-delay="4" id="heroStats">
       <div class="stat">
         <div class="stat-num"><span class="count" data-target="12">0</span><span>K+</span></div>
         <div class="stat-label">Clientes</div>
@@ -598,6 +623,15 @@
   </div>
 </section>
 
+<!-- EXTRAS / CONTENIDO PERSONALIZADO -->
+<section class="extras" id="extras" style="display:none;">
+  <div class="extras-head reveal">
+    <div class="section-tag" id="extrasTag">Novedades</div>
+    <h2 class="section-title" id="extrasTitle"></h2>
+  </div>
+  <div class="blocks" id="blocksContainer"></div>
+</section>
+
 <!-- TESTIMONIALS -->
 <section class="testimonials" id="reviews">
   <div class="reveal">
@@ -669,7 +703,7 @@
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
-      <div class="footer-logo">EV<span>J</span>O</div>
+      <div class="footer-logo" id="footerLogo">EV<span>J</span>O</div>
       <p class="footer-tagline">Scripts FiveM de calidad premium para servidores serios. Sin escrow. Sin límites.</p>
       <div class="footer-socials">
         <a href="https://discord.gg/RNVxxAU9Nv" target="_blank" class="social-btn" title="Discord">
@@ -1075,21 +1109,21 @@ const burger = document.getElementById('navBurger');
 burger.addEventListener('click', () => nav.classList.toggle('menu-open'));
 document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => nav.classList.remove('menu-open')));
 
-// Scroll reveal
+// Scroll reveal (reusable observer)
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); } });
 }, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+function observeReveals() { document.querySelectorAll('.reveal:not(.in)').forEach(el => revealObserver.observe(el)); }
 
 // Animated counters
 function animateCount(el) {
-  const target = parseFloat(el.dataset.target);
+  const target = parseFloat(el.dataset.target) || 0;
   const decimal = el.dataset.decimal;
   const dur = 1400; const start = performance.now();
   function step(now) {
     const p = Math.min((now - start) / dur, 1);
     const eased = 1 - Math.pow(1 - p, 3);
-    if (decimal !== undefined) {
+    if (decimal !== undefined && decimal !== '') {
       const val = (target + (parseInt(decimal) / 10)) * eased;
       el.textContent = val.toFixed(1);
     } else {
@@ -1102,9 +1136,223 @@ function animateCount(el) {
 const countObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { animateCount(e.target); countObserver.unobserve(e.target); } });
 }, { threshold: 0.5 });
-document.querySelectorAll('.count').forEach(el => countObserver.observe(el));
+function observeCounts() { document.querySelectorAll('.count').forEach(el => { if (!el.dataset.observed) { el.dataset.observed = '1'; countObserver.observe(el); } }); }
 
-// Boot
+// ─────────────────────────────────────────────
+// CONFIGURACIÓN PERSONALIZABLE (panel admin.html)
+// ─────────────────────────────────────────────
+const DEFAULT_CONFIG = {
+  branding: { logoText: 'EVJO', accentIndex: 1, primaryColor: '#E62B2B', discordUrl: DISCORD_URL },
+  hero: {
+    tag: 'Scripts FiveM Premium', title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
+    subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.',
+    primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda',
+    ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL
+  },
+  stats: [
+    { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
+    { target: 50, decimal: '', suffix: '+', label: 'Scripts' },
+    { target: 4, decimal: '9', suffix: '', label: 'Rating' },
+    { target: 24, decimal: '', suffix: '/7', label: 'Soporte' }
+  ],
+  extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
+  blocks: []
+};
+
+function escHTML(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function nl2br(s) { return escHTML(s).replace(/\n/g, '<br>'); }
+
+// Build a logo "EV<span>J</span>O" style with accent letter
+function buildLogo(text, accentIndex) {
+  const chars = String(text || '').split('');
+  return chars.map((c, i) => i === Number(accentIndex) ? `<span>${escHTML(c)}</span>` : escHTML(c)).join('');
+}
+
+// color helpers
+function hexToRgb(hex) {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec((hex || '').trim());
+  return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : { r: 230, g: 43, b: 43 };
+}
+function clamp(v) { return Math.max(0, Math.min(255, Math.round(v))); }
+function shade(hex, p) {
+  const { r, g, b } = hexToRgb(hex);
+  const t = p < 0 ? 0 : 255; const a = Math.abs(p);
+  const to = (c) => clamp((t - c) * a + c);
+  return `#${[to(r), to(g), to(b)].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+}
+function rgba(hex, a) { const { r, g, b } = hexToRgb(hex); return `rgba(${r},${g},${b},${a})`; }
+
+let CURRENT_PRIMARY = '#E62B2B';
+function applyTheme(color) {
+  if (!color) return;
+  CURRENT_PRIMARY = color;
+  const root = document.documentElement.style;
+  const bright = shade(color, 0.18);
+  const dark = shade(color, -0.28);
+  const deep = shade(color, -0.55);
+  root.setProperty('--red', color);
+  root.setProperty('--red-bright', bright);
+  root.setProperty('--red-dark', dark);
+  root.setProperty('--red-deep', deep);
+  root.setProperty('--red-glow', rgba(color, 0.22));
+  root.setProperty('--border-red', rgba(color, 0.4));
+  root.setProperty('--grad-red', `linear-gradient(135deg, ${bright} 0%, ${dark} 100%)`);
+  root.setProperty('--grad-red-soft', `linear-gradient(135deg, ${color} 0%, ${shade(color, -0.45)} 100%)`);
+}
+
+// media -> html (image / gif / video / embed)
+function mediaHTML(media) {
+  if (!media || !media.url) return '';
+  const url = media.url;
+  if (media.type === 'video') {
+    const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{11})/);
+    if (yt) return `<div class="block-embed"><iframe src="https://www.youtube.com/embed/${yt[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+    const vm = url.match(/vimeo\.com\/(\d+)/);
+    if (vm) return `<div class="block-embed"><iframe src="https://player.vimeo.com/video/${vm[1]}" allowfullscreen></iframe></div>`;
+    return `<video src="${escHTML(url)}" controls playsinline preload="metadata"></video>`;
+  }
+  return `<img src="${escHTML(url)}" alt="${escHTML(media.alt || '')}" loading="lazy">`;
+}
+
+function renderBlock(b) {
+  switch (b.type) {
+    case 'title':
+      return `<div class="block block-titleblock reveal">
+        ${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}
+        <h2 class="section-title">${nl2br(b.text)}</h2>
+        ${b.subtitle ? `<p class="block-text">${nl2br(b.subtitle)}</p>` : ''}
+      </div>`;
+    case 'text':
+      return `<div class="block reveal"><p class="block-text">${nl2br(b.text)}</p></div>`;
+    case 'image':
+    case 'gif':
+      return `<figure class="block block-media reveal">
+        ${b.link ? `<a href="${escHTML(b.link)}" target="_blank" rel="noopener">` : ''}
+        ${mediaHTML({ type: 'image', url: b.url, alt: b.caption })}
+        ${b.link ? `</a>` : ''}
+        ${b.caption ? `<figcaption class="block-caption">${escHTML(b.caption)}</figcaption>` : ''}
+      </figure>`;
+    case 'video':
+      return `<figure class="block block-media reveal">
+        ${mediaHTML({ type: 'video', url: b.url })}
+        ${b.caption ? `<figcaption class="block-caption">${escHTML(b.caption)}</figcaption>` : ''}
+      </figure>`;
+    case 'window':
+      return `<div class="block win reveal">
+        <div class="win-bar"><span class="win-dots"><i class="win-dot"></i><i class="win-dot"></i><i class="win-dot"></i></span><span class="win-title">${escHTML(b.title || '')}</span></div>
+        <div class="win-body">
+          ${b.media && b.media.url ? `<div class="win-media">${mediaHTML(b.media)}</div>` : ''}
+          ${b.text ? `<p class="block-text">${nl2br(b.text)}</p>` : ''}
+        </div>
+      </div>`;
+    default:
+      return '';
+  }
+}
+
+function applyConfig(cfg) {
+  const c = Object.assign({}, DEFAULT_CONFIG, cfg || {});
+  c.branding = Object.assign({}, DEFAULT_CONFIG.branding, c.branding);
+  c.hero = Object.assign({}, DEFAULT_CONFIG.hero, c.hero);
+  c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
+  if (!Array.isArray(c.stats)) c.stats = DEFAULT_CONFIG.stats;
+  if (!Array.isArray(c.blocks)) c.blocks = [];
+
+  // Theme color
+  applyTheme(c.branding.primaryColor);
+
+  // Branding / logos
+  const navLogo = document.getElementById('navLogo');
+  const footerLogo = document.getElementById('footerLogo');
+  if (navLogo) navLogo.innerHTML = buildLogo(c.branding.logoText, c.branding.accentIndex);
+  if (footerLogo) footerLogo.innerHTML = buildLogo(c.branding.logoText, c.branding.accentIndex);
+
+  // Discord links across the page
+  if (c.branding.discordUrl) {
+    document.querySelectorAll('a[href^="https://discord.gg"]').forEach(a => { a.href = c.branding.discordUrl; });
+  }
+
+  // Hero
+  const heroTagText = document.getElementById('heroTagText');
+  if (heroTagText) heroTagText.textContent = c.hero.tag;
+  const heroTitle = document.getElementById('heroTitle');
+  if (heroTitle) {
+    heroTitle.innerHTML = `${buildLogo(c.hero.title, c.hero.titleAccentIndex).replace(/<span>/g, '<span class="red">')}<br><span class="outline">${escHTML(c.hero.titleOutline)}</span>`;
+  }
+  const heroSub = document.getElementById('heroSub');
+  if (heroSub) heroSub.textContent = c.hero.subtitle;
+  const bp = document.getElementById('heroBtnPrimary');
+  if (bp) { bp.textContent = c.hero.primaryBtnLabel; bp.href = c.hero.primaryBtnHref || '#tienda'; }
+  const bg = document.getElementById('heroBtnGhost');
+  if (bg) { bg.textContent = c.hero.ghostBtnLabel; bg.href = c.hero.ghostBtnHref || c.branding.discordUrl; }
+
+  // Stats
+  const heroStats = document.getElementById('heroStats');
+  if (heroStats) {
+    heroStats.innerHTML = c.stats.map(s => `
+      <div class="stat">
+        <div class="stat-num"><span class="count" data-target="${escHTML(s.target)}"${s.decimal ? ` data-decimal="${escHTML(s.decimal)}"` : ''}>0</span>${s.suffix ? `<span>${escHTML(s.suffix)}</span>` : ''}</div>
+        <div class="stat-label">${escHTML(s.label)}</div>
+      </div>`).join('');
+  }
+
+  // Custom blocks
+  const extras = document.getElementById('extras');
+  const container = document.getElementById('blocksContainer');
+  if (extras && container) {
+    if (c.blocks.length > 0) {
+      const titleHtml = nl2br(c.extrasHeading.title);
+      document.getElementById('extrasTag').textContent = c.extrasHeading.tag || '';
+      document.getElementById('extrasTag').style.display = c.extrasHeading.tag ? '' : 'none';
+      document.getElementById('extrasTitle').innerHTML = titleHtml;
+      container.innerHTML = c.blocks.map(renderBlock).join('');
+      extras.style.display = '';
+    } else {
+      extras.style.display = 'none';
+    }
+  }
+
+  // Re-observe newly added reveal/count elements
+  observeReveals();
+  observeCounts();
+}
+
+// Load config (preview from localStorage when ?preview=1, else config.json)
+async function loadConfig() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('preview') === '1') {
+    try { const d = localStorage.getItem('evjo_preview_config'); if (d) return JSON.parse(d); } catch (e) {}
+  }
+  try {
+    const r = await fetch('config.json', { cache: 'no-store' });
+    if (r.ok) return await r.json();
+  } catch (e) {}
+  return null;
+}
+
+// Live preview: react to changes from the admin panel in the same browser
+window.addEventListener('storage', (e) => {
+  if (e.key === 'evjo_preview_config' && new URLSearchParams(location.search).get('preview') === '1') {
+    try { applyConfig(JSON.parse(e.newValue)); } catch (err) {}
+  }
+});
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'evjo-config') applyConfig(e.data.config);
+});
+
+// ─────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────
+(async function boot() {
+  const cfg = await loadConfig();
+  applyConfig(cfg);
+})();
+observeReveals();
+observeCounts();
 init();
 </script>
 </body>
