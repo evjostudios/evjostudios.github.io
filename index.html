@@ -667,7 +667,7 @@
   .carousel-track .partner { flex: 0 0 auto; }
   .carousel-item.partner-cell { flex: 0 0 auto; width: auto; display: flex; align-items: center; padding: 0 12px; }
   .carousel-track .test-card { flex: 0 0 340px; width: 340px; white-space: normal; }
-  .hero-title-img { max-width: min(560px, 85%); height: auto; display: block; margin-bottom: 8px; }
+  .hero-title-img { max-width: 90%; height: auto; display: block; margin-bottom: 8px; }
   .hero[data-align="center"] .hero-title-img { margin-left: auto; margin-right: auto; }
   .hero[data-align="right"] .hero-title-img { margin-left: auto; }
 
@@ -1692,7 +1692,7 @@ const DEFAULT_CONFIG = {
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: {
     tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
-    titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '',
+    titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '', titleImageSize: 360,
     subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.',
     primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda',
     ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL,
@@ -1811,27 +1811,30 @@ function setupCarousels(scope) {
       if (dotsWrap) {
         dotsWrap.innerHTML = originals.map((_, i) => `<button class="car-dot" data-i="${i}" aria-label="Ir al ${i + 1}"></button>`).join('');
         dots = Array.from(dotsWrap.children);
-        dots.forEach((d, i) => d.addEventListener('click', () => { paused = true; setIcon(); vp.scrollLeft = originals[i].offsetLeft; }));
+        dots.forEach((d, i) => d.addEventListener('click', () => { paused = true; setIcon(); pos = originals[i].offsetLeft; vp.scrollLeft = pos; }));
       }
       let paused = false, hover = false;
       function setIcon() { if (pauseBtn) pauseBtn.innerHTML = paused ? CAR_PLAY : CAR_PAUSE; }
       if (pauseBtn) { pauseBtn.addEventListener('click', () => { paused = !paused; setIcon(); }); setIcon(); }
       vp.addEventListener('mouseenter', () => hover = true);
       vp.addEventListener('mouseleave', () => hover = false);
-      if (dir === 'right') vp.scrollLeft = baseW();
+      let pos = dir === 'right' ? baseW() : 0;
+      vp.scrollLeft = pos;
       let last = performance.now();
       function step(now) {
         const dt = Math.min((now - last) / 1000, 0.05); last = now;
         const base = baseW();
         if (!paused && !hover) {
-          vp.scrollLeft += (base / speed) * dt * (dir === 'right' ? -1 : 1);
-          if (vp.scrollLeft >= base) vp.scrollLeft -= base;
-          else if (vp.scrollLeft < 0) vp.scrollLeft += base;
+          pos += (base / speed) * dt * (dir === 'right' ? -1 : 1);
+          if (pos >= base) pos -= base; else if (pos < 0) pos += base;
+          vp.scrollLeft = pos;
+        } else {
+          pos = vp.scrollLeft;
         }
         if (dots.length) {
-          const pos = ((vp.scrollLeft % base) + base) % base;
+          const p2 = ((pos % base) + base) % base;
           let idx = 0, best = Infinity;
-          originals.forEach((o, i) => { const dd = Math.abs(o.offsetLeft - pos); if (dd < best) { best = dd; idx = i; } });
+          originals.forEach((o, i) => { const dd = Math.abs(o.offsetLeft - p2); if (dd < best) { best = dd; idx = i; } });
           dots.forEach((d, i) => d.classList.toggle('active', i === idx));
         }
         requestAnimationFrame(step);
@@ -2158,7 +2161,8 @@ function applyConfig(cfg) {
   const heroTitle = document.getElementById('heroTitle');
   if (heroTitle) {
     if (c.hero.titleImage) {
-      heroTitle.innerHTML = `<img class="hero-title-img" src="${escHTML(c.hero.titleImage)}" alt="${escHTML(c.hero.title || 'logo')}">`;
+      const ts = Number(c.hero.titleImageSize) || 360;
+      heroTitle.innerHTML = `<img class="hero-title-img" style="width:${ts}px" src="${escHTML(c.hero.titleImage)}" alt="${escHTML(c.hero.title || 'logo')}">`;
     } else {
       const titleLetters = buildLogo(c.hero.title, c.hero.titleAccentIndex).replace(/<span>/g, '<span class="red">');
       const ow = Number(c.hero.outlineWidth) || 2;
