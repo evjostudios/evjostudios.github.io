@@ -224,7 +224,6 @@
 
   /* SECTION HEADERS */
   .section-tag { font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: var(--red); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
-  .section-tag::before { content: ''; width: 26px; height: 2px; background: var(--grad-red); }
   .section-title { font-family: var(--font-display); font-size: clamp(42px, 6vw, 80px); letter-spacing: 2px; color: #fff; line-height: 0.95; }
   .section-title .dim { -webkit-text-stroke: 1.5px rgba(255,255,255,0.18); color: transparent; }
 
@@ -428,7 +427,9 @@
     background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 10px; color: #fff; cursor: pointer;
     display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all .25s var(--ease); z-index: 3;
   }
-  .modal-close:hover { background: var(--red); border-color: var(--red); transform: rotate(90deg); }
+  .modal-close:hover { background: var(--red); border-color: var(--red); }
+  .modal-overlay.page .modal-close { left: 18px; right: auto; top: 18px; }
+  .modal-overlay.page .modal-close:hover { transform: none; }
   .modal-buy-btn {
     display: block; width: 100%; font-family: var(--font-head); font-size: 15px; font-weight: 700;
     letter-spacing: 3px; text-transform: uppercase; color: #fff; background: var(--grad-red);
@@ -627,11 +628,21 @@
   .nav-right { display: flex; align-items: center; gap: 12px; }
   .nav-login { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; background: transparent; border: 1px solid var(--border-2); padding: 9px 18px; border-radius: 8px; cursor: pointer; transition: .2s; }
   .nav-login:hover { border-color: var(--red); background: rgba(230,43,43,0.08); }
-  .nav-user { display: flex; align-items: center; gap: 8px; }
+  .nav-user { display: flex; align-items: center; gap: 8px; position: relative; }
+  .nav-user .uname { cursor: pointer; }
   .nav-user .uname { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; text-shadow: 0 0 6px #fff, 0 0 14px rgba(255,255,255,0.75), 0 0 26px var(--red-glow); animation: neon 2.6s ease-in-out infinite; }
   @keyframes neon { 0%,100%{ text-shadow: 0 0 6px #fff, 0 0 14px rgba(255,255,255,0.7), 0 0 24px var(--red-glow);} 50%{ text-shadow: 0 0 10px #fff, 0 0 22px rgba(255,255,255,0.95), 0 0 38px var(--red-glow);} }
   .nav-user .logout { font-size: 10px; color: var(--muted); cursor: pointer; letter-spacing: 1px; border: 1px solid var(--border); border-radius: 6px; padding: 3px 7px; text-transform: uppercase; }
   .nav-user .logout:hover { color: #fff; border-color: var(--red); }
+  .user-menu { position: absolute; top: calc(100% + 14px); right: 0; z-index: 130; background: var(--surface2); border: 1px solid var(--border-2); border-radius: 14px; box-shadow: 0 18px 44px rgba(0,0,0,0.55); min-width: 280px; overflow: hidden; opacity: 0; transform: translateY(-8px); pointer-events: none; transition: opacity .2s, transform .2s; }
+  .user-menu.open { opacity: 1; transform: none; pointer-events: auto; }
+  .user-menu .um-top { display: flex; align-items: center; gap: 13px; padding: 16px 18px; }
+  .um-av { width: 48px; height: 48px; border-radius: 50%; background: var(--grad-red); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 700; color: #fff; font-size: 18px; flex-shrink: 0; overflow: hidden; }
+  .um-av img { width: 100%; height: 100%; object-fit: cover; }
+  .um-name { font-family: var(--font-head); font-weight: 700; letter-spacing: 1px; color: #fff; font-size: 15px; }
+  .um-id { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .um-logout { display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-top: 1px solid var(--border); color: var(--red); font-family: var(--font-head); letter-spacing: 1px; cursor: pointer; text-transform: uppercase; font-size: 13px; }
+  .um-logout:hover { background: rgba(230,43,43,0.08); }
   .nav-cart { position: relative; background: transparent; border: 1px solid var(--border-2); color: #fff; border-radius: 8px; width: 40px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .nav-cart:hover { border-color: var(--red); }
   .nav-cart svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
@@ -647,8 +658,8 @@
   /* PARTNERS */
   .partners-grid { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
   .partner { display: inline-flex; align-items: center; justify-content: center; }
-  .partner img { max-height: 64px; width: auto; object-fit: contain; opacity: var(--p-op, 0.7); filter: grayscale(0.4); transition: transform .35s var(--ease), opacity .3s, filter .3s; }
-  .partner:hover img { transform: scale(1.2); opacity: 1; filter: none; }
+  .partner img { max-height: 64px; width: auto; object-fit: contain; opacity: var(--p-op, 0.85); transition: transform .35s var(--ease), opacity .3s, filter .3s; }
+  .partner:hover img { transform: scale(1.2); opacity: 1; }
   .carousel-track .partner { flex: 0 0 auto; }
   .carousel-item.partner-cell { flex: 0 0 auto; width: auto; display: flex; align-items: center; padding: 0 12px; }
 
@@ -1309,6 +1320,15 @@ function openModal(pkgId, fromHash) {
     imgEl.insertBefore(img, imgEl.firstChild);
   }
 
+  // Fondo de la página del producto = su propia imagen oscurecida
+  const modalEl = document.getElementById('modal');
+  const dk = window.__productDark != null ? window.__productDark : 0.82;
+  if (modalEl) {
+    modalEl.style.background = pkg.image
+      ? `linear-gradient(rgba(8,8,11,${dk}), rgba(8,8,11,${dk})), url("${pkg.image}") center/cover no-repeat`
+      : '';
+  }
+
   document.getElementById('modalOverlay').classList.add('open', 'page');
   document.body.classList.add('no-scroll');
   if (!fromHash) { try { location.hash = 'script-' + pkgId; } catch (e) {} }
@@ -1397,18 +1417,31 @@ async function resumePendingPurchase() {
 // ─────────────────────────────────────────────
 // SESIÓN CFX + CARRITO
 // ─────────────────────────────────────────────
-const AUTH = { ident: localStorage.getItem('evjo_basket') || null, username: localStorage.getItem('evjo_user') || null, cart: 0 };
+const AUTH = { ident: localStorage.getItem('evjo_basket') || null, username: localStorage.getItem('evjo_user') || null, userId: localStorage.getItem('evjo_uid') || '', avatar: localStorage.getItem('evjo_av') || '', cart: 0 };
 
 function renderAuthUI() {
   const el = document.getElementById('navAuth');
   if (!el) return;
   if (AUTH.username) {
+    const initials = (AUTH.username || '?').slice(0, 2).toUpperCase();
+    const av = AUTH.avatar ? `<img src="${escHTML(AUTH.avatar)}" alt="">` : escHTML(initials);
     el.innerHTML = `
       <button class="nav-cart" id="cartBtn" title="Ver carrito / pagar">
         <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         ${AUTH.cart ? `<span class="cart-count">${AUTH.cart}</span>` : ''}
       </button>
-      <div class="nav-user"><span class="uname">${escHTML(AUTH.username)}</span><span class="logout" id="logoutBtn">Salir</span></div>`;
+      <div class="nav-user">
+        <span class="uname" id="userNameBtn">${escHTML(AUTH.username)}</span>
+        <div class="user-menu" id="userMenu">
+          <div class="um-top">
+            <div class="um-av">${av}</div>
+            <div><div class="um-name">FiveM/CFX: ${escHTML(AUTH.username)}</div>${AUTH.userId ? `<div class="um-id">ID: ${escHTML(AUTH.userId)}</div>` : ''}</div>
+          </div>
+          <div class="um-logout" id="logoutBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Cerrar sesión</div>
+        </div>
+      </div>`;
+    const menu = document.getElementById('userMenu');
+    document.getElementById('userNameBtn').addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('open'); });
     document.getElementById('logoutBtn').addEventListener('click', logout);
     document.getElementById('cartBtn').addEventListener('click', openCart);
   } else {
@@ -1416,6 +1449,11 @@ function renderAuthUI() {
     document.getElementById('loginBtn').addEventListener('click', startLogin);
   }
 }
+// cerrar el menú al hacer clic fuera
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('userMenu');
+  if (menu && menu.classList.contains('open') && !e.target.closest('.nav-user')) menu.classList.remove('open');
+});
 
 async function getBasket(ident) {
   try {
@@ -1431,9 +1469,13 @@ async function refreshSession(ident) {
   if (b && b.username) {
     AUTH.ident = ident;
     AUTH.username = b.username;
+    AUTH.userId = b.username_id || b.user_id || b.id || '';
+    AUTH.avatar = b.avatar || b.username_avatar || '';
     AUTH.cart = (b.packages && b.packages.length) || 0;
     localStorage.setItem('evjo_basket', ident);
     localStorage.setItem('evjo_user', AUTH.username);
+    localStorage.setItem('evjo_uid', AUTH.userId);
+    localStorage.setItem('evjo_av', AUTH.avatar);
     return true;
   }
   return false;
@@ -1458,8 +1500,8 @@ async function startLogin() {
 }
 
 function logout() {
-  AUTH.ident = null; AUTH.username = null; AUTH.cart = 0;
-  localStorage.removeItem('evjo_basket'); localStorage.removeItem('evjo_user');
+  AUTH.ident = null; AUTH.username = null; AUTH.userId = ''; AUTH.avatar = ''; AUTH.cart = 0;
+  ['evjo_basket', 'evjo_user', 'evjo_uid', 'evjo_av'].forEach(k => localStorage.removeItem(k));
   renderAuthUI();
   showToast('Sesión cerrada', 'success');
 }
@@ -1646,7 +1688,7 @@ const DEFAULT_CONFIG = {
     ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL,
     bgImage: ''
   },
-  store: { cardSize: 'normal', priceTagShape: 'slant', thumbStyle: 'frame' },
+  store: { cardSize: 'normal', priceTagShape: 'slant', thumbStyle: 'frame', productBgDark: 0.82 },
   heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
   music: { enabled: false, autoplay: false, position: 'pos-br', color: '#E62B2B', title: 'Lofi EVJO', url: '', tracks: [] },
   stats: [
@@ -1922,9 +1964,9 @@ function renderBlock(b) {
     }
     case 'partners': {
       const items = (b.items || []).filter(it => it.logo);
-      if (!items.length) return '';
       const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
-      const op = (b.opacity != null && b.opacity !== '') ? b.opacity : 0.7;
+      if (!items.length) return `<div class="reveal">${head}<div class="partners-grid" style="min-height:80px;gap:20px"><span style="color:var(--muted);font-family:var(--font-head);letter-spacing:2px;text-transform:uppercase;font-size:13px">Añade logos de partners en el panel ✦</span></div></div>`;
+      const op = (b.opacity != null && b.opacity !== '') ? b.opacity : 0.85;
       const gap = Number(b.gap) || 40;
       const mk = it => {
         const img = `<img src="${escHTML(it.logo)}" alt="partner" loading="lazy">`;
@@ -2037,6 +2079,7 @@ function applyConfig(cfg) {
     if (c.store.cardSize === 'compact') sgrid.classList.add('size-compact'); else if (c.store.cardSize === 'large') sgrid.classList.add('size-large');
     sgrid.classList.toggle('thumb-clean', c.store.thumbStyle === 'clean');
   }
+  window.__productDark = (c.store.productBgDark != null && c.store.productBgDark !== '') ? c.store.productBgDark : 0.82;
 
   // Background
   root.setProperty('--bg', c.background.color || '#0a0a0c');
