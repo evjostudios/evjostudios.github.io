@@ -35,6 +35,8 @@
     "titleOutline": "STORE",
     "titleColor": "#ffffff",
     "outlineColor": "",
+    "outlineWidth": 2,
+    "align": "left",
     "subtitle": "Scripts de calidad para servidores serios — Sin escrow. Código abierto.",
     "primaryBtnLabel": "Ver Catálogo →",
     "primaryBtnHref": "#tienda",
@@ -85,6 +87,10 @@
     "mode": "grid",
     "direction": "left",
     "speed": 45
+  },
+  "store": {
+    "cardSize": "normal",
+    "priceTagShape": "slant"
   },
   "reviews": {
     "tag": "Lo que dicen",
