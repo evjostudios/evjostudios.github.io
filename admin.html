@@ -533,7 +533,7 @@ function pushPreview() {
 // ─────────────────────────────────────────────
 function bindStaticInputs() {
   document.querySelectorAll('[data-bind]').forEach(el => {
-    el.addEventListener('input', () => {
+    const handler = () => {
       let v;
       if (el.type === 'checkbox') v = el.checked;
       else if (el.type === 'number' || el.type === 'range') v = el.value === '' ? '' : Number(el.value);
@@ -545,7 +545,9 @@ function bindStaticInputs() {
       }
       if (el.dataset.out) { const o = document.getElementById(el.dataset.out); if (o) o.textContent = Number(v).toFixed(2); }
       pushPreview();
-    });
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
   });
 }
 function fillStaticInputs() {
@@ -747,7 +749,11 @@ blocksList.addEventListener('input', e => {
   pushPreview();
 });
 blocksList.addEventListener('change', e => {
-  if (e.target.dataset.bf === 'media.type') { renderBlocks(); pushPreview(); }
+  const f = e.target.dataset.bf; if (f === undefined) return;
+  const i = +e.target.closest('[data-bi]').dataset.bi;
+  setPath(config.blocks[i], f, e.target.value);
+  if (f === 'media.type') renderBlocks();
+  pushPreview();
 });
 blocksList.addEventListener('click', e => {
   const card = e.target.closest('[data-bi]'); if (!card) return;
