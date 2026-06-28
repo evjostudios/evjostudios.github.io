@@ -666,6 +666,10 @@
   .partner:hover img { transform: scale(1.2); opacity: 1; }
   .carousel-track .partner { flex: 0 0 auto; }
   .carousel-item.partner-cell { flex: 0 0 auto; width: auto; display: flex; align-items: center; padding: 0 12px; }
+  .carousel-track .test-card { flex: 0 0 340px; width: 340px; white-space: normal; }
+  .hero-title-img { max-width: min(560px, 85%); height: auto; display: block; margin-bottom: 8px; }
+  .hero[data-align="center"] .hero-title-img { margin-left: auto; margin-right: auto; }
+  .hero[data-align="right"] .hero-title-img { margin-left: auto; }
 
   /* HERO TICKER: arriba + grosor */
   .hero-ticker.top { top: 62px; bottom: auto; }
@@ -1688,7 +1692,7 @@ const DEFAULT_CONFIG = {
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: {
     tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
-    titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false,
+    titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '',
     subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.',
     primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda',
     ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL,
@@ -1711,7 +1715,7 @@ const DEFAULT_CONFIG = {
   ],
   marquee: { words: ['FiveM', 'Scripts', 'EVJO', 'Premium'], direction: 'left', speed: 32 },
   reviews: {
-    tag: 'Lo que dicen', title: 'REVIEWS\nREALES',
+    tag: 'Lo que dicen', title: 'REVIEWS\nREALES', view: 'grid', direction: 'left', speed: 40,
     items: [
       { stars: 5, text: 'El Gang System de EVJO transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
       { stars: 5, text: 'Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · Script Tester' },
@@ -2153,12 +2157,16 @@ function applyConfig(cfg) {
   if (heroTagText) heroTagText.textContent = c.hero.tag;
   const heroTitle = document.getElementById('heroTitle');
   if (heroTitle) {
-    const titleLetters = buildLogo(c.hero.title, c.hero.titleAccentIndex).replace(/<span>/g, '<span class="red">');
-    const ow = Number(c.hero.outlineWidth) || 2;
-    const outlineStyle = c.hero.outlineColor
-      ? ` style="background:none;-webkit-text-fill-color:transparent;-webkit-text-stroke:${ow}px ${escHTML(c.hero.outlineColor)};color:transparent"`
-      : ` style="-webkit-text-stroke-width:${ow}px"`;
-    heroTitle.innerHTML = `<span style="color:${escHTML(c.hero.titleColor || '#fff')}">${titleLetters}</span><br><span class="outline"${outlineStyle}>${escHTML(c.hero.titleOutline)}</span>`;
+    if (c.hero.titleImage) {
+      heroTitle.innerHTML = `<img class="hero-title-img" src="${escHTML(c.hero.titleImage)}" alt="${escHTML(c.hero.title || 'logo')}">`;
+    } else {
+      const titleLetters = buildLogo(c.hero.title, c.hero.titleAccentIndex).replace(/<span>/g, '<span class="red">');
+      const ow = Number(c.hero.outlineWidth) || 2;
+      const outlineStyle = c.hero.outlineColor
+        ? ` style="background:none;-webkit-text-fill-color:transparent;-webkit-text-stroke:${ow}px ${escHTML(c.hero.outlineColor)};color:transparent"`
+        : ` style="-webkit-text-stroke-width:${ow}px"`;
+      heroTitle.innerHTML = `<span style="color:${escHTML(c.hero.titleColor || '#fff')}">${titleLetters}</span><br><span class="outline"${outlineStyle}>${escHTML(c.hero.titleOutline)}</span>`;
+    }
   }
   const heroSection = document.querySelector('.hero');
   if (heroSection) heroSection.dataset.align = c.hero.align || 'left';
@@ -2233,7 +2241,7 @@ function applyConfig(cfg) {
   const rTitle = document.getElementById('reviewsTitle'); if (rTitle) rTitle.innerHTML = dimTitle(c.reviews.title);
   const testGrid = document.getElementById('testGrid');
   if (testGrid) {
-    testGrid.innerHTML = c.reviews.items.map((r, i) => {
+    const cardsHTML = c.reviews.items.map((r, i) => {
       const st = Math.max(0, Math.min(5, Number(r.stars) || 5));
       return `
         <div class="test-card reveal"${i ? ` data-delay="${Math.min(i, 3)}"` : ''}>
@@ -2245,6 +2253,14 @@ function applyConfig(cfg) {
           </div>
         </div>`;
     }).join('');
+    if (c.reviews.view === 'carousel') {
+      testGrid.style.display = 'block';
+      testGrid.innerHTML = carouselHTML(cardsHTML, c.reviews.direction, c.reviews.speed);
+      setupCarousels(testGrid);
+    } else {
+      testGrid.style.display = '';
+      testGrid.innerHTML = cardsHTML;
+    }
   }
 
   // CTA

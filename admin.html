@@ -287,6 +287,7 @@
           <div class="field"><label>Alineación del hero</label><select data-bind="hero.align"><option value="left">Izquierda</option><option value="center">Centro</option><option value="right">Derecha</option></select></div>
         </div>
         <div class="field"><label>Descripción</label><textarea data-bind="hero.subtitle"></textarea></div>
+        <div class="field"><label>Imagen del título (PNG, en vez del texto EVJO/STORE)</label><div class="media-input"><input type="text" data-bind="hero.titleImage" placeholder="URL o sube un PNG; vacío = usar texto"><button class="upload-btn" data-accept="image/*">⬆ Subir</button></div><div class="media-preview"></div></div>
         <div class="field-row">
           <div class="field"><label>Botón 1 — texto</label><input type="text" data-bind="hero.primaryBtnLabel"></div>
           <div class="field"><label>Botón 1 — enlace</label><input type="text" data-bind="hero.primaryBtnHref"></div>
@@ -405,6 +406,11 @@
       <div class="section-body">
         <div class="field"><label>Etiqueta</label><input type="text" data-bind="reviews.tag"></div>
         <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="reviews.title"></textarea></div>
+        <div class="field-row">
+          <div class="field"><label>Vista</label><select data-bind="reviews.view"><option value="grid">Cuadrícula</option><option value="carousel">Carrusel</option></select></div>
+          <div class="field"><label>Dirección (carrusel)</label><select data-bind="reviews.direction"><option value="left">⬅️ Izquierda</option><option value="right">➡️ Derecha</option></select></div>
+          <div class="field" style="max-width:110px"><label>Velocidad</label><input type="number" min="10" max="120" data-bind="reviews.speed"></div>
+        </div>
         <div id="reviewsList"></div>
         <button class="add-btn add-wide" id="addReview"><span class="ico">＋</span> Añadir review</button>
       </div>
@@ -550,7 +556,7 @@ const DEFAULT_CONFIG = {
   branding: { logoText: 'EVJO', accentIndex: 1, logoImage: '', primaryColor: '#E62B2B', discordUrl: 'https://discord.gg/RNVxxAU9Nv', navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
   theme: { textColor: '#F2F2F4', mutedColor: '#8a8a93', headingColor: '#ffffff', iconColor: '#E62B2B', headingAlign: 'left', fontDisplay: 'Bebas Neue', fontHead: 'Barlow Condensed', fontBody: 'Barlow', buttonStyle: 'slant' },
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
-  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
+  hero: { tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE', titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: false, titleImage: '', subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.', primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda', ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv', bgImage: '' },
   heroTicker: { show: true, position: 'bottom', direction: 'left', speed: 28, opacity: 1, height: 40, bgColor: '', textColor: '#ffffff', items: ['Sin Escrow', 'Soporte 24/7', 'Updates Gratis', 'Entrega Inmediata', 'Código Abierto', 'ESX · QBCore · QBox'] },
   music: { enabled: false, autoplay: false, position: 'pos-br', color: '#E62B2B', title: 'Lofi EVJO', url: '', tracks: [] },
   stats: [
@@ -569,7 +575,7 @@ const DEFAULT_CONFIG = {
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
   store: { cardSize: 'normal', priceTagShape: 'slant', thumbStyle: 'frame', productBgDark: 0.82 },
-  reviews: { tag: 'Lo que dicen', title: 'REVIEWS\nREALES', items: [
+  reviews: { tag: 'Lo que dicen', title: 'REVIEWS\nREALES', view: 'grid', direction: 'left', speed: 40, items: [
     { stars: 5, text: 'El Gang System de EVJO transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
     { stars: 5, text: 'Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · Script Tester' },
     { stars: 5, text: 'Scripts de calidad brutal. El soporte en Discord siempre responde rápido y las actualizaciones son constantes. Muy recomendado.', avatar: 'NG', name: 'NightGang_ES', role: 'Admin · FiveM Server' },
