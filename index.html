@@ -57,7 +57,7 @@
 
   /* GLOBAL BACKGROUND FX */
   .bg-fx {
-    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    position: fixed; inset: 0; z-index: -3; pointer-events: none;
     background:
       radial-gradient(1000px 600px at 80% -10%, rgba(230,43,43,0.10), transparent 60%),
       radial-gradient(900px 700px at -10% 30%, rgba(230,43,43,0.06), transparent 55%),
@@ -72,6 +72,21 @@
     -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
             mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
   }
+  .bg-image {
+    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background-size: cover; background-position: center; background-repeat: no-repeat;
+    opacity: 0; transition: opacity .5s var(--ease);
+  }
+  .bg-image.show { opacity: var(--bg-image-opacity, 0.25); }
+  .bg-image.show::after { content: ''; position: absolute; inset: 0; background: var(--bg-image-overlay, rgba(10,10,12,0.5)); }
+  .logo-img { display: block; height: 34px; width: auto; object-fit: contain; }
+  .footer-logo .logo-img { height: 44px; }
+  .hero-bg-img {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-size: cover; background-position: center; display: none;
+  }
+  .hero-bg-img.show { display: block; }
+  .hero-bg-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(7,7,10,0.92) 0%, rgba(7,7,10,0.6) 60%, rgba(7,7,10,0.4) 100%); }
 
   /* PROGRESS BAR */
   .scroll-progress {
@@ -491,6 +506,7 @@
 <body>
 
 <div class="bg-fx"></div>
+<div class="bg-image" id="bgImage"></div>
 <div class="bg-grid"></div>
 <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -503,12 +519,13 @@
     <li><a href="#reviews">Reviews</a></li>
     <li><a href="https://discord.gg/RNVxxAU9Nv" target="_blank">Discord</a></li>
   </ul>
-  <a href="#tienda" class="nav-cta">Ver Scripts</a>
+  <a href="#tienda" class="nav-cta" id="navCta">Ver Scripts</a>
   <button class="nav-burger" id="navBurger" aria-label="Menú"><span></span><span></span><span></span></button>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-bg-img" id="heroBgImg"></div>
   <div class="hero-orb a"></div>
   <div class="hero-orb b"></div>
   <div class="hero-inner">
@@ -559,9 +576,11 @@
   </div>
 </section>
 
+<main id="mainSections">
+
 <!-- TRUST BAR -->
-<div class="trust-bar" id="ventajas">
-  <div class="trust-grid">
+<div class="trust-bar" id="ventajas" data-section="trust">
+  <div class="trust-grid" id="trustGrid">
     <div class="trust-item reveal">
       <span class="trust-icon">🔓</span>
       <div class="trust-name">Sin Escrow</div>
@@ -586,7 +605,7 @@
 </div>
 
 <!-- MARQUEE -->
-<div class="marquee-divider">
+<div class="marquee-divider" data-section="marquee">
   <div class="marquee-track">
     <span class="marquee-item">FiveM</span>
     <span class="marquee-item accent">Scripts</span>
@@ -604,7 +623,7 @@
 </div>
 
 <!-- SCRIPTS / TIENDA -->
-<section class="scripts" id="tienda">
+<section class="scripts" id="tienda" data-section="tienda">
   <div class="scripts-header reveal">
     <div>
       <div class="section-tag">Catálogo</div>
@@ -624,7 +643,7 @@
 </section>
 
 <!-- EXTRAS / CONTENIDO PERSONALIZADO -->
-<section class="extras" id="extras" style="display:none;">
+<section class="extras" id="extras" data-section="extras" style="display:none;">
   <div class="extras-head reveal">
     <div class="section-tag" id="extrasTag">Novedades</div>
     <h2 class="section-title" id="extrasTitle"></h2>
@@ -633,12 +652,12 @@
 </section>
 
 <!-- TESTIMONIALS -->
-<section class="testimonials" id="reviews">
+<section class="testimonials" id="reviews" data-section="reviews">
   <div class="reveal">
-    <div class="section-tag">Lo que dicen</div>
-    <h2 class="section-title">REVIEWS<br><span class="dim">REALES</span></h2>
+    <div class="section-tag" id="reviewsTag">Lo que dicen</div>
+    <h2 class="section-title" id="reviewsTitle">REVIEWS<br><span class="dim">REALES</span></h2>
   </div>
-  <div class="test-grid">
+  <div class="test-grid" id="testGrid">
     <div class="test-card reveal">
       <div class="test-stars">★★★★★</div>
       <p class="test-text">"El Gang System de EVJO transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable."</p>
@@ -687,17 +706,19 @@
 </section>
 
 <!-- CTA DISCORD -->
-<section class="cta-banner reveal">
+<section class="cta-banner reveal" data-section="cta">
   <div class="cta-inner">
-    <div class="section-tag">Comunidad</div>
-    <h2 class="cta-title">ÚNETE A NUESTRA <span class="red">FAMILIA</span></h2>
-    <p class="cta-desc">+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.</p>
-    <a href="https://discord.gg/RNVxxAU9Nv" target="_blank" class="cta-discord">
+    <div class="section-tag" id="ctaTag">Comunidad</div>
+    <h2 class="cta-title" id="ctaTitle">ÚNETE A NUESTRA <span class="red">FAMILIA</span></h2>
+    <p class="cta-desc" id="ctaDesc">+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.</p>
+    <a href="https://discord.gg/RNVxxAU9Nv" target="_blank" class="cta-discord" id="ctaBtn">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.081.118 18.104.133 18.12a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.331c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-      Entrar al Discord
+      <span id="ctaBtnText">Entrar al Discord</span>
     </a>
   </div>
 </section>
+
+</main>
 
 <!-- FOOTER -->
 <footer>
@@ -1020,7 +1041,7 @@ async function handleBuy() {
       Tebex.checkout.init({
         ident: basket.ident,
         theme: 'dark',
-        colors: [{ name: 'primary', color: '#E62B2B' }]
+        colors: [{ name: 'primary', color: window.__primary || '#E62B2B' }]
       });
       Tebex.checkout.launch();
     } else {
@@ -1142,12 +1163,14 @@ function observeCounts() { document.querySelectorAll('.count').forEach(el => { i
 // CONFIGURACIÓN PERSONALIZABLE (panel admin.html)
 // ─────────────────────────────────────────────
 const DEFAULT_CONFIG = {
-  branding: { logoText: 'EVJO', accentIndex: 1, primaryColor: '#E62B2B', discordUrl: DISCORD_URL },
+  branding: { logoText: 'EVJO', accentIndex: 1, logoImage: '', primaryColor: '#E62B2B', discordUrl: DISCORD_URL, navCtaLabel: 'Ver Scripts', navCtaHref: '#tienda' },
+  background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: {
     tag: 'Scripts FiveM Premium', title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
     subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.',
     primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda',
-    ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL
+    ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL,
+    bgImage: ''
   },
   stats: [
     { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
@@ -1155,7 +1178,29 @@ const DEFAULT_CONFIG = {
     { target: 4, decimal: '9', suffix: '', label: 'Rating' },
     { target: 24, decimal: '', suffix: '/7', label: 'Soporte' }
   ],
+  trust: [
+    { icon: '🔓', name: 'Sin Escrow', desc: 'Código 100% abierto. Sin bloqueos ni dependencias ocultas.' },
+    { icon: '🔄', name: 'Updates Gratis', desc: 'Actualizaciones de por vida incluidas en cada compra.' },
+    { icon: '💬', name: 'Soporte 24/7', desc: 'Equipo disponible en Discord en todo momento.' },
+    { icon: '⚡', name: 'Entrega Inmediata', desc: 'Descarga automática al completar el pago.' }
+  ],
+  marquee: ['FiveM', 'Scripts', 'EVJO', 'Premium'],
+  reviews: {
+    tag: 'Lo que dicen', title: 'REVIEWS\nREALES',
+    items: [
+      { stars: 5, text: 'El Gang System de EVJO transformó completamente nuestro servidor. La comunidad enganchó al 100%. Instalación limpia y soporte impecable.', avatar: 'MR', name: 'MadRoller_RP', role: 'Owner · Servidor 200+ slots' },
+      { stars: 5, text: 'Lo que más me gustó es que el código es completamente abierto. Nada de escrow. Pude personalizarlo a mi gusto sin problema. Calidad top.', avatar: 'KX', name: 'KxiloDev', role: 'Developer · Script Tester' },
+      { stars: 5, text: 'Scripts de calidad brutal. El soporte en Discord siempre responde rápido y las actualizaciones son constantes. Muy recomendado.', avatar: 'NG', name: 'NightGang_ES', role: 'Admin · FiveM Server' },
+      { stars: 4, text: 'Llevo usando scripts de EVJO desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.', avatar: 'ZR', name: 'ZeRoFault', role: 'Community Manager' }
+    ]
+  },
+  cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord' },
+  scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
+  layout: {
+    order: ['trust', 'marquee', 'tienda', 'extras', 'reviews', 'cta'],
+    visible: { trust: true, marquee: true, tienda: true, extras: true, reviews: true, cta: true }
+  },
   blocks: []
 };
 
@@ -1254,29 +1299,70 @@ function renderBlock(b) {
   }
 }
 
+function logoHTML(b) {
+  return b.logoImage ? `<img class="logo-img" src="${escHTML(b.logoImage)}" alt="${escHTML(b.logoText || 'logo')}">` : buildLogo(b.logoText, b.accentIndex);
+}
+function dimTitle(t) {
+  return String(t || '').split('\n').map((l, i) => i === 0 ? escHTML(l) : `<span class="dim">${escHTML(l)}</span>`).join('<br>');
+}
+function ctaTitleHTML(t) {
+  const parts = String(t || '').split('|');
+  return parts.length > 1 ? `${escHTML(parts[0])}<span class="red">${escHTML(parts.slice(1).join('|'))}</span>` : escHTML(t);
+}
+
 function applyConfig(cfg) {
   const c = Object.assign({}, DEFAULT_CONFIG, cfg || {});
   c.branding = Object.assign({}, DEFAULT_CONFIG.branding, c.branding);
+  c.background = Object.assign({}, DEFAULT_CONFIG.background, c.background);
   c.hero = Object.assign({}, DEFAULT_CONFIG.hero, c.hero);
+  c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
+  c.cta = Object.assign({}, DEFAULT_CONFIG.cta, c.cta);
+  c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
   c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
+  c.layout = Object.assign({}, DEFAULT_CONFIG.layout, c.layout);
+  c.layout.visible = Object.assign({}, DEFAULT_CONFIG.layout.visible, c.layout.visible);
   if (!Array.isArray(c.stats)) c.stats = DEFAULT_CONFIG.stats;
+  if (!Array.isArray(c.trust)) c.trust = DEFAULT_CONFIG.trust;
+  if (!Array.isArray(c.marquee) || !c.marquee.length) c.marquee = DEFAULT_CONFIG.marquee;
+  if (!c.reviews.items || !Array.isArray(c.reviews.items)) c.reviews.items = DEFAULT_CONFIG.reviews.items;
+  if (!Array.isArray(c.layout.order) || !c.layout.order.length) c.layout.order = DEFAULT_CONFIG.layout.order.slice();
   if (!Array.isArray(c.blocks)) c.blocks = [];
+
+  const root = document.documentElement.style;
 
   // Theme color
   applyTheme(c.branding.primaryColor);
 
-  // Branding / logos
+  // Background
+  root.setProperty('--bg', c.background.color || '#0a0a0c');
+  root.setProperty('--bg-image-opacity', c.background.opacity);
+  root.setProperty('--bg-image-overlay', `rgba(0,0,0,${c.background.overlay})`);
+  const bgImage = document.getElementById('bgImage');
+  if (bgImage) {
+    if (c.background.image) { bgImage.style.backgroundImage = `url("${c.background.image}")`; bgImage.classList.add('show'); }
+    else { bgImage.classList.remove('show'); bgImage.style.backgroundImage = ''; }
+  }
+  document.querySelectorAll('.hero-orb').forEach(o => o.style.display = c.background.showOrbs === false ? 'none' : '');
+  const grid = document.querySelector('.bg-grid');
+  if (grid) grid.style.display = c.background.showGrid === false ? 'none' : '';
+
+  // Branding / logos / nav cta
   const navLogo = document.getElementById('navLogo');
   const footerLogo = document.getElementById('footerLogo');
-  if (navLogo) navLogo.innerHTML = buildLogo(c.branding.logoText, c.branding.accentIndex);
-  if (footerLogo) footerLogo.innerHTML = buildLogo(c.branding.logoText, c.branding.accentIndex);
-
-  // Discord links across the page
+  if (navLogo) navLogo.innerHTML = logoHTML(c.branding);
+  if (footerLogo) footerLogo.innerHTML = logoHTML(c.branding);
+  const navCta = document.getElementById('navCta');
+  if (navCta) { navCta.textContent = c.branding.navCtaLabel; navCta.href = c.branding.navCtaHref || '#tienda'; }
   if (c.branding.discordUrl) {
     document.querySelectorAll('a[href^="https://discord.gg"]').forEach(a => { a.href = c.branding.discordUrl; });
   }
 
   // Hero
+  const heroBgImg = document.getElementById('heroBgImg');
+  if (heroBgImg) {
+    if (c.hero.bgImage) { heroBgImg.style.backgroundImage = `url("${c.hero.bgImage}")`; heroBgImg.classList.add('show'); }
+    else { heroBgImg.classList.remove('show'); heroBgImg.style.backgroundImage = ''; }
+  }
   const heroTagText = document.getElementById('heroTagText');
   if (heroTagText) heroTagText.textContent = c.hero.tag;
   const heroTitle = document.getElementById('heroTitle');
@@ -1287,8 +1373,8 @@ function applyConfig(cfg) {
   if (heroSub) heroSub.textContent = c.hero.subtitle;
   const bp = document.getElementById('heroBtnPrimary');
   if (bp) { bp.textContent = c.hero.primaryBtnLabel; bp.href = c.hero.primaryBtnHref || '#tienda'; }
-  const bg = document.getElementById('heroBtnGhost');
-  if (bg) { bg.textContent = c.hero.ghostBtnLabel; bg.href = c.hero.ghostBtnHref || c.branding.discordUrl; }
+  const bgt = document.getElementById('heroBtnGhost');
+  if (bgt) { bgt.textContent = c.hero.ghostBtnLabel; bgt.href = c.hero.ghostBtnHref || c.branding.discordUrl; }
 
   // Stats
   const heroStats = document.getElementById('heroStats');
@@ -1300,21 +1386,87 @@ function applyConfig(cfg) {
       </div>`).join('');
   }
 
+  // Trust / ventajas
+  const trustGrid = document.getElementById('trustGrid');
+  if (trustGrid) {
+    trustGrid.innerHTML = c.trust.map((t, i) => `
+      <div class="trust-item reveal"${i ? ` data-delay="${Math.min(i, 4)}"` : ''}>
+        <span class="trust-icon">${escHTML(t.icon)}</span>
+        <div class="trust-name">${escHTML(t.name)}</div>
+        <div class="trust-desc">${escHTML(t.desc)}</div>
+      </div>`).join('');
+  }
+
+  // Marquee
+  const marqueeTrack = document.querySelector('.marquee-track');
+  if (marqueeTrack) {
+    let items = '';
+    for (let r = 0; r < 3; r++) c.marquee.forEach((w, i) => { items += `<span class="marquee-item${i % 2 ? ' accent' : ''}">${escHTML(w)}</span>`; });
+    marqueeTrack.innerHTML = items;
+  }
+
+  // Scripts heading
+  const sh = document.querySelector('#tienda .scripts-header');
+  if (sh) {
+    const tag = sh.querySelector('.section-tag'); if (tag) tag.textContent = c.scriptsHeading.tag;
+    const ttl = sh.querySelector('.section-title'); if (ttl) ttl.innerHTML = dimTitle(c.scriptsHeading.title);
+    const p = sh.querySelector('p'); if (p) p.textContent = c.scriptsHeading.desc;
+  }
+
+  // Reviews
+  const rTag = document.getElementById('reviewsTag'); if (rTag) rTag.textContent = c.reviews.tag;
+  const rTitle = document.getElementById('reviewsTitle'); if (rTitle) rTitle.innerHTML = dimTitle(c.reviews.title);
+  const testGrid = document.getElementById('testGrid');
+  if (testGrid) {
+    testGrid.innerHTML = c.reviews.items.map((r, i) => {
+      const st = Math.max(0, Math.min(5, Number(r.stars) || 5));
+      return `
+        <div class="test-card reveal"${i ? ` data-delay="${Math.min(i, 3)}"` : ''}>
+          <div class="test-stars">${'★'.repeat(st)}${'☆'.repeat(5 - st)}</div>
+          <p class="test-text">"${escHTML(r.text)}"</p>
+          <div class="test-author">
+            <div class="test-avatar">${escHTML(r.avatar)}</div>
+            <div><div class="test-name">${escHTML(r.name)}</div><div class="test-role">${escHTML(r.role)}</div></div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // CTA
+  const cTag = document.getElementById('ctaTag'); if (cTag) cTag.textContent = c.cta.tag;
+  const cTitle = document.getElementById('ctaTitle'); if (cTitle) cTitle.innerHTML = ctaTitleHTML(c.cta.title);
+  const cDesc = document.getElementById('ctaDesc'); if (cDesc) cDesc.textContent = c.cta.desc;
+  const cBtn = document.getElementById('ctaBtnText'); if (cBtn) cBtn.textContent = c.cta.btnLabel;
+
   // Custom blocks
   const extras = document.getElementById('extras');
   const container = document.getElementById('blocksContainer');
+  const extrasVisible = c.layout.visible.extras !== false && c.blocks.length > 0;
   if (extras && container) {
-    if (c.blocks.length > 0) {
-      const titleHtml = nl2br(c.extrasHeading.title);
+    if (extrasVisible) {
       document.getElementById('extrasTag').textContent = c.extrasHeading.tag || '';
       document.getElementById('extrasTag').style.display = c.extrasHeading.tag ? '' : 'none';
-      document.getElementById('extrasTitle').innerHTML = titleHtml;
+      document.getElementById('extrasTitle').innerHTML = dimTitle(c.extrasHeading.title);
       container.innerHTML = c.blocks.map(renderBlock).join('');
       extras.style.display = '';
     } else {
       extras.style.display = 'none';
     }
   }
+
+  // Section order + visibility
+  const main = document.getElementById('mainSections');
+  if (main) {
+    c.layout.order.forEach(key => { const el = main.querySelector(`[data-section="${key}"]`); if (el) main.appendChild(el); });
+    Object.keys(c.layout.visible).forEach(key => {
+      if (key === 'extras') return; // handled above
+      const el = main.querySelector(`[data-section="${key}"]`);
+      if (el) el.style.display = c.layout.visible[key] === false ? 'none' : '';
+    });
+  }
+
+  // Tebex checkout color
+  window.__primary = c.branding.primaryColor;
 
   // Re-observe newly added reveal/count elements
   observeReveals();
