@@ -83,10 +83,10 @@
   .footer-logo .logo-img { height: 44px; }
   .hero-bg-img {
     position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background-size: cover; background-position: center; display: none;
+    background-size: cover; background-position: center; display: none; will-change: transform;
   }
   .hero-bg-img.show { display: block; }
-  .hero-bg-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(7,7,10,0.92) 0%, rgba(7,7,10,0.6) 60%, rgba(7,7,10,0.4) 100%); }
+  .hero-bg-img::after { content: ''; position: absolute; inset: 0; opacity: var(--hero-ov, 1); transition: opacity .1s linear; background: linear-gradient(to right, rgba(7,7,10,0.92) 0%, rgba(7,7,10,0.6) 60%, rgba(7,7,10,0.4) 100%); }
 
   /* PROGRESS BAR */
   .scroll-progress {
@@ -364,6 +364,9 @@
   .cta-desc { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 40px; }
   .cta-members { margin-top: 18px; font-family: var(--font-head); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
   .cta-members b { color: #fff; }
+  .cta-banner[data-align="center"] .cta-inner { margin: 0 auto; text-align: center; max-width: 660px; }
+  .cta-banner[data-align="center"] .section-tag { justify-content: center; }
+  .cta-banner .cta-discord, .cta-banner #ctaBtn2 { margin-bottom: 6px; }
   .cta-discord {
     font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 3px;
     text-transform: uppercase; color: #fff; background: #5865F2; border: none; padding: 17px 42px;
@@ -647,9 +650,11 @@
   .partner img { max-height: 64px; width: auto; object-fit: contain; opacity: var(--p-op, 0.7); filter: grayscale(0.4); transition: transform .35s var(--ease), opacity .3s, filter .3s; }
   .partner:hover img { transform: scale(1.2); opacity: 1; filter: none; }
   .carousel-track .partner { flex: 0 0 auto; }
+  .carousel-item.partner-cell { flex: 0 0 auto; width: auto; display: flex; align-items: center; padding: 0 12px; }
 
   /* HERO TICKER: arriba + grosor */
   .hero-ticker.top { top: 62px; bottom: auto; }
+  .hero-ticker .ticker-item { font-size: var(--tk-fs, 12px); }
 
   /* DIVIDER full-bleed + grosor variable */
   .block-divider .divider { max-width: none; padding-left: 0; padding-right: 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
@@ -1540,6 +1545,25 @@ function onScroll() {
   nav.classList.toggle('scrolled', y > 40);
   const h = document.documentElement.scrollHeight - window.innerHeight;
   progress.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+  heroParallax(y);
+}
+function heroParallax(y) {
+  const heroEl = document.querySelector('.hero');
+  const heroInnerEl = document.querySelector('.hero-inner');
+  const heroBgEl = document.getElementById('heroBgImg');
+  if (!heroEl || !heroBgEl) return;
+  if (!heroBgEl.classList.contains('show') || heroBgEl.dataset.parallax === 'off') {
+    if (heroInnerEl) { heroInnerEl.style.opacity = ''; heroInnerEl.style.transform = ''; }
+    return;
+  }
+  const hh = heroEl.offsetHeight || window.innerHeight;
+  const p = Math.max(0, Math.min(y / hh, 1));
+  if (heroInnerEl) {
+    heroInnerEl.style.opacity = String(Math.max(0, 1 - p * 1.3));
+    heroInnerEl.style.transform = `translateY(${-y * 0.18}px)`;
+  }
+  heroBgEl.style.transform = `translateY(${y * 0.28}px) scale(${1 + p * 0.12})`;
+  heroBgEl.style.setProperty('--hero-ov', String(Math.max(0.12, 1 - p * 0.9)));
 }
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
@@ -1587,7 +1611,7 @@ const DEFAULT_CONFIG = {
   background: { color: '#0a0a0c', image: '', opacity: 0.25, overlay: 0.5, showOrbs: true, showGrid: true },
   hero: {
     tag: 'Scripts FiveM Premium', showTag: true, title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
-    titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left',
+    titleColor: '#ffffff', outlineColor: '', outlineWidth: 2, align: 'left', parallax: true,
     subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.',
     primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda',
     ghostBtnLabel: 'Únete al Discord', ghostBtnHref: DISCORD_URL,
@@ -1618,7 +1642,7 @@ const DEFAULT_CONFIG = {
       { stars: 4, text: 'Llevo usando scripts de EVJO desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.', avatar: 'ZR', name: 'ZeRoFault', role: 'Community Manager' }
     ]
   },
-  cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '' },
+  cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
@@ -1878,7 +1902,10 @@ function renderBlock(b) {
         return it.link ? `<a class="partner" href="${escHTML(it.link)}" target="_blank" rel="noopener">${img}</a>` : `<span class="partner">${img}</span>`;
       };
       const inner = items.map(mk).join('');
-      if (b.view === 'carousel') return `<div class="reveal" style="--p-op:${op}">${head}${carouselHTML(`<div style="display:flex;gap:${gap}px">${inner}</div>`, b.direction, b.speed)}</div>`;
+      if (b.view === 'carousel') {
+        const cells = items.map(it => `<div class="carousel-item partner-cell">${mk(it)}</div>`).join('');
+        return `<div class="reveal" style="--p-op:${op}">${head}${carouselHTML(cells, b.direction, b.speed)}</div>`;
+      }
       return `<div class="reveal" style="--p-op:${op}">${head}<div class="partners-grid" style="gap:${gap}px">${inner}</div></div>`;
     }
     case 'gallery': {
@@ -2007,6 +2034,8 @@ function applyConfig(cfg) {
   if (heroBgImg) {
     if (c.hero.bgImage) { heroBgImg.style.backgroundImage = `url("${c.hero.bgImage}")`; heroBgImg.classList.add('show'); }
     else { heroBgImg.classList.remove('show'); heroBgImg.style.backgroundImage = ''; }
+    heroBgImg.dataset.parallax = (c.hero.parallax === false) ? 'off' : 'on';
+    if (c.hero.parallax === false) { heroBgImg.style.transform = ''; heroBgImg.style.setProperty('--hero-ov', '1'); }
   }
   const heroTagEl = document.querySelector('.hero-tag');
   if (heroTagEl) heroTagEl.style.display = c.hero.showTag === false ? 'none' : '';
@@ -2041,6 +2070,7 @@ function applyConfig(cfg) {
       heroTicker.classList.toggle('top', c.heroTicker.position === 'top');
       heroTicker.style.opacity = (c.heroTicker.opacity != null && c.heroTicker.opacity !== '') ? c.heroTicker.opacity : 1;
       heroTicker.style.height = (Number(c.heroTicker.height) || 40) + 'px';
+      heroTicker.style.setProperty('--tk-fs', Math.max(11, Math.round((Number(c.heroTicker.height) || 40) * 0.32)) + 'px');
       let items = '';
       for (let r = 0; r < 3; r++) c.heroTicker.items.forEach(w => { items += `<span class="ticker-item" style="color:${escHTML(c.heroTicker.textColor || '#fff')}">${escHTML(w)}</span>`; });
       tickerTrack.innerHTML = items;
@@ -2121,8 +2151,15 @@ function applyConfig(cfg) {
   if (cMembers) { if (c.cta.membersText) { cMembers.innerHTML = escHTML(c.cta.membersText); cMembers.style.display = ''; } else cMembers.style.display = 'none'; }
   const ctaBanner = document.querySelector('.cta-banner');
   if (ctaBanner) {
-    if (c.cta.image) { ctaBanner.style.backgroundImage = `linear-gradient(135deg, rgba(20,6,6,0.86), rgba(13,13,16,0.86)), url("${c.cta.image}")`; ctaBanner.style.backgroundSize = 'cover'; ctaBanner.style.backgroundPosition = 'center'; }
-    else { ctaBanner.style.backgroundImage = ''; }
+    const ov = (c.cta.overlay != null && c.cta.overlay !== '') ? c.cta.overlay : 0.85;
+    if (c.cta.image) {
+      ctaBanner.style.background = `linear-gradient(135deg, rgba(20,6,6,${ov}), rgba(13,13,16,${ov})), url("${c.cta.image}") center/cover no-repeat`;
+    } else if (c.cta.bgColor) {
+      ctaBanner.style.background = c.cta.bgColor;
+    } else {
+      ctaBanner.style.background = '';
+    }
+    ctaBanner.dataset.align = c.cta.align || 'left';
   }
 
   // Legacy extras container -> always hidden (blocks are individual sections now)
