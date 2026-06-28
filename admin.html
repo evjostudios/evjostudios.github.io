@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVJO — Panel de Personalización</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E62B2B; --red-dark: #9E1818;
+    --grad-red: linear-gradient(135deg, #FF3B3B 0%, #B81C1C 100%);
+    --bg: #0a0a0c; --surface: #101013; --surface2: #16161b; --surface3: #1f1f26;
+    --border: rgba(255,255,255,0.09); --border-2: rgba(255,255,255,0.15);
+    --text: #F2F2F4; --muted: #8a8a93;
+    --font-head: 'Barlow Condensed', sans-serif; --font-body: 'Barlow', sans-serif; --font-display: 'Bebas Neue', sans-serif;
+    --ease: cubic-bezier(0.22,1,0.36,1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  ::-webkit-scrollbar { width: 9px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--red-dark); border-radius: 4px; }
+  a { color: var(--red); }
+
+  /* TOPBAR */
+  .topbar {
+    height: 60px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 22px; background: rgba(13,13,16,0.9); border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px); position: relative; z-index: 10;
+  }
+  .topbar-logo { font-family: var(--font-display); font-size: 24px; letter-spacing: 5px; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .topbar-logo span { color: var(--red); }
+  .topbar-logo small { font-family: var(--font-head); font-size: 11px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
+  .topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tb-btn {
+    font-family: var(--font-head); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text); background: var(--surface2); border: 1px solid var(--border); padding: 9px 16px; border-radius: 8px;
+    cursor: pointer; transition: all .2s var(--ease); display: inline-flex; align-items: center; gap: 7px;
+  }
+  .tb-btn:hover { border-color: var(--border-2); background: var(--surface3); }
+  .tb-btn.primary { background: var(--grad-red); border-color: transparent; color: #fff; box-shadow: 0 4px 14px rgba(230,43,43,0.3); }
+  .tb-btn.primary:hover { transform: translateY(-1px); }
+
+  /* LAYOUT */
+  .layout { display: flex; height: calc(100vh - 60px); }
+  .panel { width: 460px; min-width: 360px; max-width: 50%; overflow-y: auto; border-right: 1px solid var(--border); background: var(--surface); padding: 18px 18px 80px; resize: horizontal; }
+  .preview-wrap { flex: 1; position: relative; background: #000; }
+  .preview-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .preview-bar { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 5;
+    background: rgba(13,13,16,0.92); border: 1px solid var(--border); border-radius: 100px; padding: 6px 8px; display: flex; gap: 6px; backdrop-filter: blur(10px); }
+  .vp-btn { font-family: var(--font-head); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); background: transparent; border: none; padding: 6px 14px; border-radius: 100px; cursor: pointer; transition: .2s; }
+  .vp-btn.active { background: var(--grad-red); color: #fff; }
+
+  /* SECTIONS / ACCORDION */
+  .section { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; cursor: pointer; user-select: none; transition: background .2s; }
+  .section-head:hover { background: var(--surface3); }
+  .section-head h3 { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .section-head .chev { color: var(--muted); transition: transform .25s var(--ease); font-size: 13px; }
+  .section.collapsed .chev { transform: rotate(-90deg); }
+  .section-body { padding: 4px 18px 20px; }
+  .section.collapsed .section-body { display: none; }
+
+  /* FORM FIELDS */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-family: var(--font-head); font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .field input[type=text], .field input[type=url], .field input[type=number], .field input[type=password], .field textarea, .field select {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-family: var(--font-body); font-size: 14px; padding: 10px 12px; transition: border-color .2s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--red); }
+  .field textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+  .color-row { display: flex; align-items: center; gap: 10px; }
+  .color-row input[type=color] { width: 46px; height: 40px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); cursor: pointer; padding: 3px; }
+
+  /* MEDIA INPUT */
+  .media-input { display: flex; gap: 8px; }
+  .media-input input { flex: 1; }
+  .upload-btn { white-space: nowrap; font-family: var(--font-head); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text); background: var(--surface3); border: 1px solid var(--border); border-radius: 8px; padding: 0 14px; cursor: pointer; transition: .2s; }
+  .upload-btn:hover { border-color: var(--red); color: #fff; }
+  .media-preview { margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); display: none; }
+  .media-preview.show { display: block; }
+  .media-preview img, .media-preview video { width: 100%; max-height: 160px; object-fit: cover; display: block; }
+
+  /* BLOCKS */
+  .blocks-toolbar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .add-btn { font-family: var(--font-head); font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text); background: var(--bg); border: 1px dashed var(--border-2); border-radius: 8px; padding: 12px 8px; cursor: pointer; transition: all .2s var(--ease); display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .add-btn:hover { border-color: var(--red); color: #fff; background: rgba(230,43,43,0.06); }
+  .add-btn .ico { font-size: 18px; }
+  .block-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+  .block-card-head { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; background: var(--surface3); }
+  .block-card-head .bc-type { font-family: var(--font-head); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 8px; }
+  .block-card-head .bc-type .badge { background: var(--grad-red); color: #fff; font-size: 9px; padding: 2px 7px; border-radius: 4px; letter-spacing: 1px; }
+  .bc-actions { display: flex; gap: 4px; }
+  .bc-actions button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: .2s; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .bc-actions button:hover { color: #fff; border-color: var(--border-2); }
+  .bc-actions button.del:hover { background: var(--red); border-color: var(--red); color: #fff; }
+  .block-card-body { padding: 14px; }
+  .empty-blocks { text-align: center; padding: 30px 10px; color: var(--muted); font-size: 13px; border: 1px dashed var(--border); border-radius: 10px; }
+
+  /* PUBLISH MODAL */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-bg.open { display: flex; }
+  .modal-box { background: var(--surface2); border: 1px solid var(--border-2); border-radius: 16px; max-width: 460px; width: 100%; padding: 28px; }
+  .modal-box h2 { font-family: var(--font-head); font-size: 20px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .modal-box .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+  .modal-box .field label { color: var(--text); }
+  .warn { background: rgba(230,43,43,0.08); border: 1px solid rgba(230,43,43,0.3); border-radius: 8px; padding: 12px; font-size: 12.5px; color: #f0c9c9; line-height: 1.5; margin: 8px 0 18px; }
+  .modal-foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translate(-50%, 120px); z-index: 200;
+    background: var(--surface2); border: 1px solid var(--border-2); border-radius: 10px; padding: 13px 22px;
+    font-family: var(--font-head); font-size: 13px; letter-spacing: 1px; color: #fff; transition: transform .4s var(--ease); max-width: 90%; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast.error { border-color: rgba(230,43,43,0.6); }
+  .toast.success { border-color: rgba(34,181,107,0.6); }
+
+  @media (max-width: 820px) {
+    .layout { flex-direction: column; height: auto; overflow: auto; }
+    body { overflow: auto; height: auto; }
+    .panel { width: 100%; max-width: 100%; resize: none; border-right: 0; border-bottom: 1px solid var(--border); }
+    .preview-wrap { height: 70vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">EV<span>J</span>O <small>Panel</small></div>
+  <div class="topbar-actions">
+    <button class="tb-btn" id="btnOpenSite" title="Abrir el sitio en una pestaña nueva">🌐 Ver sitio</button>
+    <button class="tb-btn" id="btnImport">📥 Importar</button>
+    <button class="tb-btn" id="btnExport">💾 Exportar JSON</button>
+    <button class="tb-btn primary" id="btnPublish">🚀 Publicar</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none">
+  </div>
+</div>
+
+<div class="layout">
+  <!-- FORM PANEL -->
+  <aside class="panel" id="panel">
+
+    <!-- BRANDING -->
+    <div class="section" data-key="branding">
+      <div class="section-head"><h3>🎨 Marca y colores</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field-row">
+          <div class="field"><label>Logo (texto)</label><input type="text" data-bind="branding.logoText"></div>
+          <div class="field" style="max-width:120px"><label>Letra destacada (índice)</label><input type="number" min="0" data-bind="branding.accentIndex"></div>
+        </div>
+        <div class="hint">El índice marca qué letra va en rojo (0 = primera letra). Ej: "EVJO" con índice 1 = la "V".</div>
+        <div class="field">
+          <label>Color principal</label>
+          <div class="color-row">
+            <input type="color" data-bind="branding.primaryColor" id="primaryColorPicker">
+            <input type="text" data-bind="branding.primaryColor" id="primaryColorText" style="flex:1">
+          </div>
+        </div>
+        <div class="field"><label>URL de Discord</label><input type="url" data-bind="branding.discordUrl"></div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="section" data-key="hero">
+      <div class="section-head"><h3>🦸 Portada (Hero)</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta superior</label><input type="text" data-bind="hero.tag"></div>
+        <div class="field-row">
+          <div class="field"><label>Título</label><input type="text" data-bind="hero.title"></div>
+          <div class="field" style="max-width:120px"><label>Letra destacada</label><input type="number" min="0" data-bind="hero.titleAccentIndex"></div>
+        </div>
+        <div class="field"><label>Subtítulo grande (contorno)</label><input type="text" data-bind="hero.titleOutline"></div>
+        <div class="field"><label>Descripción</label><textarea data-bind="hero.subtitle"></textarea></div>
+        <div class="field-row">
+          <div class="field"><label>Botón 1 — texto</label><input type="text" data-bind="hero.primaryBtnLabel"></div>
+          <div class="field"><label>Botón 1 — enlace</label><input type="text" data-bind="hero.primaryBtnHref"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Botón 2 — texto</label><input type="text" data-bind="hero.ghostBtnLabel"></div>
+          <div class="field"><label>Botón 2 — enlace</label><input type="text" data-bind="hero.ghostBtnHref"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="section" data-key="stats">
+      <div class="section-head"><h3>📊 Estadísticas</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div id="statsList"></div>
+        <button class="add-btn" id="addStat" style="grid-template-columns:none; flex-direction:row; width:100%; margin-top:6px"><span class="ico">＋</span> Añadir estadística</button>
+      </div>
+    </div>
+
+    <!-- EXTRAS HEADING -->
+    <div class="section collapsed" data-key="extrasHeading">
+      <div class="section-head"><h3>🏷️ Título de "Contenido extra"</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta</label><input type="text" data-bind="extrasHeading.tag"></div>
+        <div class="field"><label>Título (usa Enter para 2 líneas)</label><textarea data-bind="extrasHeading.title"></textarea></div>
+        <div class="hint">Este encabezado solo aparece si añades al menos un bloque abajo.</div>
+      </div>
+    </div>
+
+    <!-- BLOCKS -->
+    <div class="section" data-key="blocks">
+      <div class="section-head"><h3>🧩 Bloques personalizados</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="blocks-toolbar">
+          <button class="add-btn" data-add="title"><span class="ico">🔠</span> Título</button>
+          <button class="add-btn" data-add="text"><span class="ico">📝</span> Texto</button>
+          <button class="add-btn" data-add="image"><span class="ico">🖼️</span> Imagen</button>
+          <button class="add-btn" data-add="gif"><span class="ico">🎞️</span> GIF</button>
+          <button class="add-btn" data-add="video"><span class="ico">🎬</span> Vídeo</button>
+          <button class="add-btn" data-add="window"><span class="ico">🪟</span> Ventana</button>
+        </div>
+        <div id="blocksList"></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- LIVE PREVIEW -->
+  <div class="preview-wrap">
+    <div class="preview-bar">
+      <button class="vp-btn active" data-vp="desktop">🖥️ Escritorio</button>
+      <button class="vp-btn" data-vp="mobile">📱 Móvil</button>
+      <button class="vp-btn" id="vpReload">🔄</button>
+    </div>
+    <iframe id="preview" src="index.html?preview=1"></iframe>
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal-bg" id="publishModal">
+  <div class="modal-box">
+    <h2>🚀 Publicar cambios</h2>
+    <p class="sub">Guarda <strong>config.json</strong> directamente en tu repositorio de GitHub. GitHub Pages actualizará el sitio en 1-2 minutos.</p>
+    <div class="field-row">
+      <div class="field"><label>Owner</label><input type="text" id="ghOwner" value="evjostudios"></div>
+      <div class="field"><label>Repositorio</label><input type="text" id="ghRepo" value="evjostudios.github.io"></div>
+    </div>
+    <div class="field"><label>Rama</label><input type="text" id="ghBranch" value="main"></div>
+    <div class="field"><label>Token de GitHub (fine-grained)</label><input type="password" id="ghToken" placeholder="github_pat_..."></div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:10px;cursor:pointer">
+      <input type="checkbox" id="ghRemember"> Recordar token en este navegador
+    </label>
+    <div class="warn">⚠️ Usa un <strong>token fine-grained</strong> con permiso <em>Contents: Read and write</em> solo para este repositorio. El token se guarda solo en tu navegador, nunca se sube al sitio. No lo uses en ordenadores compartidos.</div>
+    <div class="modal-foot">
+      <button class="tb-btn" id="publishCancel">Cancelar</button>
+      <button class="tb-btn primary" id="publishConfirm">Publicar ahora</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// DEFAULTS
+// ─────────────────────────────────────────────
+const DEFAULT_CONFIG = {
+  branding: { logoText: 'EVJO', accentIndex: 1, primaryColor: '#E62B2B', discordUrl: 'https://discord.gg/RNVxxAU9Nv' },
+  hero: {
+    tag: 'Scripts FiveM Premium', title: 'EVJO', titleAccentIndex: 1, titleOutline: 'STORE',
+    subtitle: 'Scripts de calidad para servidores serios — Sin escrow. Código abierto.',
+    primaryBtnLabel: 'Ver Catálogo →', primaryBtnHref: '#tienda',
+    ghostBtnLabel: 'Únete al Discord', ghostBtnHref: 'https://discord.gg/RNVxxAU9Nv'
+  },
+  stats: [
+    { target: 12, decimal: '', suffix: 'K+', label: 'Clientes' },
+    { target: 50, decimal: '', suffix: '+', label: 'Scripts' },
+    { target: 4, decimal: '9', suffix: '', label: 'Rating' },
+    { target: 24, decimal: '', suffix: '/7', label: 'Soporte' }
+  ],
+  extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
+  blocks: []
+};
+
+const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', window: 'Ventana' };
+const DRAFT_KEY = 'evjo_admin_config';
+const PREVIEW_KEY = 'evjo_preview_config';
+
+let config = null;
+
+// ─────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────
+function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+function getPath(obj, path) { return path.split('.').reduce((a, k) => (a == null ? a : a[k]), obj); }
+function setPath(obj, path, val) {
+  const keys = path.split('.'); let o = obj;
+  for (let i = 0; i < keys.length - 1; i++) { if (o[keys[i]] == null) o[keys[i]] = {}; o = o[keys[i]]; }
+  o[keys[keys.length - 1]] = val;
+}
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  clearTimeout(t._t); t._t = setTimeout(() => { t.className = 'toast ' + type; }, 3200);
+}
+function fileToDataURL(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+}
+
+// ─────────────────────────────────────────────
+// PREVIEW SYNC
+// ─────────────────────────────────────────────
+const previewFrame = document.getElementById('preview');
+let pushTimer = null;
+function pushPreview() {
+  try { localStorage.setItem(PREVIEW_KEY, JSON.stringify(config)); } catch (e) {}
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(config)); } catch (e) {}
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => {
+    if (previewFrame.contentWindow) previewFrame.contentWindow.postMessage({ type: 'evjo-config', config: config }, '*');
+  }, 120);
+}
+
+// ─────────────────────────────────────────────
+// STATIC FIELD BINDING (data-bind)
+// ─────────────────────────────────────────────
+function bindStaticInputs() {
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const path = el.dataset.bind;
+    const handler = () => {
+      let v = el.type === 'number' ? (el.value === '' ? '' : Number(el.value)) : el.value;
+      setPath(config, path, v);
+      // keep color picker and text in sync
+      if (path === 'branding.primaryColor') {
+        document.getElementById('primaryColorPicker').value = normalizeHex(v);
+        document.getElementById('primaryColorText').value = v;
+      }
+      pushPreview();
+    };
+    el.addEventListener('input', handler);
+  });
+}
+function normalizeHex(v) { v = (v || '').trim(); return /^#?[0-9a-fA-F]{6}$/.test(v) ? (v[0] === '#' ? v : '#' + v) : '#E62B2B'; }
+function fillStaticInputs() {
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const v = getPath(config, el.dataset.bind);
+    if (el.type === 'color') el.value = normalizeHex(v);
+    else el.value = (v == null ? '' : v);
+  });
+}
+
+// ─────────────────────────────────────────────
+// STATS EDITOR
+// ─────────────────────────────────────────────
+function renderStats() {
+  const wrap = document.getElementById('statsList');
+  wrap.innerHTML = config.stats.map((s, i) => `
+    <div class="block-card" data-si="${i}">
+      <div class="block-card-head">
+        <span class="bc-type">Estadística ${i + 1}</span>
+        <div class="bc-actions">
+          <button data-smove="-1" title="Subir">▲</button>
+          <button data-smove="1" title="Bajar">▼</button>
+          <button class="del" data-sdel title="Eliminar">✕</button>
+        </div>
+      </div>
+      <div class="block-card-body">
+        <div class="field-row">
+          <div class="field"><label>Número</label><input type="number" data-sf="target" value="${s.target ?? ''}"></div>
+          <div class="field" style="max-width:90px"><label>Decimal</label><input type="number" min="0" max="9" data-sf="decimal" value="${s.decimal ?? ''}"></div>
+          <div class="field" style="max-width:90px"><label>Sufijo</label><input type="text" data-sf="suffix" value="${(s.suffix ?? '').replace(/"/g, '&quot;')}"></div>
+        </div>
+        <div class="field"><label>Etiqueta</label><input type="text" data-sf="label" value="${(s.label ?? '').replace(/"/g, '&quot;')}"></div>
+      </div>
+    </div>`).join('');
+}
+document.getElementById('statsList').addEventListener('input', e => {
+  const f = e.target.dataset.sf; if (!f) return;
+  const i = +e.target.closest('[data-si]').dataset.si;
+  config.stats[i][f] = e.target.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value;
+  pushPreview();
+});
+document.getElementById('statsList').addEventListener('click', e => {
+  const card = e.target.closest('[data-si]'); if (!card) return;
+  const i = +card.dataset.si;
+  if (e.target.dataset.sdel !== undefined) { config.stats.splice(i, 1); renderStats(); pushPreview(); }
+  else if (e.target.dataset.smove !== undefined) {
+    const j = i + (+e.target.dataset.smove);
+    if (j < 0 || j >= config.stats.length) return;
+    [config.stats[i], config.stats[j]] = [config.stats[j], config.stats[i]];
+    renderStats(); pushPreview();
+  }
+});
+document.getElementById('addStat').addEventListener('click', () => {
+  config.stats.push({ target: 0, decimal: '', suffix: '', label: 'Nueva' });
+  renderStats(); pushPreview();
+});
+
+// ─────────────────────────────────────────────
+// BLOCKS EDITOR
+// ─────────────────────────────────────────────
+function newBlock(type) {
+  switch (type) {
+    case 'title': return { type, tag: 'Sección', text: 'Título nuevo', subtitle: '' };
+    case 'text': return { type, text: 'Escribe aquí tu texto...' };
+    case 'image': return { type, url: '', caption: '', link: '' };
+    case 'gif': return { type, url: '', caption: '', link: '' };
+    case 'video': return { type, url: '', caption: '' };
+    case 'window': return { type, title: 'Ventana', text: 'Contenido de la ventana...', media: { type: 'image', url: '' } };
+  }
+}
+
+function mediaField(label, urlVal, idxAttr, opts) {
+  opts = opts || {};
+  const isVideo = opts.video;
+  const accept = isVideo ? 'video/*' : 'image/*';
+  const prev = urlVal ? `<div class="media-preview show">${isVideo && !/youtube|youtu\.be|vimeo/.test(urlVal) ? `<video src="${urlVal}" muted></video>` : (isVideo ? '' : `<img src="${urlVal}">`)}</div>` : '<div class="media-preview"></div>';
+  return `
+    <div class="field">
+      <label>${label}</label>
+      <div class="media-input">
+        <input type="text" ${idxAttr} value="${(urlVal || '').replace(/"/g, '&quot;')}" placeholder="${isVideo ? 'URL de YouTube, Vimeo o .mp4' : 'Pega una URL o sube un archivo'}">
+        <button class="upload-btn" data-upload accept="${accept}">⬆ Subir</button>
+      </div>
+      ${prev}
+      <div class="hint">${isVideo ? 'Acepta enlaces de YouTube/Vimeo o un archivo de vídeo.' : 'Sube imágenes/GIFs pequeños (&lt; 1.5MB) o usa una URL externa para archivos grandes.'}</div>
+    </div>`;
+}
+
+function blockFields(b, i) {
+  const idx = (field) => `data-bf="${field}"`;
+  switch (b.type) {
+    case 'title':
+      return `
+        <div class="field"><label>Etiqueta</label><input type="text" ${idx('tag')} value="${(b.tag || '').replace(/"/g, '&quot;')}"></div>
+        <div class="field"><label>Título</label><textarea ${idx('text')}>${b.text || ''}</textarea></div>
+        <div class="field"><label>Subtítulo</label><textarea ${idx('subtitle')}>${b.subtitle || ''}</textarea></div>`;
+    case 'text':
+      return `<div class="field"><label>Texto</label><textarea ${idx('text')} style="min-height:90px">${b.text || ''}</textarea></div>`;
+    case 'image':
+    case 'gif':
+      return `
+        ${mediaField(b.type === 'gif' ? 'GIF (URL o archivo)' : 'Imagen (URL o archivo)', b.url, idx('url'))}
+        <div class="field"><label>Pie de foto (opcional)</label><input type="text" ${idx('caption')} value="${(b.caption || '').replace(/"/g, '&quot;')}"></div>
+        <div class="field"><label>Enlace al hacer clic (opcional)</label><input type="text" ${idx('link')} value="${(b.link || '').replace(/"/g, '&quot;')}"></div>`;
+    case 'video':
+      return `
+        ${mediaField('Vídeo', b.url, idx('url'), { video: true })}
+        <div class="field"><label>Pie / descripción (opcional)</label><input type="text" ${idx('caption')} value="${(b.caption || '').replace(/"/g, '&quot;')}"></div>`;
+    case 'window':
+      return `
+        <div class="field"><label>Título de la ventana</label><input type="text" ${idx('title')} value="${(b.title || '').replace(/"/g, '&quot;')}"></div>
+        <div class="field"><label>Texto</label><textarea ${idx('text')}>${b.text || ''}</textarea></div>
+        <div class="field"><label>Tipo de medio</label><select data-bf="media.type"><option value="image"${b.media?.type === 'image' ? ' selected' : ''}>Imagen / GIF</option><option value="video"${b.media?.type === 'video' ? ' selected' : ''}>Vídeo</option></select></div>
+        ${mediaField('Medio de la ventana (opcional)', b.media?.url, 'data-bf="media.url"', { video: b.media?.type === 'video' })}`;
+  }
+}
+
+function renderBlocks() {
+  const wrap = document.getElementById('blocksList');
+  if (!config.blocks.length) { wrap.innerHTML = `<div class="empty-blocks">Aún no hay bloques. Usa los botones de arriba para añadir títulos, textos, imágenes, GIFs, vídeos o ventanas.</div>`; return; }
+  wrap.innerHTML = config.blocks.map((b, i) => `
+    <div class="block-card" data-bi="${i}">
+      <div class="block-card-head">
+        <span class="bc-type"><span class="badge">${BLOCK_LABELS[b.type] || b.type}</span> Bloque ${i + 1}</span>
+        <div class="bc-actions">
+          <button data-bmove="-1" title="Subir">▲</button>
+          <button data-bmove="1" title="Bajar">▼</button>
+          <button class="del" data-bdel title="Eliminar">✕</button>
+        </div>
+      </div>
+      <div class="block-card-body">${blockFields(b, i)}</div>
+    </div>`).join('');
+}
+
+const blocksList = document.getElementById('blocksList');
+blocksList.addEventListener('input', e => {
+  const f = e.target.dataset.bf; if (!f) return;
+  const i = +e.target.closest('[data-bi]').dataset.bi;
+  setPath(config.blocks[i], f, e.target.value);
+  pushPreview();
+});
+blocksList.addEventListener('change', e => {
+  if (e.target.dataset.bf === 'media.type') {
+    const i = +e.target.closest('[data-bi]').dataset.bi;
+    renderBlocks(); // re-render to switch upload accept/preview
+    pushPreview();
+  }
+});
+blocksList.addEventListener('click', async e => {
+  const card = e.target.closest('[data-bi]'); if (!card) return;
+  const i = +card.dataset.bi;
+  if (e.target.dataset.bdel !== undefined) { config.blocks.splice(i, 1); renderBlocks(); pushPreview(); }
+  else if (e.target.dataset.bmove !== undefined) {
+    const j = i + (+e.target.dataset.bmove);
+    if (j < 0 || j >= config.blocks.length) return;
+    [config.blocks[i], config.blocks[j]] = [config.blocks[j], config.blocks[i]];
+    renderBlocks(); pushPreview();
+  } else if (e.target.dataset.upload !== undefined) {
+    const accept = e.target.getAttribute('accept') || 'image/*';
+    const targetInput = e.target.previousElementSibling; // the text input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file'; fileInput.accept = accept;
+    fileInput.onchange = async () => {
+      const file = fileInput.files[0]; if (!file) return;
+      if (file.size > 1.5 * 1024 * 1024) toast('Archivo grande: ralentizará la carga. Mejor usa una URL externa.', 'error');
+      const dataUrl = await fileToDataURL(file);
+      targetInput.value = dataUrl;
+      const bf = targetInput.dataset.bf;
+      setPath(config.blocks[i], bf, dataUrl);
+      renderBlocks(); pushPreview();
+    };
+    fileInput.click();
+  }
+});
+
+document.querySelectorAll('[data-add]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    config.blocks.push(newBlock(btn.dataset.add));
+    renderBlocks(); pushPreview();
+    document.querySelector('[data-key="blocks"]').classList.remove('collapsed');
+    blocksList.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+});
+
+// ─────────────────────────────────────────────
+// ACCORDION
+// ─────────────────────────────────────────────
+document.querySelectorAll('.section-head').forEach(h => {
+  h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed'));
+});
+
+// ─────────────────────────────────────────────
+// PREVIEW DEVICE TOGGLE
+// ─────────────────────────────────────────────
+document.querySelectorAll('.vp-btn[data-vp]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.vp-btn[data-vp]').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const wrap = previewFrame;
+    if (b.dataset.vp === 'mobile') { wrap.style.maxWidth = '420px'; wrap.style.margin = '0 auto'; wrap.style.borderLeft = wrap.style.borderRight = '1px solid var(--border)'; }
+    else { wrap.style.maxWidth = ''; wrap.style.margin = ''; wrap.style.borderLeft = wrap.style.borderRight = ''; }
+  });
+});
+document.getElementById('vpReload').addEventListener('click', () => { previewFrame.contentWindow.location.reload(); });
+
+// ─────────────────────────────────────────────
+// IMPORT / EXPORT
+// ─────────────────────────────────────────────
+document.getElementById('btnExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'config.json'; a.click();
+  URL.revokeObjectURL(a.href);
+  toast('config.json descargado ✓', 'success');
+});
+document.getElementById('btnImport').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', async e => {
+  const file = e.target.files[0]; if (!file) return;
+  try {
+    const txt = await file.text();
+    const parsed = JSON.parse(txt);
+    config = Object.assign(deepClone(DEFAULT_CONFIG), parsed);
+    initUI(); pushPreview();
+    toast('Configuración importada ✓', 'success');
+  } catch (err) { toast('Archivo JSON inválido', 'error'); }
+  e.target.value = '';
+});
+document.getElementById('btnOpenSite').addEventListener('click', () => window.open('index.html', '_blank'));
+
+// ─────────────────────────────────────────────
+// PUBLISH TO GITHUB
+// ─────────────────────────────────────────────
+const publishModal = document.getElementById('publishModal');
+document.getElementById('btnPublish').addEventListener('click', () => {
+  const saved = localStorage.getItem('evjo_gh_token');
+  if (saved) { document.getElementById('ghToken').value = saved; document.getElementById('ghRemember').checked = true; }
+  publishModal.classList.add('open');
+});
+document.getElementById('publishCancel').addEventListener('click', () => publishModal.classList.remove('open'));
+publishModal.addEventListener('click', e => { if (e.target === publishModal) publishModal.classList.remove('open'); });
+
+document.getElementById('publishConfirm').addEventListener('click', async () => {
+  const owner = document.getElementById('ghOwner').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  const branch = document.getElementById('ghBranch').value.trim() || 'main';
+  const token = document.getElementById('ghToken').value.trim();
+  if (!owner || !repo || !token) { toast('Completa owner, repositorio y token', 'error'); return; }
+
+  if (document.getElementById('ghRemember').checked) localStorage.setItem('evjo_gh_token', token);
+  else localStorage.removeItem('evjo_gh_token');
+
+  const btn = document.getElementById('publishConfirm');
+  btn.disabled = true; btn.textContent = 'Publicando...';
+  const api = `https://api.github.com/repos/${owner}/${repo}/contents/config.json`;
+  const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' };
+  try {
+    let sha = null;
+    const getRes = await fetch(`${api}?ref=${encodeURIComponent(branch)}`, { headers });
+    if (getRes.ok) { sha = (await getRes.json()).sha; }
+    else if (getRes.status !== 404) { throw new Error('No se pudo acceder al repo (¿token o permisos?)'); }
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+    const putRes = await fetch(api, {
+      method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Actualizar config.json desde el panel EVJO', content, sha: sha || undefined, branch })
+    });
+    if (!putRes.ok) { const err = await putRes.json().catch(() => ({})); throw new Error(err.message || 'Error ' + putRes.status); }
+    publishModal.classList.remove('open');
+    toast('¡Publicado! El sitio se actualizará en 1-2 min.', 'success');
+  } catch (err) {
+    toast('Error al publicar: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Publicar ahora';
+  }
+});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function initUI() {
+  fillStaticInputs();
+  renderStats();
+  renderBlocks();
+  document.getElementById('primaryColorPicker').value = normalizeHex(config.branding.primaryColor);
+}
+
+async function loadInitialConfig() {
+  // 1) draft from localStorage
+  try { const d = localStorage.getItem(DRAFT_KEY); if (d) return JSON.parse(d); } catch (e) {}
+  // 2) config.json from repo
+  try { const r = await fetch('config.json', { cache: 'no-store' }); if (r.ok) return await r.json(); } catch (e) {}
+  // 3) defaults
+  return deepClone(DEFAULT_CONFIG);
+}
+
+(async function start() {
+  const loaded = await loadInitialConfig();
+  config = Object.assign(deepClone(DEFAULT_CONFIG), loaded);
+  // ensure nested defaults
+  config.branding = Object.assign({}, DEFAULT_CONFIG.branding, config.branding);
+  config.hero = Object.assign({}, DEFAULT_CONFIG.hero, config.hero);
+  config.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, config.extrasHeading);
+  if (!Array.isArray(config.stats)) config.stats = deepClone(DEFAULT_CONFIG.stats);
+  if (!Array.isArray(config.blocks)) config.blocks = [];
+
+  bindStaticInputs();
+  initUI();
+  // seed preview before/with iframe load
+  try { localStorage.setItem(PREVIEW_KEY, JSON.stringify(config)); } catch (e) {}
+  previewFrame.addEventListener('load', () => pushPreview());
+  pushPreview();
+})();
+</script>
+</body>
+</html>
