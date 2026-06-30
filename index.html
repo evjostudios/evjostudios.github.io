@@ -1741,6 +1741,35 @@ function escHTML(s) {
 }
 function nl2br(s) { return escHTML(s).replace(/\n/g, '<br>'); }
 
+// Probar varias extensiones (png/jpg/jpeg/webp/gif) para fondos por CSS
+function probeImg(src, cb) {
+  if (!src) { cb(null); return; }
+  const exts = ['png', 'jpg', 'jpeg', 'webp', 'gif'];
+  const m = src.match(/^(.*)\.(png|jpe?g|webp|gif)$/i);
+  const base = m ? m[1] : src.replace(/\.[a-z0-9]+$/i, '');
+  let cands;
+  if (m) { const cur = m[2].toLowerCase(); cands = [src].concat(exts.filter(e => e !== cur).map(e => base + '.' + e)); }
+  else { cands = [src].concat(exts.map(e => base + '.' + e)); }
+  let i = 0;
+  (function next() {
+    if (i >= cands.length) { cb(null); return; }
+    const url = cands[i++]; const im = new Image();
+    im.onload = () => cb(url); im.onerror = next; im.src = url;
+  })();
+}
+// Fallback de extensión para etiquetas <img> (logo, título)
+function evjoImgFallback(img) {
+  const exts = ['png', 'jpg', 'jpeg', 'webp', 'gif'];
+  const cur = img.getAttribute('src') || '';
+  const m = cur.match(/^(.*)\.(png|jpe?g|webp|gif)$/i);
+  const base = m ? m[1] : cur.replace(/\.[a-z0-9]+$/i, '');
+  const tried = (img.getAttribute('data-tried') || '').split(',').filter(Boolean);
+  if (m) tried.push(m[2].toLowerCase());
+  const nextExt = exts.find(e => tried.indexOf(e) === -1);
+  if (nextExt) { img.setAttribute('data-tried', tried.join(',')); img.src = base + '.' + nextExt; }
+  else { img.style.display = 'none'; }
+}
+
 // ── SVG ICON SET (monocromo, sin emojis) ──
 const ICONS = {
   lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
@@ -1930,7 +1959,7 @@ function mediaHTML(media) {
     if (vm) return `<div class="block-embed"><iframe src="https://player.vimeo.com/video/${vm[1]}" allowfullscreen></iframe></div>`;
     return `<video src="${escHTML(url)}" controls playsinline preload="metadata"></video>`;
   }
-  return `<img src="${escHTML(url)}" alt="${escHTML(media.alt || '')}" loading="lazy">`;
+  return `<img src="${escHTML(url)}" alt="${escHTML(media.alt || '')}" onerror="evjoImgFallback(this)" loading="lazy">`;
 }
 
 function renderBlock(b) {
@@ -2011,7 +2040,7 @@ function renderBlock(b) {
       const gap = Number(b.gap) || 40;
       const size = Number(b.logoSize) || 64;
       const mk = it => {
-        const img = `<img src="${escHTML(it.logo)}" alt="partner" loading="lazy">`;
+        const img = `<img src="${escHTML(it.logo)}" alt="partner" onerror="evjoImgFallback(this)" loading="lazy">`;
         return it.link ? `<a class="partner" href="${escHTML(it.link)}" target="_blank" rel="noopener">${img}</a>` : `<span class="partner">${img}</span>`;
       };
       const inner = items.map(mk).join('');
@@ -2026,10 +2055,10 @@ function renderBlock(b) {
       if (!imgs.length) return '';
       const head = (b.tag || b.title) ? `<div class="sec-head">${b.tag ? `<div class="section-tag">${escHTML(b.tag)}</div>` : ''}${b.title ? `<h2 class="section-title">${dimTitle(b.title)}</h2>` : ''}</div>` : '';
       if (b.view === 'carousel') {
-        const cards = imgs.map(u => `<div class="carousel-item"><img src="${escHTML(u)}" loading="lazy"></div>`).join('');
+        const cards = imgs.map(u => `<div class="carousel-item"><img src="${escHTML(u)}" onerror="evjoImgFallback(this)" loading="lazy"></div>`).join('');
         return `<div class="reveal">${head}${carouselHTML(cards, b.direction, b.speed)}</div>`;
       }
-      return `<div class="reveal">${head}<div class="gallery-grid">${imgs.map(u => `<img src="${escHTML(u)}" loading="lazy">`).join('')}</div></div>`;
+      return `<div class="reveal">${head}<div class="gallery-grid">${imgs.map(u => `<img src="${escHTML(u)}" onerror="evjoImgFallback(this)" loading="lazy">`).join('')}</div></div>`;
     }
     case 'features': {
       const items = (b.items || []);
@@ -2058,7 +2087,7 @@ function renderBlock(b) {
 }
 
 function logoHTML(b) {
-  return b.logoImage ? `<img class="logo-img" src="${escHTML(b.logoImage)}" alt="${escHTML(b.logoText || 'logo')}">` : buildLogo(b.logoText, b.accentIndex);
+  return b.logoImage ? `<img class="logo-img" src="${escHTML(b.logoImage)}" onerror="evjoImgFallback(this)" alt="${escHTML(b.logoText || 'logo')}">` : buildLogo(b.logoText, b.accentIndex);
 }
 function dimTitle(t) {
   return String(t || '').split('\n').map((l, i) => i === 0 ? escHTML(l) : `<span class="dim">${escHTML(l)}</span>`).join('<br>');
@@ -2129,7 +2158,7 @@ function applyConfig(cfg) {
   root.setProperty('--bg-image-overlay', `rgba(0,0,0,${c.background.overlay})`);
   const bgImage = document.getElementById('bgImage');
   if (bgImage) {
-    if (c.background.image) { bgImage.style.backgroundImage = `url("${c.background.image}")`; bgImage.classList.add('show'); }
+    if (c.background.image) { probeImg(c.background.image, url => { if (url) { bgImage.style.backgroundImage = `url("${url}")`; bgImage.classList.add('show'); } else { bgImage.classList.remove('show'); bgImage.style.backgroundImage = ''; } }); }
     else { bgImage.classList.remove('show'); bgImage.style.backgroundImage = ''; }
   }
   document.querySelectorAll('.hero-orb').forEach(o => o.style.display = c.background.showOrbs === false ? 'none' : '');
@@ -2150,7 +2179,7 @@ function applyConfig(cfg) {
   // Hero
   const heroBgImg = document.getElementById('heroBgImg');
   if (heroBgImg) {
-    if (c.hero.bgImage) { heroBgImg.style.backgroundImage = `url("${c.hero.bgImage}")`; heroBgImg.classList.add('show'); }
+    if (c.hero.bgImage) { probeImg(c.hero.bgImage, url => { if (url) { heroBgImg.style.backgroundImage = `url("${url}")`; heroBgImg.classList.add('show'); } else { heroBgImg.classList.remove('show'); heroBgImg.style.backgroundImage = ''; } }); }
     else { heroBgImg.classList.remove('show'); heroBgImg.style.backgroundImage = ''; }
     heroBgImg.dataset.parallax = (c.hero.parallax === false) ? 'off' : 'on';
     if (c.hero.parallax === false) { heroBgImg.style.transform = ''; heroBgImg.style.setProperty('--hero-ov', '1'); }
@@ -2163,7 +2192,7 @@ function applyConfig(cfg) {
   if (heroTitle) {
     if (c.hero.titleImage) {
       const ts = Number(c.hero.titleImageSize) || 360;
-      heroTitle.innerHTML = `<img class="hero-title-img" style="width:${ts}px" src="${escHTML(c.hero.titleImage)}" alt="${escHTML(c.hero.title || 'logo')}">`;
+      heroTitle.innerHTML = `<img class="hero-title-img" style="width:${ts}px" src="${escHTML(c.hero.titleImage)}" onerror="evjoImgFallback(this)" alt="${escHTML(c.hero.title || 'logo')}">`;
     } else {
       const titleLetters = buildLogo(c.hero.title, c.hero.titleAccentIndex).replace(/<span>/g, '<span class="red">');
       const ow = Number(c.hero.outlineWidth) || 2;
