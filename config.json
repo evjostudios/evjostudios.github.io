@@ -38,14 +38,14 @@
     "outlineWidth": 2,
     "align": "left",
     "parallax": false,
-    "titleImage": "img/hero.png",
-    "titleImageSize": 360,
+    "titleImage": "img/titulo.png",
+    "titleImageSize": 900,
     "subtitle": "Scripts de calidad para servidores serios — Sin escrow. Código abierto.",
     "primaryBtnLabel": "Ver Catálogo →",
     "primaryBtnHref": "#tienda",
     "ghostBtnLabel": "Únete al Discord",
     "ghostBtnHref": "https://discord.gg/RNVxxAU9Nv",
-    "bgImage": ""
+    "bgImage": "img/hero.png"
   },
   "heroTicker": {
     "show": true,
