@@ -29,7 +29,7 @@
   },
   "hero": {
     "tag": "Scripts FiveM Premium",
-    "showTag": true,
+    "showTag": false,
     "title": "EVJO",
     "titleAccentIndex": 1,
     "titleOutline": "STORE",
@@ -208,15 +208,25 @@
       "marquee",
       "tienda",
       "reviews",
-      "cta"
+      "cta",
+      "b:bowvdzg6"
     ],
     "visible": {
       "trust": true,
       "marquee": true,
       "tienda": false,
       "reviews": false,
-      "cta": true
+      "cta": true,
+      "b:bowvdzg6": true
     }
   },
-  "blocks": []
+  "blocks": [
+    {
+      "type": "image",
+      "url": "",
+      "caption": "",
+      "link": "",
+      "id": "bowvdzg6"
+    }
+  ]
 }
