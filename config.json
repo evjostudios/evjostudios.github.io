@@ -213,8 +213,8 @@
     "visible": {
       "trust": true,
       "marquee": true,
-      "tienda": true,
-      "reviews": true,
+      "tienda": false,
+      "reviews": false,
       "cta": true
     }
   },
