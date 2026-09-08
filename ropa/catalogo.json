@@ -1,0 +1,13 @@
+[
+  {
+    "id": "camiseta1brazo_hombre",
+    "nombre": "Camiseta 1 Brazo (Hombre)",
+    "categoria": "Camisetas",
+    "descripcion": "EUP jbib masculino. Sustituye el .ydd+.ytd originales por el .glb convertido para verlo en 3D.",
+    "glb": "ropa/camiseta1brazo_hombre.glb",
+    "thumb": "img/hero.jpg",
+    "ydd": "",
+    "ytd": "",
+    "precio": ""
+  }
+]

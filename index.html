@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://js.tebex.io/v/1.js"></script>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <style>
   :root {
     --red: #E62B2B;
@@ -777,6 +778,14 @@
   .dv-10 i { width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--dvc) 50%, transparent); box-shadow: 0 0 16px var(--dvc); animation: dvscan 3s ease-in-out infinite; }
   @keyframes dvscan { 0%,100% { opacity: .25; transform: scaleX(.3); } 50% { opacity: 1; transform: scaleX(1); } }
 
+  /* PROBADOR 3D (ropa EUP: tarjetas + visor model-viewer) */
+  .ropa-viewer { width: 100%; height: 420px; background: var(--surface2); border-radius: 12px; --poster-color: transparent; }
+  .ropa-viewer:focus { outline: 1px solid var(--border-red); }
+  .ropa-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .ropa-note { font-size: 12.5px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+  .ropa-pill { display: inline-block; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border-red); color: var(--red); background: rgba(230,43,43,0.08); margin-bottom: 8px; }
+  .ropa-pill.pending { color: var(--muted); border-color: var(--border-2); background: rgba(255,255,255,0.03); }
+
   /* RESPONSIVE */
   @media (max-width: 900px) {
     nav { padding: 0 20px; }
@@ -808,6 +817,7 @@
   <a href="#" class="nav-logo" id="navLogo">EV<span>J</span>O</a>
   <ul class="nav-links">
     <li><a href="#tienda">Tienda</a></li>
+    <li><a href="#probador">Probador 3D</a></li>
     <li><a href="#ventajas">Ventajas</a></li>
     <li><a href="#reviews">Reviews</a></li>
     <li><a href="https://discord.gg/RNVxxAU9Nv" target="_blank">Discord</a></li>
@@ -921,6 +931,26 @@
     <div class="loading-state">
       <div class="loading-spinner"></div>
       <div class="loading-text">Cargando paquetes...</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBADOR 3D / ROPA EUP -->
+<section class="scripts" id="probador" data-section="probador">
+  <div class="scripts-header reveal">
+    <div>
+      <div class="section-tag" id="probadorTag">Probador 3D</div>
+      <h2 class="section-title" id="probadorTitle">ROPA<br><span class="dim">EN 3D</span></h2>
+    </div>
+    <p id="probadorDesc">Sube cada prenda convertida a .glb en la carpeta ropa/ y dala de alta en ropa/catalogo.json. Toca una prenda para girarla, hacer zoom y verla en 3D.</p>
+  </div>
+  <div class="filter-bar reveal" data-delay="1" id="ropaFilterBar" style="display:none;">
+    <button class="filter-btn active" data-cat="all">Todas</button>
+  </div>
+  <div class="scripts-grid" id="ropaGrid">
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Cargando prendas 3D...</div>
     </div>
   </div>
 </section>
@@ -1068,6 +1098,20 @@
         <div class="modal-price" id="modalPrice"></div>
       </div>
       <div id="modalAction"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ropaModalOverlay">
+  <div class="modal" id="ropaModal">
+    <button class="modal-close" id="ropaModalClose">← Volver</button>
+    <div class="modal-body">
+      <div class="modal-cat" id="ropaModalCat"></div>
+      <div class="modal-name" id="ropaModalName"></div>
+      <div class="modal-desc" id="ropaModalDesc"></div>
+      <div id="ropaModalViewer"></div>
+      <div class="ropa-actions" id="ropaModalActions"></div>
+      <div class="ropa-note">Arrastra para girar · rueda/pellizco para zoom · clic derecho para mover. Si el modelo se ve sin texturas, revisa la conversión YDD+YTD → GLB.</div>
     </div>
   </div>
 </div>
@@ -1617,6 +1661,122 @@ document.getElementById('modalOverlay').addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
 // ─────────────────────────────────────────────
+// PROBADOR 3D (ropa/ → ropa/catalogo.json → model-viewer)
+// ─────────────────────────────────────────────
+let ropaItems = [];
+let ropaActiveCat = 'all';
+
+async function loadRopa() {
+  const grid = document.getElementById('ropaGrid');
+  const bar = document.getElementById('ropaFilterBar');
+  try {
+    const r = await fetch('ropa/catalogo.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    ropaItems = Array.isArray(data) ? data : [];
+  } catch (e) {
+    ropaItems = [];
+  }
+  if (!ropaItems.length) {
+    if (bar) bar.style.display = 'none';
+    if (grid) grid.innerHTML = `<div class="error-state"><div class="error-icon">👕</div><p>Aún no hay prendas. Sube tu primer .glb a la carpeta ropa/ y dalo de alta en ropa/catalogo.json</p></div>`;
+    return;
+  }
+  renderRopaFilters();
+  renderRopaGrid('all');
+  observeReveals();
+}
+
+function renderRopaFilters() {
+  const bar = document.getElementById('ropaFilterBar');
+  if (!bar) return;
+  const cats = [...new Set(ropaItems.map(p => p.categoria).filter(Boolean))];
+  if (!cats.length) { bar.style.display = 'none'; return; }
+  bar.style.display = '';
+  bar.innerHTML = `<button class="filter-btn active" data-cat="all">Todas</button>` +
+    cats.map(c => `<button class="filter-btn" data-cat="${escHTML(c)}">${escHTML(c)}</button>`).join('');
+  bar.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      ropaActiveCat = btn.dataset.cat;
+      renderRopaGrid(ropaActiveCat);
+    });
+  });
+}
+
+function renderRopaGrid(filterCat) {
+  const grid = document.getElementById('ropaGrid');
+  if (!grid) return;
+  const filtered = (!filterCat || filterCat === 'all') ? ropaItems : ropaItems.filter(p => p.categoria === filterCat);
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="error-state"><div class="error-icon">📭</div><p>No hay prendas en esta categoría</p></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(p => {
+    const hasGlb = Boolean(p.glb);
+    const thumb = p.thumb
+      ? `<img src="${escHTML(p.thumb)}" alt="${escHTML(p.nombre || p.id)}" loading="lazy" onerror="this.remove()">`
+      : `<div class="script-thumb-placeholder"><div class="script-thumb-icon">👕</div><div class="script-thumb-label">3D</div></div>`;
+    return `
+      <article class="script-card" data-ropa="${escHTML(p.id)}">
+        <div class="script-thumb">${thumb}<span class="thumb-line"></span></div>
+        <div class="script-body">
+          <div class="script-category">${escHTML(p.categoria || 'EUP')}</div>
+          <div class="script-name">${escHTML(p.nombre || p.id)}</div>
+          <div class="script-desc">${escHTML(p.descripcion || 'Prenda FiveM visualizable en 3D.')}</div>
+          <div class="script-meta">
+            <span class="ropa-pill${hasGlb ? '' : ' pending'}">${hasGlb ? '3D listo' : 'GLB pendiente'}</span>
+            ${p.precio ? `<span class="script-price">${escHTML(p.precio)}</span>` : ''}
+          </div>
+          <span class="script-btn">${hasGlb ? 'Ver en 3D →' : 'Ver detalle'}</span>
+        </div>
+      </article>`;
+  }).join('');
+  grid.querySelectorAll('[data-ropa]').forEach(card => {
+    card.addEventListener('click', () => openRopaModal(card.dataset.ropa));
+  });
+}
+
+function openRopaModal(id) {
+  const p = ropaItems.find(x => String(x.id) === String(id));
+  if (!p) return;
+  document.getElementById('ropaModalCat').textContent = p.categoria || 'EUP · FiveM';
+  document.getElementById('ropaModalName').textContent = p.nombre || p.id;
+  document.getElementById('ropaModalDesc').textContent = p.descripcion || '';
+  const viewer = document.getElementById('ropaModalViewer');
+  if (p.glb) {
+    viewer.innerHTML = `<model-viewer class="ropa-viewer" src="${escHTML(p.glb)}" camera-controls auto-rotate auto-rotate-delay="1200" shadow-intensity="1" exposure="1.1" interaction-prompt="auto"></model-viewer>
+      <div class="ropa-note" id="ropaLoadNote" style="display:none;">No se pudo cargar el .glb. Revisa que <b>${escHTML(p.glb)}</b> exista en el repo y pese &lt; 25 MB.</div>`;
+    const mv = viewer.querySelector('model-viewer');
+    if (mv) mv.addEventListener('error', () => { const n = document.getElementById('ropaLoadNote'); if (n) n.style.display = ''; }, { once: true });
+  } else {
+    viewer.innerHTML = `<div class="error-state"><div class="error-icon">👕</div><p>Esta prenda aún no tiene .glb. Conviértela desde YDD+YTD y súbela a ropa/</p></div>`;
+  }
+  const acts = document.getElementById('ropaModalActions');
+  let html = '';
+  if (p.ydd) html += `<a class="btn-ghost" href="${escHTML(p.ydd)}" download>Descargar .ydd</a>`;
+  if (p.ytd) html += `<a class="btn-ghost" href="${escHTML(p.ytd)}" download>Descargar .ytd</a>`;
+  if (p.glb) html += `<a class="btn-ghost" href="${escHTML(p.glb)}" download>Descargar .glb</a>`;
+  acts.innerHTML = html;
+  document.getElementById('ropaModalOverlay').classList.add('open');
+  document.body.classList.add('no-scroll');
+}
+
+function closeRopaModal() {
+  document.getElementById('ropaModalOverlay').classList.remove('open');
+  document.body.classList.remove('no-scroll');
+  const viewer = document.getElementById('ropaModalViewer');
+  if (viewer) viewer.innerHTML = '';
+}
+
+document.getElementById('ropaModalClose').addEventListener('click', closeRopaModal);
+document.getElementById('ropaModalOverlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('ropaModalOverlay')) closeRopaModal();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRopaModal(); });
+
+// ─────────────────────────────────────────────
 // UI EFFECTS
 // ─────────────────────────────────────────────
 const nav = document.getElementById('navbar');
@@ -1726,10 +1886,11 @@ const DEFAULT_CONFIG = {
   cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
+  probador: { tag: 'Probador 3D', title: 'ROPA\nEN 3D', desc: 'Sube cada prenda convertida a .glb en la carpeta ropa/ y dala de alta en ropa/catalogo.json. Toca una prenda para girarla, hacer zoom y verla en 3D.' },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
   layout: {
-    order: ['trust', 'marquee', 'tienda', 'reviews', 'cta'],
-    visible: { trust: true, marquee: true, tienda: true, reviews: true, cta: true }
+    order: ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'cta'],
+    visible: { trust: true, marquee: true, tienda: true, probador: true, reviews: true, cta: true }
   },
   blocks: []
 };
@@ -2115,6 +2276,7 @@ function applyConfig(cfg) {
   c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
   c.scriptsLayout = Object.assign({}, DEFAULT_CONFIG.scriptsLayout, c.scriptsLayout);
   c.store = Object.assign({}, DEFAULT_CONFIG.store, c.store);
+  c.probador = Object.assign({}, DEFAULT_CONFIG.probador, c.probador);
   c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
   c.layout = Object.assign({}, DEFAULT_CONFIG.layout, c.layout);
   c.layout.visible = Object.assign({}, c.layout.visible);
@@ -2132,7 +2294,7 @@ function applyConfig(cfg) {
   ensureBlockIds(c.blocks);
   const blockKeys = c.blocks.map(b => 'b:' + b.id);
   let order = c.layout.order.filter(k => k !== 'extras' && (!k.startsWith('b:') || blockKeys.includes(k)));
-  ['trust', 'marquee', 'tienda', 'reviews', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
+  ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
   blockKeys.forEach(k => { if (!order.includes(k)) order.push(k); });
   c.layout.order = order;
   order.forEach(k => { if (c.layout.visible[k] === undefined) c.layout.visible[k] = true; });
@@ -2269,6 +2431,11 @@ function applyConfig(cfg) {
     const ttl = sh.querySelector('.section-title'); if (ttl) ttl.innerHTML = dimTitle(c.scriptsHeading.title);
     const p = sh.querySelector('p'); if (p) p.textContent = c.scriptsHeading.desc;
   }
+
+  // Probador 3D heading
+  const phTag = document.getElementById('probadorTag'); if (phTag) phTag.textContent = c.probador.tag;
+  const phTitle = document.getElementById('probadorTitle'); if (phTitle) phTitle.innerHTML = dimTitle(c.probador.title);
+  const phDesc = document.getElementById('probadorDesc'); if (phDesc) phDesc.textContent = c.probador.desc;
 
   // Reviews
   const rTag = document.getElementById('reviewsTag'); if (rTag) rTag.textContent = c.reviews.tag;
@@ -2462,6 +2629,7 @@ window.addEventListener('message', (e) => {
 observeReveals();
 observeCounts();
 init();
+loadRopa();
 resumePendingPurchase();
 checkAuthReturn();</script>
 </body>

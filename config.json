@@ -142,6 +142,11 @@
     "direction": "left",
     "speed": 45
   },
+  "probador": {
+    "tag": "Probador 3D",
+    "title": "ROPA\nEN 3D",
+    "desc": "Sube cada prenda convertida a .glb en la carpeta ropa/ y dala de alta en ropa/catalogo.json. Toca una prenda para girarla, hacer zoom y verla en 3D."
+  },
   "store": {
     "cardSize": "normal",
     "priceTagShape": "slant",
@@ -207,6 +212,7 @@
       "trust",
       "marquee",
       "tienda",
+      "probador",
       "reviews",
       "cta",
       "b:bowvdzg6"
@@ -215,6 +221,7 @@
       "trust": true,
       "marquee": true,
       "tienda": false,
+      "probador": true,
       "reviews": false,
       "cta": true,
       "b:bowvdzg6": true

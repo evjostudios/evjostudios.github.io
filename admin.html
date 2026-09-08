@@ -584,12 +584,12 @@ const DEFAULT_CONFIG = {
   ] },
   cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
-  layout: { order: ['trust', 'marquee', 'tienda', 'reviews', 'cta'], visible: { trust: true, marquee: true, tienda: true, reviews: true, cta: true } },
+  layout: { order: ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'cta'], visible: { trust: true, marquee: true, tienda: true, probador: true, reviews: true, cta: true } },
   blocks: []
 };
 
 const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner', divider: 'Separador', partners: 'Partners' };
-const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', reviews: 'Reviews', cta: 'CTA Discord' };
+const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', probador: 'Probador 3D (ropa)', reviews: 'Reviews', cta: 'CTA Discord' };
 const ICON_OPTIONS = ['lock','unlock','refresh','chat','bolt','shield','star','download','check','clock','code','box','users','gift','headset','server','tag','cart','heart','fire','rocket','globe'];
 const DRAFT_KEY = 'evjo_admin_config';
 const PREVIEW_KEY = 'evjo_preview_config';
@@ -598,7 +598,7 @@ function migrateLayout(c) {
   c.blocks.forEach(b => { if (!b.id) b.id = 'b' + Math.random().toString(36).slice(2, 9); });
   const blockKeys = c.blocks.map(b => 'b:' + b.id);
   let order = (c.layout.order || []).filter(k => k !== 'extras' && (!k.startsWith('b:') || blockKeys.includes(k)));
-  ['trust', 'marquee', 'tienda', 'reviews', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
+  ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
   blockKeys.forEach(k => { if (!order.includes(k)) order.push(k); });
   c.layout.order = order;
   if (!c.layout.visible) c.layout.visible = {};
