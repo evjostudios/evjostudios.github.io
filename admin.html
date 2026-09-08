@@ -417,6 +417,23 @@
       </div>
     </div>
 
+    <!-- DISCORD EN VIVO -->
+    <div class="section collapsed" data-key="discordFeed">
+      <div class="section-head"><h3>💬 Discord en vivo</h3><span class="chev">▾</span></div>
+      <div class="section-body">
+        <div class="field"><label>Etiqueta</label><input type="text" data-bind="discordFeed.tag"></div>
+        <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="discordFeed.title"></textarea></div>
+        <div class="field"><label>Descripción</label><input type="text" data-bind="discordFeed.desc"></div>
+        <div class="field-row">
+          <div class="field"><label>Server ID</label><input type="text" data-bind="discordFeed.serverId" placeholder="Ej: 123456789012345678"></div>
+          <div class="field" style="max-width:130px"><label>Altura (px)</label><input type="number" min="320" max="900" data-bind="discordFeed.height"></div>
+        </div>
+        <div class="hint">Activa el <strong>Widget del servidor</strong> en Discord (Ajustes del servidor → Widget) y usa canales visibles. Los IDs se copian con clic derecho → Copiar ID (activa el modo desarrollador en Discord).</div>
+        <div id="dcList"></div>
+        <button class="add-btn add-wide" id="addDcChannel"><span class="ico">＋</span> Añadir canal</button>
+      </div>
+    </div>
+
     <!-- CTA -->
     <div class="section collapsed" data-key="cta">
       <div class="section-head"><h3>💬 CTA Discord</h3><span class="chev">▾</span></div>
@@ -583,13 +600,14 @@ const DEFAULT_CONFIG = {
     { stars: 4, text: 'Llevo usando scripts de EVJO desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.', avatar: 'ZR', name: 'ZeRoFault', role: 'Community Manager' }
   ] },
   cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
+  discordFeed: { tag: 'En vivo', title: 'DISCORD\nEN VIVO', desc: 'Lo último de nuestro Discord, en directo.', serverId: '', channels: [], height: 560 },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
-  layout: { order: ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'cta'], visible: { trust: true, marquee: true, tienda: true, probador: true, reviews: true, cta: true } },
+  layout: { order: ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'discord', 'cta'], visible: { trust: true, marquee: true, tienda: true, probador: true, reviews: true, discord: true, cta: true } },
   blocks: []
 };
 
 const BLOCK_LABELS = { title: 'Título', text: 'Texto', image: 'Imagen', gif: 'GIF', video: 'Vídeo', embed: 'Embed', marquee: 'Barra texto', window: 'Ventana', buttons: 'Botones', carousel: 'Carrusel', gallery: 'Galería', faq: 'FAQ', features: 'Features', banner: 'Banner', divider: 'Separador', partners: 'Partners' };
-const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', probador: 'Probador 3D (ropa)', reviews: 'Reviews', cta: 'CTA Discord' };
+const SECTION_LABELS = { trust: 'Ventajas', marquee: 'Marquee', tienda: 'Tienda (scripts)', probador: 'Probador 3D (ropa)', reviews: 'Reviews', discord: 'Discord en vivo', cta: 'CTA Discord' };
 const ICON_OPTIONS = ['lock','unlock','refresh','chat','bolt','shield','star','download','check','clock','code','box','users','gift','headset','server','tag','cart','heart','fire','rocket','globe'];
 const DRAFT_KEY = 'evjo_admin_config';
 const PREVIEW_KEY = 'evjo_preview_config';
@@ -598,7 +616,7 @@ function migrateLayout(c) {
   c.blocks.forEach(b => { if (!b.id) b.id = 'b' + Math.random().toString(36).slice(2, 9); });
   const blockKeys = c.blocks.map(b => 'b:' + b.id);
   let order = (c.layout.order || []).filter(k => k !== 'extras' && (!k.startsWith('b:') || blockKeys.includes(k)));
-  ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
+  ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'discord', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
   blockKeys.forEach(k => { if (!order.includes(k)) order.push(k); });
   c.layout.order = order;
   if (!c.layout.visible) c.layout.visible = {};
@@ -808,6 +826,31 @@ function renderReviews() {
       </div>
     </div>`).join('');
 }
+// DISCORD FEED
+function renderDiscordChannels() {
+  const wrap = document.getElementById('dcList'); if (!wrap) return;
+  if (!config.discordFeed.channels.length) { wrap.innerHTML = `<div class="empty">Sin canales. Añade el primero con el botón de abajo.</div>`; return; }
+  wrap.innerHTML = config.discordFeed.channels.map((ch, i) => `
+    <div class="card" data-dc="${i}">${cardHead('Canal', i)}
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Nombre (pestaña)</label><input type="text" data-dcf="label" value="${attr(ch.label)}" placeholder="Anuncios"></div>
+          <div class="field"><label>ID del canal</label><input type="text" data-dcf="id" value="${attr(ch.id)}" placeholder="123456789012345678"></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+(function () {
+  const wrap = document.getElementById('dcList');
+  const edit = e => { const f = e.target.dataset.dcf; if (f === undefined) return; const card = e.target.closest('[data-dc]'); if (!card) return; config.discordFeed.channels[+card.dataset.dc][f] = e.target.value; pushPreview(); };
+  wrap.addEventListener('input', edit); wrap.addEventListener('change', edit);
+  wrap.addEventListener('click', e => {
+    const card = e.target.closest('[data-dc]'); if (!card) return; const i = +card.dataset.dc;
+    if (e.target.dataset.del !== undefined) { config.discordFeed.channels.splice(i, 1); renderDiscordChannels(); pushPreview(); }
+    else if (e.target.dataset.move !== undefined) { const k = i + (+e.target.dataset.move); if (k < 0 || k >= config.discordFeed.channels.length) return; [config.discordFeed.channels[i], config.discordFeed.channels[k]] = [config.discordFeed.channels[k], config.discordFeed.channels[i]]; renderDiscordChannels(); pushPreview(); }
+  });
+})();
+document.getElementById('addDcChannel').addEventListener('click', () => { config.discordFeed.channels.push({ label: 'Canal', id: '' }); renderDiscordChannels(); pushPreview(); });
 // MARQUEE
 function renderMarquee() {
   document.getElementById('marqueeList').innerHTML = config.marquee.words.map((w, i) => `
@@ -1119,6 +1162,8 @@ function mergeConfig(loaded) {
   c.store = Object.assign({}, DEFAULT_CONFIG.store, c.store);
   c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
   c.cta = Object.assign({}, DEFAULT_CONFIG.cta, c.cta);
+  c.discordFeed = Object.assign({}, DEFAULT_CONFIG.discordFeed, c.discordFeed);
+  if (!Array.isArray(c.discordFeed.channels)) c.discordFeed.channels = [];
   c.extrasHeading = Object.assign({}, DEFAULT_CONFIG.extrasHeading, c.extrasHeading);
   c.layout = Object.assign({}, DEFAULT_CONFIG.layout, c.layout);
   c.layout.visible = Object.assign({}, c.layout.visible);
@@ -1136,7 +1181,7 @@ function mergeConfig(loaded) {
 }
 function initUI() {
   fillStaticInputs();
-  renderStats(); renderTrust(); renderTicker(); renderMusic(); renderReviews(); renderMarquee(); renderBlocks(); renderLayout();
+  renderStats(); renderTrust(); renderTicker(); renderMusic(); renderReviews(); renderDiscordChannels(); renderMarquee(); renderBlocks(); renderLayout();
 }
 async function loadInitialConfig() {
   try { const d = localStorage.getItem(DRAFT_KEY); if (d) return JSON.parse(d); } catch (e) {}

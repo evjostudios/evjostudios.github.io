@@ -800,6 +800,11 @@
   .ropa-pill { display: inline-block; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border-red); color: var(--red); background: rgba(230,43,43,0.08); margin-bottom: 8px; }
   .ropa-pill.pending { color: var(--muted); border-color: var(--border-2); background: rgba(255,255,255,0.03); }
 
+  /* DISCORD EN VIVO */
+  .discord-frame { width: 100%; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #0e0e12; }
+  .discord-frame iframe { width: 100%; border: 0; display: block; }
+  .discord-fallback { text-align: center; margin-top: 14px; }
+
   /* RESPONSIVE */
   @media (max-width: 900px) {
     nav { padding: 0 20px; }
@@ -1029,6 +1034,19 @@
       </div>
     </div>
   </div>
+</section>
+
+<!-- DISCORD EN VIVO -->
+<section class="scripts" id="discord" data-section="discord">
+  <div class="scripts-header reveal">
+    <div>
+      <div class="section-tag" id="discordTag">En vivo</div>
+      <h2 class="section-title" id="discordTitle">DISCORD<br><span class="dim">EN VIVO</span></h2>
+    </div>
+    <p id="discordDesc">Lo último de nuestro Discord, en directo.</p>
+  </div>
+  <div class="filter-bar reveal" data-delay="1" id="discordTabs" style="display:none;"></div>
+  <div class="reveal" data-delay="2" id="discordFrameWrap"></div>
 </section>
 
 <!-- CTA DISCORD -->
@@ -1829,6 +1847,39 @@ document.getElementById('ropaModalOverlay').addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRopaModal(); });
 
 // ─────────────────────────────────────────────
+// DISCORD EN VIVO (embed por canal)
+// ─────────────────────────────────────────────
+let discordActive = 0;
+function renderDiscordFeed(df) {
+  df = df || {};
+  window.__discordFeed = df;
+  const tag = document.getElementById('discordTag'); if (tag) tag.textContent = df.tag || 'En vivo';
+  const ttl = document.getElementById('discordTitle'); if (ttl) ttl.innerHTML = dimTitle(df.title || 'DISCORD\nEN VIVO');
+  const desc = document.getElementById('discordDesc'); if (desc) desc.textContent = df.desc || '';
+  const tabs = document.getElementById('discordTabs');
+  const wrap = document.getElementById('discordFrameWrap');
+  if (!tabs || !wrap) return;
+  const server = String(df.serverId || '').trim();
+  const chs = (df.channels || []).filter(ch => ch && String(ch.id || '').trim());
+  if (!server || !chs.length) {
+    tabs.style.display = 'none';
+    wrap.innerHTML = `<div class="error-state"><div class="error-icon">💬</div><p>Añade tu Server ID y canales en el panel para ver el Discord en vivo</p></div>`;
+    return;
+  }
+  if (discordActive >= chs.length) discordActive = 0;
+  tabs.style.display = '';
+  tabs.innerHTML = chs.map((ch, i) => `<button class="filter-btn${i === discordActive ? ' active' : ''}" data-dc="${i}">${escHTML(ch.label || ('Canal ' + (i + 1)))}</button>`).join('');
+  tabs.querySelectorAll('[data-dc]').forEach(btn => {
+    btn.addEventListener('click', () => { discordActive = +btn.dataset.dc; renderDiscordFeed(window.__discordFeed); });
+  });
+  const ch = chs[discordActive];
+  const chId = String(ch.id).trim();
+  const h = Math.max(320, Math.min(900, Number(df.height) || 560));
+  wrap.innerHTML = `<div class="discord-frame"><iframe src="https://e.widgetbot.io/channels/${escHTML(server)}/${escHTML(chId)}" height="${h}" allow="clipboard-write; fullscreen" loading="lazy" title="Discord en vivo"></iframe></div>
+    <div class="discord-fallback"><a class="btn-ghost" href="https://discord.com/channels/${escHTML(server)}/${escHTML(chId)}" target="_blank" rel="noopener">Abrir en Discord →</a></div>`;
+}
+
+// ─────────────────────────────────────────────
 // UI EFFECTS
 // ─────────────────────────────────────────────
 const nav = document.getElementById('navbar');
@@ -1936,13 +1987,14 @@ const DEFAULT_CONFIG = {
     ]
   },
   cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
+  discordFeed: { tag: 'En vivo', title: 'DISCORD\nEN VIVO', desc: 'Lo último de nuestro Discord, en directo.', serverId: '', channels: [], height: 560 },
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
   probador: { tag: 'Probador 3D', title: 'CATALOGO\n3D', desc: '' },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
   layout: {
-    order: ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'cta'],
-    visible: { trust: true, marquee: true, tienda: true, probador: true, reviews: true, cta: true }
+    order: ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'discord', 'cta'],
+    visible: { trust: true, marquee: true, tienda: true, probador: true, reviews: true, discord: true, cta: true }
   },
   blocks: []
 };
@@ -2325,6 +2377,8 @@ function applyConfig(cfg) {
   if (!Array.isArray(c.music.tracks)) c.music.tracks = [];
   c.reviews = Object.assign({}, DEFAULT_CONFIG.reviews, c.reviews);
   c.cta = Object.assign({}, DEFAULT_CONFIG.cta, c.cta);
+  c.discordFeed = Object.assign({}, DEFAULT_CONFIG.discordFeed, c.discordFeed);
+  if (!Array.isArray(c.discordFeed.channels)) c.discordFeed.channels = [];
   c.scriptsHeading = Object.assign({}, DEFAULT_CONFIG.scriptsHeading, c.scriptsHeading);
   c.scriptsLayout = Object.assign({}, DEFAULT_CONFIG.scriptsLayout, c.scriptsLayout);
   c.store = Object.assign({}, DEFAULT_CONFIG.store, c.store);
@@ -2346,7 +2400,7 @@ function applyConfig(cfg) {
   ensureBlockIds(c.blocks);
   const blockKeys = c.blocks.map(b => 'b:' + b.id);
   let order = c.layout.order.filter(k => k !== 'extras' && (!k.startsWith('b:') || blockKeys.includes(k)));
-  ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
+  ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'discord', 'cta'].forEach(k => { if (!order.includes(k)) order.push(k); });
   blockKeys.forEach(k => { if (!order.includes(k)) order.push(k); });
   c.layout.order = order;
   order.forEach(k => { if (c.layout.visible[k] === undefined) c.layout.visible[k] = true; });
@@ -2573,6 +2627,9 @@ function applyConfig(cfg) {
   if (typeof allPackages !== 'undefined' && allPackages.length) {
     try { renderGrid(activeCategory); } catch (e) {}
   }
+
+  // Discord en vivo
+  renderDiscordFeed(c.discordFeed);
 
   observeReveals();
   observeCounts();

@@ -147,6 +147,14 @@
     "title": "CATALOGO\n3D",
     "desc": ""
   },
+  "discordFeed": {
+    "tag": "En vivo",
+    "title": "DISCORD\nEN VIVO",
+    "desc": "Lo último de nuestro Discord, en directo.",
+    "serverId": "",
+    "channels": [],
+    "height": 560
+  },
   "store": {
     "cardSize": "normal",
     "priceTagShape": "slant",
@@ -214,6 +222,7 @@
       "tienda",
       "probador",
       "reviews",
+      "discord",
       "cta",
       "b:bowvdzg6"
     ],
@@ -223,6 +232,7 @@
       "tienda": false,
       "probador": true,
       "reviews": false,
+      "discord": true,
       "cta": true,
       "b:bowvdzg6": true
     }
