@@ -1,7 +1,7 @@
 # Feed de Discord — sin hosting
 
 Un workflow de GitHub Actions (`.github/workflows/discord-feed.yml`) copia cada
-~10 min las últimas publicaciones de tus canales a `discord/feed.json`, y la web
+~5 min las últimas publicaciones de tus canales a `discord/feed.json`, y la web
 las muestra como tarjetas flotantes. No hay servidor que mantener.
 
 ## Ponerlo en marcha (solo se hace una vez)
