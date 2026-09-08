@@ -1774,6 +1774,11 @@ function renderRopaGrid(filterCat) {
   }).join('');
   grid.querySelectorAll('[data-ropa]').forEach(card => {
     card.addEventListener('click', () => openRopaModal(card.dataset.ropa));
+    const mv = card.querySelector('model-viewer.ropa-card-viewer');
+    if (mv) {
+      card.addEventListener('mouseenter', () => { mv.autoRotate = true; });
+      card.addEventListener('mouseleave', () => { mv.autoRotate = false; });
+    }
   });
   grid.querySelectorAll('model-viewer.ropa-card-viewer').forEach(mv => {
     mv.addEventListener('load', () => forceOpaqueMaterials(mv), { once: true });
