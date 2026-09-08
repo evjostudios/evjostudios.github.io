@@ -41,18 +41,42 @@ def clean_message(m):
         for a in (m.get("attachments") or [])
         if str(a.get("content_type") or "").startswith("image/") and a.get("url")
     ]
-    # Los anuncios suelen venir solo como embeds: rescatar su texto e imagenes.
-    embed_texts = []
+    audios = [
+        a["url"]
+        for a in (m.get("attachments") or [])
+        if str(a.get("content_type") or "").startswith("audio/") and a.get("url")
+    ]
+    texts = []
+    base = (m.get("content") or "").strip()
+    if base:
+        texts.append(base)
+    # Stickers aislados (sin texto ni adjuntos).
+    for sticker in (m.get("sticker_items") or []):
+        if sticker.get("name"):
+            texts.append(f"[Sticker: {sticker['name']}]")
+    # Encuestas.
+    poll = m.get("poll") or {}
+    question = (poll.get("question") or {}).get("text")
+    if question:
+        texts.append(f"Encuesta: {question}")
+    for answer in poll.get("answers") or []:
+        option = (answer.get("poll_media") or {}).get("text")
+        if option:
+            texts.append(f"- {option}")
+    # Los anuncios suelen venir solo como embeds: rescatar texto, campos e imagenes.
     for e in (m.get("embeds") or []):
         for key in ("title", "description"):
             if e.get(key):
-                embed_texts.append(str(e[key]))
+                texts.append(str(e[key]))
+        for field in (e.get("fields") or []):
+            name = str(field.get("name") or "").strip()
+            value = str(field.get("value") or "").strip()
+            if name or value:
+                texts.append(f"{name}: {value}".strip())
         for media in (e.get("thumbnail") or {}, e.get("image") or {}):
             if media.get("url"):
                 images.append(media["url"])
-    content = (m.get("content") or "").strip()
-    if embed_texts:
-        content = (content + "\n\n" + "\n\n".join(embed_texts)).strip()
+    content = "\n\n".join(texts).strip()
     return {
         "id": m.get("id"),
         "author": author.get("global_name") or author.get("username") or "?",
@@ -61,6 +85,7 @@ def clean_message(m):
         "content": content,
         "timestamp": m.get("timestamp"),
         "images": images[:4],
+        "audios": audios[:2],
     }
 
 
@@ -91,7 +116,11 @@ def main():
             print(f"WARN canal {cid}: {err}")
             continue
         cleaned = [clean_message(m) for m in messages]
-        cleaned = [m for m in cleaned if m["content"].strip() or m["images"]]
+        cleaned = [
+            m
+            for m in cleaned
+            if m["content"].strip() or m["images"] or m["audios"]
+        ]
         print(f"canal {cid}: {len(messages)} recibidos, {len(cleaned)} validos")
         out["channels"].append(
             {"id": cid, "label": ch.get("label") or "Canal", "messages": cleaned}

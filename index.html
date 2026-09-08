@@ -814,6 +814,8 @@
   .dc-text a { color: var(--red-bright); }
   .dc-imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 12px; }
   .dc-imgs img { width: 100%; border-radius: 10px; border: 1px solid var(--border); }
+  .dc-audios { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .dc-audios audio { width: 100%; }
   .discord-fallback { text-align: center; margin-top: 14px; }
 
   /* RESPONSIVE */
@@ -1935,6 +1937,7 @@ function renderDcPosts() {
         </div>
         ${m.content ? `<div class="dc-text">${dcRichText(m.content)}</div>` : ''}
         ${(m.images && m.images.length) ? `<div class="dc-imgs">${m.images.map(u => `<img src="${escHTML(u)}" loading="lazy" alt="">`).join('')}</div>` : ''}
+        ${(m.audios && m.audios.length) ? `<div class="dc-audios">${m.audios.map(u => `<audio controls preload="none" src="${escHTML(u)}"></audio>`).join('')}</div>` : ''}
       </article>`).join('');
   }
   html += `</div><div class="discord-fallback"><a class="btn-ghost" href="${openUrl}" target="_blank" rel="noopener">Abrir en Discord →</a></div>`;
