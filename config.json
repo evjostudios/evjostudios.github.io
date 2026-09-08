@@ -202,8 +202,13 @@
     "tag": "En vivo",
     "title": "DISCORD\nEN VIVO",
     "desc": "Lo último de nuestro Discord, en directo.",
-    "serverId": "",
-    "channels": [],
+    "serverId": "1535427242686152764",
+    "channels": [
+      {
+        "label": "Canal",
+        "id": "1535427243185279090"
+      }
+    ],
     "height": 560
   },
   "extrasHeading": {
