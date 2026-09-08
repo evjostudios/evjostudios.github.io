@@ -795,7 +795,8 @@
   .script-card[data-ropa]::after { display: none; }
   .script-card[data-ropa]:hover { border-color: transparent; box-shadow: none; }
   .ropa-card-viewer { width: 100%; height: 100%; background: transparent; --poster-color: transparent; pointer-events: none; }
-  .ropa-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .ropa-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; justify-content: center; }
+  .ropa-actions .foco-on { border-color: #ffd75e; color: #ffd75e; }
   .ropa-note { font-size: 12.5px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
   .ropa-pill { display: inline-block; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border-red); color: var(--red); background: rgba(230,43,43,0.08); margin-bottom: 8px; }
   .ropa-pill.pending { color: var(--muted); border-color: var(--border-2); background: rgba(255,255,255,0.03); }
@@ -1784,23 +1785,34 @@ function openRopaModal(id) {
   const descEl = document.getElementById('ropaModalDesc');
   if (p.descripcion) { descEl.textContent = p.descripcion; descEl.style.display = ''; } else { descEl.style.display = 'none'; }
   const viewer = document.getElementById('ropaModalViewer');
+  let mvEl = null;
   if (p.glb) {
-    viewer.innerHTML = `<model-viewer class="ropa-viewer" src="${escHTML(p.glb)}" camera-controls auto-rotate auto-rotate-delay="1200" shadow-intensity="1" exposure="1.1" interaction-prompt="auto"></model-viewer>
+    viewer.innerHTML = `<model-viewer class="ropa-viewer" src="${escHTML(p.glb)}" camera-controls auto-rotate auto-rotate-delay="1200" min-camera-orbit="auto 80deg auto" max-camera-orbit="auto 80deg auto" shadow-intensity="1" exposure="1.1" interaction-prompt="auto"></model-viewer>
       <div class="ropa-note" id="ropaLoadNote" style="display:none;">No se pudo cargar el .glb. Revisa que <b>${escHTML(p.glb)}</b> exista en el repo y pese &lt; 25 MB.</div>`;
-    const mv = viewer.querySelector('model-viewer');
-    if (mv) {
-      mv.addEventListener('error', () => { const n = document.getElementById('ropaLoadNote'); if (n) n.style.display = ''; }, { once: true });
-      mv.addEventListener('load', () => forceOpaqueMaterials(mv), { once: true });
+    mvEl = viewer.querySelector('model-viewer');
+    if (mvEl) {
+      mvEl.addEventListener('error', () => { const n = document.getElementById('ropaLoadNote'); if (n) n.style.display = ''; }, { once: true });
+      mvEl.addEventListener('load', () => forceOpaqueMaterials(mvEl), { once: true });
     }
   } else {
     viewer.innerHTML = `<div class="error-state"><div class="error-icon">👕</div><p>Esta prenda aún no tiene .glb. Conviértela desde YDD+YTD y súbela a ropa/</p></div>`;
   }
   const acts = document.getElementById('ropaModalActions');
   let html = '';
+  if (p.glb) html += `<button class="btn-ghost" id="ropaFocoBtn" aria-pressed="false">💡 Foco</button>`;
   if (p.ydd) html += `<a class="btn-ghost" href="${escHTML(p.ydd)}" download>Descargar .ydd</a>`;
   if (p.ytd) html += `<a class="btn-ghost" href="${escHTML(p.ytd)}" download>Descargar .ytd</a>`;
   acts.innerHTML = html;
   acts.style.display = html ? '' : 'none';
+  const focoBtn = document.getElementById('ropaFocoBtn');
+  if (focoBtn && mvEl) focoBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const on = mvEl.exposure > 1.5;
+    mvEl.exposure = on ? 1.1 : 2.4;
+    mvEl.shadowIntensity = on ? 1 : 0.4;
+    focoBtn.setAttribute('aria-pressed', String(!on));
+    focoBtn.classList.toggle('foco-on', !on);
+  });
   document.getElementById('ropaModalOverlay').classList.add('open');
   document.body.classList.add('no-scroll');
 }
