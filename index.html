@@ -804,6 +804,11 @@
   .discord-frame { width: 100%; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #0e0e12; }
   .discord-frame iframe { width: 100%; border: 0; display: block; }
   .discord-fallback { text-align: center; margin-top: 14px; }
+  /* Recorte: solo la columna de mensajes (medidas estándar Discord, solo escritorio) */
+  @media (min-width: 901px) {
+    .discord-crop { overflow: hidden; }
+    .discord-crop iframe { width: calc(100% + 480px); max-width: none; margin-left: -240px; }
+  }
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
@@ -1875,7 +1880,7 @@ function renderDiscordFeed(df) {
   const ch = chs[discordActive];
   const chId = String(ch.id).trim();
   const h = Math.max(320, Math.min(900, Number(df.height) || 560));
-  wrap.innerHTML = `<div class="discord-frame"><iframe src="https://e.widgetbot.io/channels/${escHTML(server)}/${escHTML(chId)}" height="${h}" allow="clipboard-write; fullscreen" loading="lazy" title="Discord en vivo"></iframe></div>
+  wrap.innerHTML = `<div class="discord-frame discord-crop"><iframe src="https://e.widgetbot.io/channels/${escHTML(server)}/${escHTML(chId)}" height="${h}" allow="clipboard-write; fullscreen" loading="lazy" title="Discord en vivo"></iframe></div>
     <div class="discord-fallback"><a class="btn-ghost" href="https://discord.com/channels/${escHTML(server)}/${escHTML(chId)}" target="_blank" rel="noopener">Abrir en Discord →</a></div>`;
 }
 
