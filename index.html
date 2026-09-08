@@ -779,10 +779,16 @@
   @keyframes dvscan { 0%,100% { opacity: .25; transform: scaleX(.3); } 50% { opacity: 1; transform: scaleX(1); } }
 
   /* PROBADOR 3D (ropa EUP: tarjetas + visor model-viewer) */
-  .ropa-viewer { width: 100%; height: min(62vh, 600px); min-height: 440px; background: #050506; border: 2px solid #000; border-radius: 6px; --poster-color: transparent; }
+  .ropa-viewer { width: 100%; height: min(66vh, 640px); min-height: 440px; background: transparent; border: none; border-radius: 0; --poster-color: transparent; }
   .ropa-viewer:focus { outline: none; }
   #ropaModalName { font-family: var(--font-display); font-weight: 400; font-size: 46px; letter-spacing: 3px; }
-  #ropaModal { max-width: 1100px; border-color: #000; }
+  #ropaModalOverlay { background: rgba(10,10,12,0.25); backdrop-filter: blur(22px) saturate(130%); -webkit-backdrop-filter: blur(22px) saturate(130%); }
+  #ropaModal { max-width: 1200px; background: transparent; border: none; box-shadow: none; }
+  #ropaModal .modal-body { text-align: center; padding: 12px; }
+  #ropaModal .modal-cat, #ropaModal .modal-name, #ropaModal .modal-desc { text-shadow: 0 2px 20px rgba(0,0,0,0.85); }
+  #ropaModal .modal-desc { margin-left: auto; margin-right: auto; max-width: 640px; }
+  #ropaModalClose { background: transparent; border: none; font-size: 30px; color: var(--muted); width: 48px; height: 48px; }
+  #ropaModalClose:hover { background: transparent; border: none; color: #fff; }
   .ropa-thumb { height: 240px; padding: 0; background: transparent; }
   .ropa-thumb::before { display: none; }
   .script-card[data-ropa] { background: transparent; border-color: transparent; box-shadow: none; }
@@ -1112,7 +1118,7 @@
 
 <div class="modal-overlay" id="ropaModalOverlay">
   <div class="modal" id="ropaModal">
-    <button class="modal-close" id="ropaModalClose">← Volver</button>
+    <button class="modal-close" id="ropaModalClose" aria-label="Cerrar">✕</button>
     <div class="modal-body">
       <div class="modal-cat" id="ropaModalCat"></div>
       <div class="modal-name" id="ropaModalName"></div>
