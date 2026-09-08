@@ -1679,7 +1679,13 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal
 let ropaItems = [];
 let ropaActiveCat = 'all';
 
-// Las conversiones YDD->GLB suelen traer alphaMode BLEND y se ven transparentes: forzar opaco.
+// Nombre visible: usa `nombre` si existe, si no el nombre del archivo .glb (ej. "camiseta 3445.glb" -> "camiseta 3445").
+function nombreDesdeGlb(glb) {
+  const base = String(glb || '').split('/').pop().split('?')[0].replace(/\.[a-z0-9]+$/i, '');
+  try { return decodeURIComponent(base).replace(/[_-]+/g, ' ').trim(); }
+  catch (e) { return base.replace(/[_-]+/g, ' ').trim(); }
+}
+function nombrePrenda(p) { return p.nombre || nombreDesdeGlb(p.glb) || p.id; }
 function forceOpaqueMaterials(mv) {
   try {
     (mv.model && mv.model.materials ? mv.model.materials : []).forEach(m => {
@@ -1747,7 +1753,7 @@ function renderRopaGrid(filterCat) {
       const poster = p.thumb ? ` poster="${escHTML(p.thumb)}"` : '';
       visual = `<model-viewer class="ropa-card-viewer" src="${escHTML(p.glb)}"${poster} loading="lazy" shadow-intensity="1" exposure="1.1" interaction-prompt="none"></model-viewer>`;
     } else if (p.thumb) {
-      visual = `<img src="${escHTML(p.thumb)}" alt="${escHTML(p.nombre || p.id)}" loading="lazy" onerror="this.remove()">`;
+      visual = `<img src="${escHTML(p.thumb)}" alt="${escHTML(nombrePrenda(p))}" loading="lazy" onerror="this.remove()">`;
     } else {
       visual = `<div class="script-thumb-placeholder"><div class="script-thumb-icon">👕</div><div class="script-thumb-label">3D</div></div>`;
     }
@@ -1756,7 +1762,7 @@ function renderRopaGrid(filterCat) {
         <div class="script-thumb ropa-thumb">${visual}<span class="thumb-line"></span></div>
         <div class="script-body">
           <div class="script-category">${escHTML(p.categoria || 'EUP')}</div>
-          <div class="script-name">${escHTML(p.nombre || p.id)}</div>
+          <div class="script-name">${escHTML(nombrePrenda(p))}</div>
           ${p.descripcion ? `<div class="script-desc">${escHTML(p.descripcion)}</div>` : ''}
           <div class="script-meta">
             <span class="ropa-pill${hasGlb ? '' : ' pending'}">${hasGlb ? '3D listo' : 'GLB pendiente'}</span>
@@ -1779,7 +1785,7 @@ function openRopaModal(id) {
   if (!p) return;
   const catEl = document.getElementById('ropaModalCat');
   if (p.categoria) { catEl.textContent = p.categoria; catEl.style.display = ''; } else { catEl.style.display = 'none'; }
-  document.getElementById('ropaModalName').textContent = p.nombre || p.id;
+  document.getElementById('ropaModalName').textContent = nombrePrenda(p);
   const descEl = document.getElementById('ropaModalDesc');
   if (p.descripcion) { descEl.textContent = p.descripcion; descEl.style.display = ''; } else { descEl.style.display = 'none'; }
   const viewer = document.getElementById('ropaModalViewer');

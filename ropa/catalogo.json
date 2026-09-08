@@ -1,7 +1,6 @@
 [
   {
     "id": "camiseta1brazo_hombre",
-    "nombre": "Camiseta",
     "categoria": "Camisetas",
     "descripcion": "",
     "glb": "ropa/camiseta.glb",
