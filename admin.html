@@ -424,11 +424,8 @@
         <div class="field"><label>Etiqueta</label><input type="text" data-bind="discordFeed.tag"></div>
         <div class="field"><label>Título (Enter = 2 líneas)</label><textarea data-bind="discordFeed.title"></textarea></div>
         <div class="field"><label>Descripción</label><input type="text" data-bind="discordFeed.desc"></div>
-        <div class="field-row">
-          <div class="field"><label>Server ID</label><input type="text" data-bind="discordFeed.serverId" placeholder="Ej: 123456789012345678"></div>
-          <div class="field" style="max-width:130px"><label>Altura (px)</label><input type="number" min="320" max="900" data-bind="discordFeed.height"></div>
-        </div>
-        <div class="hint">Activa el <strong>Widget del servidor</strong> en Discord (Ajustes del servidor → Widget) y usa canales visibles. Los IDs se copian con clic derecho → Copiar ID (activa el modo desarrollador en Discord).</div>
+        <div class="field"><label>Server ID</label><input type="text" data-bind="discordFeed.serverId" placeholder="Ej: 123456789012345678"></div>
+        <div class="hint">Un robot de GitHub copia las publicaciones a <strong>discord/feed.json</strong> cada ~10 min (sin hosting). Necesita: bot en tu servidor con permiso de ver/leer esos canales + secreto <strong>DISCORD_BOT_TOKEN</strong> en el repo. Guía en <strong>discord/README.md</strong>. Los IDs se copian con clic derecho → Copiar ID (modo desarrollador).</div>
         <div id="dcList"></div>
         <button class="add-btn add-wide" id="addDcChannel"><span class="ico">＋</span> Añadir canal</button>
       </div>
@@ -600,7 +597,7 @@ const DEFAULT_CONFIG = {
     { stars: 4, text: 'Llevo usando scripts de EVJO desde hace 6 meses. La tienda actualiza constantemente y el soporte en Discord responde rápido.', avatar: 'ZR', name: 'ZeRoFault', role: 'Community Manager' }
   ] },
   cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
-  discordFeed: { tag: 'En vivo', title: 'DISCORD\nEN VIVO', desc: 'Lo último de nuestro Discord, en directo.', serverId: '', channels: [], height: 560 },
+  discordFeed: { tag: 'En vivo', title: 'DISCORD\nEN VIVO', desc: 'Lo último de nuestro Discord, en directo.', serverId: '', channels: [] },
   extrasHeading: { tag: 'Novedades', title: 'CONTENIDO\nEXTRA' },
   layout: { order: ['trust', 'marquee', 'tienda', 'probador', 'reviews', 'discord', 'cta'], visible: { trust: true, marquee: true, tienda: true, probador: true, reviews: true, discord: true, cta: true } },
   blocks: []

@@ -800,15 +800,21 @@
   .ropa-pill { display: inline-block; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border-red); color: var(--red); background: rgba(230,43,43,0.08); margin-bottom: 8px; }
   .ropa-pill.pending { color: var(--muted); border-color: var(--border-2); background: rgba(255,255,255,0.03); }
 
-  /* DISCORD EN VIVO */
-  .discord-frame { width: 100%; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #0e0e12; }
-  .discord-frame iframe { width: 100%; border: 0; display: block; }
+  /* DISCORD EN VIVO (tarjetas flotantes del feed) */
+  .dc-list { display: flex; flex-direction: column; gap: 14px; }
+  .dc-post { background: linear-gradient(170deg, var(--surface2), var(--surface)); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; transition: border-color .3s var(--ease); }
+  .dc-post:hover { border-color: var(--border-red); }
+  .dc-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .dc-av { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: var(--grad-red); color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .dc-av img { width: 100%; height: 100%; object-fit: cover; }
+  .dc-name { font-family: var(--font-head); font-size: 16px; font-weight: 700; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+  .dc-bot { font-size: 10px; background: #5865F2; border-radius: 4px; padding: 1px 6px; letter-spacing: 1px; vertical-align: 2px; }
+  .dc-time { font-size: 12px; color: var(--muted); }
+  .dc-text { font-size: 14px; color: #c9c9d0; line-height: 1.7; overflow-wrap: break-word; }
+  .dc-text a { color: var(--red-bright); }
+  .dc-imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 12px; }
+  .dc-imgs img { width: 100%; border-radius: 10px; border: 1px solid var(--border); }
   .discord-fallback { text-align: center; margin-top: 14px; }
-  /* Recorte: solo la columna de mensajes (medidas estándar Discord, solo escritorio) */
-  @media (min-width: 901px) {
-    .discord-crop { overflow: hidden; }
-    .discord-crop iframe { width: calc(100% + 480px); max-width: none; margin-left: -240px; }
-  }
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
@@ -1852,9 +1858,29 @@ document.getElementById('ropaModalOverlay').addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRopaModal(); });
 
 // ─────────────────────────────────────────────
-// DISCORD EN VIVO (embed por canal)
+// DISCORD EN VIVO (tarjetas flotantes desde discord/feed.json)
 // ─────────────────────────────────────────────
 let discordActive = 0;
+let dcFeedCache = null;
+function dcTimeAgo(iso) {
+  const t = new Date(iso).getTime();
+  if (isNaN(t)) return '';
+  const s = Math.max(0, (Date.now() - t) / 1000);
+  if (s < 60) return 'ahora mismo';
+  if (s < 3600) return `hace ${Math.floor(s / 60)} min`;
+  if (s < 86400) return `hace ${Math.floor(s / 3600)} h`;
+  const d = Math.floor(s / 86400);
+  return d === 1 ? 'ayer' : `hace ${d} días`;
+}
+function dcRichText(s) {
+  return escHTML(s || '')
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
+    .replace(/\n/g, '<br>');
+}
+function dcChannels() {
+  const df = window.__discordFeed || {};
+  return (df.channels || []).filter(ch => ch && String(ch.id || '').trim());
+}
 function renderDiscordFeed(df) {
   df = df || {};
   window.__discordFeed = df;
@@ -1864,24 +1890,55 @@ function renderDiscordFeed(df) {
   const tabs = document.getElementById('discordTabs');
   const wrap = document.getElementById('discordFrameWrap');
   if (!tabs || !wrap) return;
-  const server = String(df.serverId || '').trim();
-  const chs = (df.channels || []).filter(ch => ch && String(ch.id || '').trim());
-  if (!server || !chs.length) {
+  const chs = dcChannels();
+  if (!chs.length) {
     tabs.style.display = 'none';
-    wrap.innerHTML = `<div class="error-state"><div class="error-icon">💬</div><p>Añade tu Server ID y canales en el panel para ver el Discord en vivo</p></div>`;
+    wrap.innerHTML = `<div class="error-state"><div class="error-icon">💬</div><p>Añade tus canales en el panel para ver las publicaciones</p></div>`;
     return;
   }
   if (discordActive >= chs.length) discordActive = 0;
   tabs.style.display = '';
   tabs.innerHTML = chs.map((ch, i) => `<button class="filter-btn${i === discordActive ? ' active' : ''}" data-dc="${i}">${escHTML(ch.label || ('Canal ' + (i + 1)))}</button>`).join('');
   tabs.querySelectorAll('[data-dc]').forEach(btn => {
-    btn.addEventListener('click', () => { discordActive = +btn.dataset.dc; renderDiscordFeed(window.__discordFeed); });
+    btn.addEventListener('click', () => { discordActive = +btn.dataset.dc; paintDcTabs(); renderDcPosts(); });
   });
+  wrap.innerHTML = `<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Cargando publicaciones...</div></div>`;
+  fetch('discord/feed.json', { cache: 'no-store' })
+    .then(r => (r.ok ? r.json() : null))
+    .then(j => { dcFeedCache = j; renderDcPosts(); })
+    .catch(() => renderDcPosts());
+}
+function paintDcTabs() {
+  const tabs = document.getElementById('discordTabs'); if (!tabs) return;
+  tabs.querySelectorAll('[data-dc]').forEach(b => b.classList.toggle('active', +b.dataset.dc === discordActive));
+}
+function renderDcPosts() {
+  const wrap = document.getElementById('discordFrameWrap'); if (!wrap) return;
+  const df = window.__discordFeed || {};
+  const chs = dcChannels();
+  if (!chs.length) return;
+  if (discordActive >= chs.length) discordActive = 0;
   const ch = chs[discordActive];
-  const chId = String(ch.id).trim();
-  const h = Math.max(320, Math.min(900, Number(df.height) || 560));
-  wrap.innerHTML = `<div class="discord-frame discord-crop"><iframe src="https://e.widgetbot.io/channels/${escHTML(server)}/${escHTML(chId)}" height="${h}" allow="clipboard-write; fullscreen" loading="lazy" title="Discord en vivo"></iframe></div>
-    <div class="discord-fallback"><a class="btn-ghost" href="https://discord.com/channels/${escHTML(server)}/${escHTML(chId)}" target="_blank" rel="noopener">Abrir en Discord →</a></div>`;
+  const fed = ((dcFeedCache && dcFeedCache.channels) || []).find(c => String(c.id) === String(ch.id).trim());
+  const msgs = fed ? (fed.messages || []) : [];
+  const server = String(df.serverId || '').trim();
+  const openUrl = server ? `https://discord.com/channels/${escHTML(server)}/${escHTML(String(ch.id).trim())}` : '#';
+  let html = `<div class="dc-list">`;
+  if (!msgs.length) {
+    html += `<div class="error-state"><div class="error-icon">💬</div><p>${dcFeedCache ? 'Aún no hay publicaciones sincronizadas. El robot actualiza cada ~10 min.' : 'El feed aún no se ha sincronizado. Revisa el secreto DISCORD_BOT_TOKEN y ejecútalo desde Actions.'}</p></div>`;
+  } else {
+    html += msgs.map(m => `
+      <article class="dc-post">
+        <div class="dc-head">
+          <div class="dc-av">${m.avatar ? `<img src="${escHTML(m.avatar)}" alt="" loading="lazy" onerror="this.remove()">` : escHTML(String(m.author || '?').slice(0, 2).toUpperCase())}</div>
+          <div><div class="dc-name">${escHTML(m.author || '?')}${m.bot ? ' <span class="dc-bot">BOT</span>' : ''}</div><div class="dc-time">${escHTML(dcTimeAgo(m.timestamp))}</div></div>
+        </div>
+        ${m.content ? `<div class="dc-text">${dcRichText(m.content)}</div>` : ''}
+        ${(m.images && m.images.length) ? `<div class="dc-imgs">${m.images.map(u => `<img src="${escHTML(u)}" loading="lazy" alt="">`).join('')}</div>` : ''}
+      </article>`).join('');
+  }
+  html += `</div><div class="discord-fallback"><a class="btn-ghost" href="${openUrl}" target="_blank" rel="noopener">Abrir en Discord →</a></div>`;
+  wrap.innerHTML = html;
 }
 
 // ─────────────────────────────────────────────
@@ -1992,7 +2049,7 @@ const DEFAULT_CONFIG = {
     ]
   },
   cta: { tag: 'Comunidad', title: 'ÚNETE A NUESTRA |FAMILIA', desc: '+12.000 admins, devs y owners ya forman parte de la comunidad EVJO. Soporte, novedades y drops exclusivos te esperan dentro.', btnLabel: 'Entrar al Discord', btn2Label: '', btn2Href: '', membersText: '', image: '', bgColor: '', overlay: 0.85, align: 'left' },
-  discordFeed: { tag: 'En vivo', title: 'DISCORD\nEN VIVO', desc: 'Lo último de nuestro Discord, en directo.', serverId: '', channels: [], height: 560 },
+  discordFeed: { tag: 'En vivo', title: 'DISCORD\nEN VIVO', desc: 'Lo último de nuestro Discord, en directo.', serverId: '', channels: [] },
   scriptsHeading: { tag: 'Catálogo', title: 'NUESTROS\nSCRIPTS', desc: 'Explora nuestra colección de scripts premium. Cada paquete incluye código abierto, soporte y actualizaciones gratuitas.' },
   scriptsLayout: { mode: 'grid', direction: 'left', speed: 45 },
   probador: { tag: 'Probador 3D', title: 'CATALOGO\n3D', desc: '' },
