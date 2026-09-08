@@ -1749,7 +1749,22 @@ function openRopaModal(id) {
     viewer.innerHTML = `<model-viewer class="ropa-viewer" src="${escHTML(p.glb)}" camera-controls auto-rotate auto-rotate-delay="1200" shadow-intensity="1" exposure="1.1" interaction-prompt="auto"></model-viewer>
       <div class="ropa-note" id="ropaLoadNote" style="display:none;">No se pudo cargar el .glb. Revisa que <b>${escHTML(p.glb)}</b> exista en el repo y pese &lt; 25 MB.</div>`;
     const mv = viewer.querySelector('model-viewer');
-    if (mv) mv.addEventListener('error', () => { const n = document.getElementById('ropaLoadNote'); if (n) n.style.display = ''; }, { once: true });
+    if (mv) {
+      mv.addEventListener('error', () => { const n = document.getElementById('ropaLoadNote'); if (n) n.style.display = ''; }, { once: true });
+      // Las conversiones YDD->GLB suelen traer alphaMode BLEND y se ven transparentes: forzar opaco.
+      mv.addEventListener('load', () => {
+        try {
+          (mv.model && mv.model.materials ? mv.model.materials : []).forEach(m => {
+            if (m.setAlphaMode) m.setAlphaMode('OPAQUE');
+            const pbr = m.pbrMetallicRoughness;
+            if (pbr && pbr.setBaseColorFactor) {
+              const f = pbr.baseColorFactor || [1, 1, 1, 1];
+              pbr.setBaseColorFactor([f[0], f[1], f[2], 1]);
+            }
+          });
+        } catch (e) {}
+      });
+    }
   } else {
     viewer.innerHTML = `<div class="error-state"><div class="error-icon">👕</div><p>Esta prenda aún no tiene .glb. Conviértela desde YDD+YTD y súbela a ropa/</p></div>`;
   }
