@@ -8,11 +8,28 @@ Sin secreto: avisa y no falla (para no ensuciar el historial de Actions).
 import datetime
 import json
 import os
+import re
 import sys
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LIMIT = 20
+
+# La web es publica: censurar secretos antes de guardarlos en feed.json.
+REDACT_PATTERNS = [
+    r"github_pat_[A-Za-z0-9_]+",
+    r"gh[pousr]_[A-Za-z0-9]+",
+    r"mfa\.[A-Za-z0-9_\-]+",
+    r"[A-Za-z0-9_\-]{24}\.[A-Za-z0-9_\-]{6}\.[A-Za-z0-9_\-]{27,}",
+    r"discord(?:app)?\.com/api/webhooks/\d+/[\w\-]+",
+    r"sk-[A-Za-z0-9]{20,}",
+]
+
+
+def redact_secrets(text):
+    for pattern in REDACT_PATTERNS:
+        text = re.sub(pattern, "[secreto oculto]", text)
+    return text
 
 
 def fetch_messages(channel_id, token):
@@ -77,6 +94,7 @@ def clean_message(m):
             if media.get("url"):
                 images.append(media["url"])
     content = "\n\n".join(texts).strip()
+    content = redact_secrets(content)
     return {
         "id": m.get("id"),
         "author": author.get("global_name") or author.get("username") or "?",
