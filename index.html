@@ -779,8 +779,12 @@
   @keyframes dvscan { 0%,100% { opacity: .25; transform: scaleX(.3); } 50% { opacity: 1; transform: scaleX(1); } }
 
   /* PROBADOR 3D (ropa EUP: tarjetas + visor model-viewer) */
-  .ropa-viewer { width: 100%; height: 420px; background: var(--surface2); border-radius: 12px; --poster-color: transparent; }
+  .ropa-viewer { width: 100%; height: min(62vh, 600px); min-height: 440px; background: #050506; border: 2px solid #000; border-radius: 6px; --poster-color: transparent; }
   .ropa-viewer:focus { outline: 1px solid var(--border-red); }
+  #ropaModalName { font-family: var(--font-display); font-weight: 400; font-size: 46px; letter-spacing: 3px; }
+  .ropa-thumb { height: 240px; padding: 0; background: #050506; }
+  .ropa-thumb::before { display: none; }
+  .ropa-card-viewer { width: 100%; height: 100%; background: transparent; --poster-color: transparent; pointer-events: none; }
   .ropa-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
   .ropa-note { font-size: 12.5px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
   .ropa-pill { display: inline-block; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border-red); color: var(--red); background: rgba(230,43,43,0.08); margin-bottom: 8px; }
@@ -1666,6 +1670,20 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal
 let ropaItems = [];
 let ropaActiveCat = 'all';
 
+// Las conversiones YDD->GLB suelen traer alphaMode BLEND y se ven transparentes: forzar opaco.
+function forceOpaqueMaterials(mv) {
+  try {
+    (mv.model && mv.model.materials ? mv.model.materials : []).forEach(m => {
+      if (m.setAlphaMode) m.setAlphaMode('OPAQUE');
+      const pbr = m.pbrMetallicRoughness;
+      if (pbr && pbr.setBaseColorFactor) {
+        const f = pbr.baseColorFactor || [1, 1, 1, 1];
+        pbr.setBaseColorFactor([f[0], f[1], f[2], 1]);
+      }
+    });
+  } catch (e) {}
+}
+
 async function loadRopa() {
   const grid = document.getElementById('ropaGrid');
   const bar = document.getElementById('ropaFilterBar');
@@ -1715,12 +1733,18 @@ function renderRopaGrid(filterCat) {
   }
   grid.innerHTML = filtered.map(p => {
     const hasGlb = Boolean(p.glb);
-    const thumb = p.thumb
-      ? `<img src="${escHTML(p.thumb)}" alt="${escHTML(p.nombre || p.id)}" loading="lazy" onerror="this.remove()">`
-      : `<div class="script-thumb-placeholder"><div class="script-thumb-icon">👕</div><div class="script-thumb-label">3D</div></div>`;
+    let visual;
+    if (hasGlb) {
+      const poster = p.thumb ? ` poster="${escHTML(p.thumb)}"` : '';
+      visual = `<model-viewer class="ropa-card-viewer" src="${escHTML(p.glb)}"${poster} loading="lazy" shadow-intensity="1" exposure="1.1" interaction-prompt="none"></model-viewer>`;
+    } else if (p.thumb) {
+      visual = `<img src="${escHTML(p.thumb)}" alt="${escHTML(p.nombre || p.id)}" loading="lazy" onerror="this.remove()">`;
+    } else {
+      visual = `<div class="script-thumb-placeholder"><div class="script-thumb-icon">👕</div><div class="script-thumb-label">3D</div></div>`;
+    }
     return `
       <article class="script-card" data-ropa="${escHTML(p.id)}">
-        <div class="script-thumb">${thumb}<span class="thumb-line"></span></div>
+        <div class="script-thumb ropa-thumb">${visual}<span class="thumb-line"></span></div>
         <div class="script-body">
           <div class="script-category">${escHTML(p.categoria || 'EUP')}</div>
           <div class="script-name">${escHTML(p.nombre || p.id)}</div>
@@ -1735,6 +1759,9 @@ function renderRopaGrid(filterCat) {
   }).join('');
   grid.querySelectorAll('[data-ropa]').forEach(card => {
     card.addEventListener('click', () => openRopaModal(card.dataset.ropa));
+  });
+  grid.querySelectorAll('model-viewer.ropa-card-viewer').forEach(mv => {
+    mv.addEventListener('load', () => forceOpaqueMaterials(mv), { once: true });
   });
 }
 
@@ -1751,19 +1778,7 @@ function openRopaModal(id) {
     const mv = viewer.querySelector('model-viewer');
     if (mv) {
       mv.addEventListener('error', () => { const n = document.getElementById('ropaLoadNote'); if (n) n.style.display = ''; }, { once: true });
-      // Las conversiones YDD->GLB suelen traer alphaMode BLEND y se ven transparentes: forzar opaco.
-      mv.addEventListener('load', () => {
-        try {
-          (mv.model && mv.model.materials ? mv.model.materials : []).forEach(m => {
-            if (m.setAlphaMode) m.setAlphaMode('OPAQUE');
-            const pbr = m.pbrMetallicRoughness;
-            if (pbr && pbr.setBaseColorFactor) {
-              const f = pbr.baseColorFactor || [1, 1, 1, 1];
-              pbr.setBaseColorFactor([f[0], f[1], f[2], 1]);
-            }
-          });
-        } catch (e) {}
-      });
+      mv.addEventListener('load', () => forceOpaqueMaterials(mv), { once: true });
     }
   } else {
     viewer.innerHTML = `<div class="error-state"><div class="error-icon">👕</div><p>Esta prenda aún no tiene .glb. Conviértela desde YDD+YTD y súbela a ropa/</p></div>`;
