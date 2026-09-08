@@ -41,12 +41,24 @@ def clean_message(m):
         for a in (m.get("attachments") or [])
         if str(a.get("content_type") or "").startswith("image/") and a.get("url")
     ]
+    # Los anuncios suelen venir solo como embeds: rescatar su texto e imagenes.
+    embed_texts = []
+    for e in (m.get("embeds") or []):
+        for key in ("title", "description"):
+            if e.get(key):
+                embed_texts.append(str(e[key]))
+        for media in (e.get("thumbnail") or {}, e.get("image") or {}):
+            if media.get("url"):
+                images.append(media["url"])
+    content = (m.get("content") or "").strip()
+    if embed_texts:
+        content = (content + "\n\n" + "\n\n".join(embed_texts)).strip()
     return {
         "id": m.get("id"),
         "author": author.get("global_name") or author.get("username") or "?",
         "avatar": avatar,
         "bot": bool(author.get("bot")),
-        "content": m.get("content") or "",
+        "content": content,
         "timestamp": m.get("timestamp"),
         "images": images[:4],
     }
