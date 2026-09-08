@@ -1757,7 +1757,7 @@ function renderRopaGrid(filterCat) {
         <div class="script-body">
           <div class="script-category">${escHTML(p.categoria || 'EUP')}</div>
           <div class="script-name">${escHTML(p.nombre || p.id)}</div>
-          <div class="script-desc">${escHTML(p.descripcion || 'Prenda FiveM visualizable en 3D.')}</div>
+          ${p.descripcion ? `<div class="script-desc">${escHTML(p.descripcion)}</div>` : ''}
           <div class="script-meta">
             <span class="ropa-pill${hasGlb ? '' : ' pending'}">${hasGlb ? '3D listo' : 'GLB pendiente'}</span>
             ${p.precio ? `<span class="script-price">${escHTML(p.precio)}</span>` : ''}
