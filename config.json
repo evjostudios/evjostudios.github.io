@@ -142,19 +142,6 @@
     "direction": "left",
     "speed": 45
   },
-  "probador": {
-    "tag": "Probador 3D",
-    "title": "CATALOGO\n3D",
-    "desc": ""
-  },
-  "discordFeed": {
-    "tag": "En vivo",
-    "title": "DISCORD\nEN VIVO",
-    "desc": "Lo último de nuestro Discord, en directo.",
-    "serverId": "",
-    "channels": [],
-    "height": 560
-  },
   "store": {
     "cardSize": "normal",
     "priceTagShape": "slant",
@@ -211,6 +198,19 @@
     "overlay": 0.85,
     "align": "left"
   },
+  "discordFeed": {
+    "tag": "En vivo",
+    "title": "DISCORD\nEN VIVO",
+    "desc": "Lo último de nuestro Discord, en directo.",
+    "serverId": "",
+    "channels": [
+      {
+        "label": "Canal",
+        "id": "1535427243185279090"
+      }
+    ],
+    "height": 560
+  },
   "extrasHeading": {
     "tag": "Novedades",
     "title": "CONTENIDO\nEXTRA"
@@ -245,5 +245,10 @@
       "link": "",
       "id": "bowvdzg6"
     }
-  ]
+  ],
+  "probador": {
+    "tag": "Probador 3D",
+    "title": "CATALOGO\n3D",
+    "desc": ""
+  }
 }
