@@ -144,8 +144,8 @@
   },
   "probador": {
     "tag": "Probador 3D",
-    "title": "ROPA\nEN 3D",
-    "desc": "Sube cada prenda convertida a .glb en la carpeta ropa/ y dala de alta en ropa/catalogo.json. Toca una prenda para girarla, hacer zoom y verla en 3D."
+    "title": "CATALOGO\n3D",
+    "desc": ""
   },
   "store": {
     "cardSize": "normal",
