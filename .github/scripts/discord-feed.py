@@ -122,6 +122,49 @@ def main():
             if m["content"].strip() or m["images"] or m["audios"]
         ]
         print(f"canal {cid}: {len(messages)} recibidos, {len(cleaned)} validos")
+        if messages and not cleaned:
+            from collections import Counter
+
+            shapes = Counter()
+            for m in messages:
+                parts = [f"type={m.get('type')}"]
+                if (m.get("content") or "").strip():
+                    parts.append("texto")
+                if m.get("attachments"):
+                    parts.append(
+                        "adj="
+                        + str(
+                            [
+                                (a.get("filename"), a.get("content_type"))
+                                for a in m["attachments"]
+                            ]
+                        )
+                    )
+                if m.get("sticker_items"):
+                    parts.append("stickers")
+                if m.get("poll"):
+                    parts.append("poll")
+                for e in m.get("embeds") or []:
+                    keys = [
+                        k
+                        for k in (
+                            "title",
+                            "description",
+                            "fields",
+                            "image",
+                            "thumbnail",
+                            "author",
+                            "footer",
+                            "url",
+                        )
+                        if e.get(k)
+                    ]
+                    parts.append("embed:" + (",".join(keys) or "vacio"))
+                if m.get("flags"):
+                    parts.append(f"flags={m['flags']}")
+                shapes["|".join(parts)] += 1
+            for shape, count in list(shapes.most_common(10)):
+                print(f"  forma x{count}: {shape}")
         out["channels"].append(
             {"id": cid, "label": ch.get("label") or "Canal", "messages": cleaned}
         )
