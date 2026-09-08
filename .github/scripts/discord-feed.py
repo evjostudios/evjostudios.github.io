@@ -92,6 +92,7 @@ def main():
             continue
         cleaned = [clean_message(m) for m in messages]
         cleaned = [m for m in cleaned if m["content"].strip() or m["images"]]
+        print(f"canal {cid}: {len(messages)} recibidos, {len(cleaned)} validos")
         out["channels"].append(
             {"id": cid, "label": ch.get("label") or "Canal", "messages": cleaned}
         )
